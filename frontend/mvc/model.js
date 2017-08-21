@@ -71,10 +71,12 @@ module.exports = function() {
     }; 
 
     var startLife = function (speed) {
-        _timer = setInterval(function(){
-        _board = nextState(_board);
-        document.getElementById('field').dispatchEvent(changeStateBoard());
-        },speed);
+        if (_timer===false){
+            _timer = setInterval(function(){
+            _board = nextState(_board);
+            document.getElementById('field').dispatchEvent(changeStateBoard());
+            },speed);
+        }
     }
 
     return {
@@ -90,6 +92,7 @@ module.exports = function() {
         },
         stopLife: function(){
             clearInterval(_timer);
+            _timer = false;
         },
         clearBoard:function(){
             _board = newBoard(_n);
