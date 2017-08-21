@@ -52,6 +52,7 @@
 	    var model = Model();
 	    var view = View();
 	    var controller = Controller(model,view);
+	    model.startLife();
 	})
 
 /***/ }),
@@ -61,7 +62,7 @@
 	module.exports = function() {
 	    
 	    var _n=5;
-	    var _timer;
+	    var _timer=false;
 	    var _speed = 1000;
 	    var newBoard = function(n){
 	        var board=[] ;
@@ -131,10 +132,12 @@
 	    }; 
 
 	    var startLife = function (speed) {
-	        _timer = setInterval(function(){
-	        _board = nextState(_board);
-	        document.getElementById('field').dispatchEvent(changeStateBoard());
-	        },speed);
+	        if (_timer===false){
+	            _timer = setInterval(function(){
+	            _board = nextState(_board);
+	            document.getElementById('field').dispatchEvent(changeStateBoard());
+	            },speed);
+	        }
 	    }
 
 	    return {
@@ -150,6 +153,7 @@
 	        },
 	        stopLife: function(){
 	            clearInterval(_timer);
+	            _timer = false;
 	        },
 	        clearBoard:function(){
 	            _board = newBoard(_n);

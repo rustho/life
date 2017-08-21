@@ -1,7 +1,7 @@
 module.exports = function() {
     
     var _n=5;
-    var _timer;
+    var _timer=false;
     var _speed = 1000;
     var newBoard = function(n){
         var board=[] ;
