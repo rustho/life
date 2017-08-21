@@ -80,7 +80,7 @@ module.exports = function() {
     return {
 
         changeSize:function(){
-            changeSize(width);
+            changeSize();
         },
         
         addEvents:function(){

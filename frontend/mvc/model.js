@@ -81,13 +81,17 @@ module.exports = function() {
         getBoard: function() {
             return _board;
         },
+        setBoard: function(testboard){
+            _board = testboard
+            _n = testboard.length;
+        },
         startLife: function(){
             startLife(_speed);
         },
         stopLife: function(){
             clearInterval(_timer);
         },
-        clearLife:function(){
+        clearBoard:function(){
             _board = newBoard(_n);
             document.getElementById('field').dispatchEvent(changeStateBoard());
         },

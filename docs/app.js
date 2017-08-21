@@ -141,13 +141,17 @@
 	        getBoard: function() {
 	            return _board;
 	        },
+	        setBoard: function(testboard){
+	            _board = testboard
+	            _n = testboard.length;
+	        },
 	        startLife: function(){
 	            startLife(_speed);
 	        },
 	        stopLife: function(){
 	            clearInterval(_timer);
 	        },
-	        clearLife:function(){
+	        clearBoard:function(){
 	            _board = newBoard(_n);
 	            document.getElementById('field').dispatchEvent(changeStateBoard());
 	        },
@@ -255,7 +259,7 @@
 	    return {
 
 	        changeSize:function(){
-	            changeSize(width);
+	            changeSize();
 	        },
 	        
 	        addEvents:function(){
@@ -284,8 +288,8 @@
 	    document.getElementById('field').addEventListener ('stopLife', function(){
 	        _model.stopLife();
 	    },false);
-	    document.getElementById('field').addEventListener ('clear', function(){
-	        _model.clear();
+	    document.getElementById('field').addEventListener ('clearBoard', function(){
+	        _model.clearBoard();
 	    },false);
 	    document.getElementById('field').addEventListener ('changeStateBoard', function(event){
 	        _view.drawCanvas(event.detail.board);

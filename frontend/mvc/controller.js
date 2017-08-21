@@ -10,8 +10,8 @@ module.exports = function(model,view) {
     document.getElementById('field').addEventListener ('stopLife', function(){
         _model.stopLife();
     },false);
-    document.getElementById('field').addEventListener ('clear', function(){
-        _model.clear();
+    document.getElementById('field').addEventListener ('clearBoard', function(){
+        _model.clearBoard();
     },false);
     document.getElementById('field').addEventListener ('changeStateBoard', function(event){
         _view.drawCanvas(event.detail.board);
