@@ -88,7 +88,6 @@
 	        var cell = width/_n;
 	        var xCell= Math.ceil(x/cell)-1;
 	        var yCell= Math.ceil(y/cell)-1;
-	        console.log(xCell+yCell);
 	        if(_board[xCell][yCell]===0)
 	            _board[xCell][yCell]=1;
 	        else
@@ -292,7 +291,7 @@
 	        _view.drawCanvas(event.detail.board);
 	    },false);
 	    document.getElementById('field').addEventListener ('changeSize', function(){
-	        _view.changeSize;
+	        _view.changeSize();
 	    },false);
 	    document.getElementById('field').addEventListener ('changeQuantityCell', function(){
 	        _model.changeQuantityCell(event.detail.n);

@@ -17,7 +17,7 @@ module.exports = function(model,view) {
         _view.drawCanvas(event.detail.board);
     },false);
     document.getElementById('field').addEventListener ('changeSize', function(){
-        _view.changeSize;
+        _view.changeSize();
     },false);
     document.getElementById('field').addEventListener ('changeQuantityCell', function(){
         _model.changeQuantityCell(event.detail.n);
