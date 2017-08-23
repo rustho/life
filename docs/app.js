@@ -52,7 +52,7 @@
 	    var model = Model();
 	    var view = View();
 	    var controller = Controller(model,view);
-	    model.startLife();
+	    /* model.startLife(); */
 	})
 
 /***/ }),
@@ -77,13 +77,30 @@
 
 	    var _board=newBoard(_n) ;
 
-	    var changeStateBoard = function () {
-	        var event = new CustomEvent('changeStateBoard', {
+	    var _event = function(){
+	    var event = new CustomEvent('changeStateBoard', {
 	                bubbles:true,
 	                detail:{board:_board}
-	            })  
-	        return event;  
-	    }
+	            });
+	    return event;
+	    };
+
+	    var _changeStateBoard =  {
+	        _subscribers : [],
+	        addSubscriber : function(object){
+	            this._subscribers.push(object);
+	        },
+	        notifySubscribers : function() {
+	            for (var i=0; i<this._subscribers.length; i++){
+	                this._subscribers[i](_event());
+	                console.log('ok');
+	            }
+	        } 
+	    };
+
+	    var notifyField= function(event){
+	        document.getElementById('field').dispatchEvent(event);
+	    };
 
 	    var findCellAndChange = function (x,y,width) {
 	        var cell = width/_n;
@@ -135,18 +152,22 @@
 	        if (_timer===false){
 	            _timer = setInterval(function(){
 	            _board = nextState(_board);
-	            document.getElementById('field').dispatchEvent(changeStateBoard());
+	            _changeStateBoard.notifySubscribers();
 	            },speed);
 	        }
 	    }
 
 	    return {
+	        changeStateBoard: _changeStateBoard,
 	        getBoard: function() {
 	            return _board;
 	        },
 	        setBoard: function(testboard){
 	            _board = testboard
 	            _n = testboard.length;
+	        },
+	        nextState: function(testboard){
+	            return nextState(testboard);
 	        },
 	        startLife: function(){
 	            startLife(_speed);
@@ -157,19 +178,20 @@
 	        },
 	        clearBoard:function(){
 	            _board = newBoard(_n);
-	            document.getElementById('field').dispatchEvent(changeStateBoard());
+	            _changeStateBoard.notifySubscribers();
 	        },
 	        changeQuantityCell:function(n){
 	            _n = n;
 	            _board = newBoard(_n);
-	            document.getElementById('field').dispatchEvent(changeStateBoard());
+	            _changeStateBoard.notifySubscribers();
 	        },
 	        findCellAndChange:function(x,y,width){
 	            findCellAndChange(x,y,width);
-	            document.getElementById('field').dispatchEvent(changeStateBoard());
+	            _changeStateBoard.notifySubscribers();
 	        },
 	        changeSpeed: function(speed) {
 	            clearInterval(_timer);
+	            _timer = false;
 	            _speed = speed;
 	            startLife(speed);
 	        }
@@ -283,9 +305,15 @@
 	module.exports = function(model,view) {
 	    _model = model;
 	    _view = view;
+	    
+	    var observer = function(event){
+	        _view.drawCanvas(event.detail.board);
+	    };
+
+	    _model.changeStateBoard.addSubscriber(observer)
 
 	    _view.addEvents();
-
+	    
 	    document.getElementById('field').addEventListener ('startLife', function(){
 	        _model.startLife();
 	    },false);
@@ -294,9 +322,6 @@
 	    },false);
 	    document.getElementById('field').addEventListener ('clearBoard', function(){
 	        _model.clearBoard();
-	    },false);
-	    document.getElementById('field').addEventListener ('changeStateBoard', function(event){
-	        _view.drawCanvas(event.detail.board);
 	    },false);
 	    document.getElementById('field').addEventListener ('changeSize', function(){
 	        _view.changeSize();

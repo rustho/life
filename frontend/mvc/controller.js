@@ -1,9 +1,15 @@
 module.exports = function(model,view) {
     _model = model;
     _view = view;
+    
+    var observer = function(event){
+        _view.drawCanvas(event.detail.board);
+    };
+
+    _model.changeStateBoard.addSubscriber(observer)
 
     _view.addEvents();
-
+    
     document.getElementById('field').addEventListener ('startLife', function(){
         _model.startLife();
     },false);
@@ -12,9 +18,6 @@ module.exports = function(model,view) {
     },false);
     document.getElementById('field').addEventListener ('clearBoard', function(){
         _model.clearBoard();
-    },false);
-    document.getElementById('field').addEventListener ('changeStateBoard', function(event){
-        _view.drawCanvas(event.detail.board);
     },false);
     document.getElementById('field').addEventListener ('changeSize', function(){
         _view.changeSize();

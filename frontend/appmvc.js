@@ -6,5 +6,5 @@ document.addEventListener("DOMContentLoaded",function(){
     var model = Model();
     var view = View();
     var controller = Controller(model,view);
-    model.startLife();
+    /* model.startLife(); */
 })

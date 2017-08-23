@@ -16,18 +16,30 @@ module.exports = function() {
 
     var _board=newBoard(_n) ;
 
-    var changeStateBoard = function () {
-        var event = new CustomEvent('changeStateBoard', {
+    var _event = function(){
+    var event = new CustomEvent('changeStateBoard', {
                 bubbles:true,
                 detail:{board:_board}
-            })  
-        return event;  
-    }
+            });
+    return event;
+    };
+
+    var _changeStateBoard =  {
+        _subscribers : [],
+        addSubscriber : function(object){
+            this._subscribers.push(object);
+        },
+        notifySubscribers : function() {
+            for (var i=0; i<this._subscribers.length; i++){
+                this._subscribers[i](_event());
+            }
+        } 
+    };
 
     var findCellAndChange = function (x,y,width) {
         var cell = width/_n;
-        var xCell= Math.ceil(x/cell)-1;
-        var yCell= Math.ceil(y/cell)-1;
+        var xCell= Math.floor(x/cell);
+        var yCell= Math.floor(y/cell);
         if(_board[xCell][yCell]===0)
             _board[xCell][yCell]=1;
         else
@@ -74,18 +86,23 @@ module.exports = function() {
         if (_timer===false){
             _timer = setInterval(function(){
             _board = nextState(_board);
-            document.getElementById('field').dispatchEvent(changeStateBoard());
+            _changeStateBoard.notifySubscribers();
             },speed);
         }
     }
 
     return {
+        changeStateBoard: _changeStateBoard,
         getBoard: function() {
             return _board;
         },
         setBoard: function(testboard){
             _board = testboard
             _n = testboard.length;
+        },
+        nextState: function(testboard){
+            return nextState(testboard);
+            _changeStateBoard.notifySubscribers(); //можно реализовать кнопку перехода в следующее состояние
         },
         startLife: function(){
             startLife(_speed);
@@ -96,19 +113,20 @@ module.exports = function() {
         },
         clearBoard:function(){
             _board = newBoard(_n);
-            document.getElementById('field').dispatchEvent(changeStateBoard());
+            _changeStateBoard.notifySubscribers();
         },
         changeQuantityCell:function(n){
             _n = n;
             _board = newBoard(_n);
-            document.getElementById('field').dispatchEvent(changeStateBoard());
+            _changeStateBoard.notifySubscribers();
         },
         findCellAndChange:function(x,y,width){
             findCellAndChange(x,y,width);
-            document.getElementById('field').dispatchEvent(changeStateBoard());
+            _changeStateBoard.notifySubscribers();
         },
         changeSpeed: function(speed) {
             clearInterval(_timer);
+            _timer = false;
             _speed = speed;
             startLife(speed);
         }

@@ -1,5 +1,5 @@
 // Karma configuration
-// Generated on Mon Aug 21 2017 19:18:02 GMT+0700 (+07)
+// Generated on Tue Aug 22 2017 13:34:39 GMT+0700 (+07)
 
 module.exports = function(config) {
   config.set({
@@ -10,13 +10,12 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ['mocha','sinon'],
 
 
     // list of files / patterns to load in the browser
     files: [
-      'frontend/*/*.js',
-      'test/*.js'
+      'test/*spec.js'
     ],
 
 
@@ -28,13 +27,20 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+      'test/*spec.js':['webpack']
     },
 
-
+    plugins:[
+      require('karma-webpack'),
+      require("karma-phantomjs-launcher"),
+      require("karma-mocha"),
+      require('karma-mocha-reporter'),
+      require('karma-sinon')
+    ],
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ['mocha'],
 
 
     // web server port
@@ -61,7 +67,7 @@ module.exports = function(config) {
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false,
+    singleRun: true,
 
     // Concurrency level
     // how many browser should be started simultaneous
