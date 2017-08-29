@@ -200,26 +200,38 @@
 /***/ (function(module, exports) {
 
 	module.exports = function() {
+
+	    var _publisher =  {
+	        _subscribers : [],
+	        addSubscriber : function(object){
+	            this._subscribers.push(object);
+	        },
+	        notifySubscribers : function(event) {
+	            for (var i=0; i<this._subscribers.length; i++){
+	                this._subscribers[i](event);
+	            }
+	        } 
+	    };
 	        
 	    var addEvents = function(){
 	        document.getElementById('start').onclick = function(){
 	            var startLife = new CustomEvent('startLife', {bubbles:true,})
-	            document.getElementById('field').dispatchEvent(startLife);
+	            _publisher.notifySubscribers(startLife);
 	        };
 
 	        document.getElementById('stop').onclick = function(){
 	            var stopLife = new CustomEvent('stopLife', {bubbles:true,})
-	            document.getElementById('field').dispatchEvent(stopLife);
+	            _publisher.notifySubscribers(stopLife);
 	        };
 
 	        document.getElementById('clear').onclick = function(){
 	            var clearBoard = new CustomEvent('clearBoard', {bubbles:true,})
-	            document.getElementById('field').dispatchEvent(clearBoard);
+	            _publisher.notifySubscribers(clearBoard);
 	        };
 
 	        document.getElementById('change_size').onclick = function() {
 	            var changeSize = new CustomEvent('changeSize', {bubbles:true,})
-	            document.getElementById('field').dispatchEvent(changeSize);
+	            _publisher.notifySubscribers(changeSize);
 
 	        };
 
@@ -229,7 +241,7 @@
 	                bubbles:true,
 	                detail:{n:n}
 	            })
-	            document.getElementById('field').dispatchEvent(changeQuantityCell);
+	            _publisher.notifySubscribers(changeQuantityCell);
 	        };
 
 	        document.getElementById('change_speed').onclick = function() {
@@ -238,7 +250,7 @@
 	                bubbles:true,
 	                detail:{speed:speed}
 	            })
-	            document.getElementById('field').dispatchEvent(changeSpeed);
+	            _publisher.notifySubscribers(changeSpeed);
 	        };
 	        
 	        document.getElementById('field').onclick = function(e) {
@@ -251,7 +263,7 @@
 	                bubbles:true,
 	                detail:{x:x-xo,y:y-yo,width:width}
 	            })
-	            document.getElementById('field').dispatchEvent(clickOnCell); 
+	            _publisher.notifySubscribers(clickOnCell); 
 	        }; 
 	    }
 	    
@@ -279,6 +291,8 @@
 	    }
 
 	    return {
+	        
+	        publisher:_publisher,
 
 	        changeSize:function(){
 	            changeSize();
@@ -302,35 +316,42 @@
 	    _model = model;
 	    _view = view;
 	    
-	    var observer = function(event){
+	    var modelObserver = function(event){
 	        _view.drawCanvas(event.detail.board);
 	    };
 
-	    _model.changeStateBoard.addSubscriber(observer)
+	    _model.changeStateBoard.addSubscriber(modelObserver)
 
 	    _view.addEvents();
 	    
-	    document.getElementById('field').addEventListener ('startLife', function(){
-	        _model.startLife();
-	    },false);
-	    document.getElementById('field').addEventListener ('stopLife', function(){
-	        _model.stopLife();
-	    },false);
-	    document.getElementById('field').addEventListener ('clearBoard', function(){
-	        _model.clearBoard();
-	    },false);
-	    document.getElementById('field').addEventListener ('changeSize', function(){
-	        _view.changeSize();
-	    },false);
-	    document.getElementById('field').addEventListener ('changeQuantityCell', function(){
-	        _model.changeQuantityCell(event.detail.n);
-	    },false);
-	    document.getElementById('field').addEventListener ('clickOnCell', function(event){
-	         _model.findCellAndChange(event.detail.x,event.detail.y,event.detail.width); 
-	    },false);
-	    document.getElementById('field').addEventListener ('changeSpeed', function(event){
-	         _model.changeSpeed(event.detail.speed); 
-	    },false);
+	    var viewObserver = function(event){
+	        switch(event.type){
+	            case 'startLife':
+	                _model.startLife();
+	                break;
+	            case 'stopLife':
+	                _model.stopLife();
+	                break;
+	            case 'clearBoard':
+	                _model.clearBoard();
+	                break;
+	            case 'changeSize':
+	                _view.changeSize();
+	                break;
+	            case 'changeQuantityCell':
+	                _model.changeQuantityCell(event.detail.n);
+	                break;
+	            case 'clickOnCell':
+	                _model.findCellAndChange(event.detail.x,event.detail.y,event.detail.width);
+	                break;
+	            case 'changeSpeed':
+	                _model.changeSpeed(event.detail.speed); 
+	                break;
+	        }
+	    }
+
+	    _view.publisher.addSubscriber(viewObserver);
+	    
 	}
 
 /***/ })

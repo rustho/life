@@ -2,33 +2,40 @@ module.exports = function(model,view) {
     _model = model;
     _view = view;
     
-    var observer = function(event){
+    var modelObserver = function(event){
         _view.drawCanvas(event.detail.board);
     };
 
-    _model.changeStateBoard.addSubscriber(observer)
+    _model.changeStateBoard.addSubscriber(modelObserver)
 
     _view.addEvents();
     
-    document.getElementById('field').addEventListener ('startLife', function(){
-        _model.startLife();
-    },false);
-    document.getElementById('field').addEventListener ('stopLife', function(){
-        _model.stopLife();
-    },false);
-    document.getElementById('field').addEventListener ('clearBoard', function(){
-        _model.clearBoard();
-    },false);
-    document.getElementById('field').addEventListener ('changeSize', function(){
-        _view.changeSize();
-    },false);
-    document.getElementById('field').addEventListener ('changeQuantityCell', function(){
-        _model.changeQuantityCell(event.detail.n);
-    },false);
-    document.getElementById('field').addEventListener ('clickOnCell', function(event){
-         _model.findCellAndChange(event.detail.x,event.detail.y,event.detail.width); 
-    },false);
-    document.getElementById('field').addEventListener ('changeSpeed', function(event){
-         _model.changeSpeed(event.detail.speed); 
-    },false);
+    var viewObserver = function(event){
+        switch(event.type){
+            case 'startLife':
+                _model.startLife();
+                break;
+            case 'stopLife':
+                _model.stopLife();
+                break;
+            case 'clearBoard':
+                _model.clearBoard();
+                break;
+            case 'changeSize':
+                _view.changeSize();
+                break;
+            case 'changeQuantityCell':
+                _model.changeQuantityCell(event.detail.n);
+                break;
+            case 'clickOnCell':
+                _model.findCellAndChange(event.detail.x,event.detail.y,event.detail.width);
+                break;
+            case 'changeSpeed':
+                _model.changeSpeed(event.detail.speed); 
+                break;
+        }
+    }
+
+    _view.publisher.addSubscriber(viewObserver);
+    
 }

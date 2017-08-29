@@ -1,24 +1,36 @@
 module.exports = function() {
+
+    var _publisher =  {
+        _subscribers : [],
+        addSubscriber : function(object){
+            this._subscribers.push(object);
+        },
+        notifySubscribers : function(event) {
+            for (var i=0; i<this._subscribers.length; i++){
+                this._subscribers[i](event);
+            }
+        } 
+    };
         
     var addEvents = function(){
         document.getElementById('start').onclick = function(){
             var startLife = new CustomEvent('startLife', {bubbles:true,})
-            document.getElementById('field').dispatchEvent(startLife);
+            _publisher.notifySubscribers(startLife);
         };
 
         document.getElementById('stop').onclick = function(){
             var stopLife = new CustomEvent('stopLife', {bubbles:true,})
-            document.getElementById('field').dispatchEvent(stopLife);
+            _publisher.notifySubscribers(stopLife);
         };
 
         document.getElementById('clear').onclick = function(){
             var clearBoard = new CustomEvent('clearBoard', {bubbles:true,})
-            document.getElementById('field').dispatchEvent(clearBoard);
+            _publisher.notifySubscribers(clearBoard);
         };
 
         document.getElementById('change_size').onclick = function() {
             var changeSize = new CustomEvent('changeSize', {bubbles:true,})
-            document.getElementById('field').dispatchEvent(changeSize);
+            _publisher.notifySubscribers(changeSize);
 
         };
 
@@ -28,7 +40,7 @@ module.exports = function() {
                 bubbles:true,
                 detail:{n:n}
             })
-            document.getElementById('field').dispatchEvent(changeQuantityCell);
+            _publisher.notifySubscribers(changeQuantityCell);
         };
 
         document.getElementById('change_speed').onclick = function() {
@@ -37,7 +49,7 @@ module.exports = function() {
                 bubbles:true,
                 detail:{speed:speed}
             })
-            document.getElementById('field').dispatchEvent(changeSpeed);
+            _publisher.notifySubscribers(changeSpeed);
         };
         
         document.getElementById('field').onclick = function(e) {
@@ -50,7 +62,7 @@ module.exports = function() {
                 bubbles:true,
                 detail:{x:x-xo,y:y-yo,width:width}
             })
-            document.getElementById('field').dispatchEvent(clickOnCell); 
+            _publisher.notifySubscribers(clickOnCell); 
         }; 
     }
     
@@ -78,6 +90,8 @@ module.exports = function() {
     }
 
     return {
+        
+        publisher:_publisher,
 
         changeSize:function(){
             changeSize();
