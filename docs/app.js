@@ -93,19 +93,14 @@
 	        notifySubscribers : function() {
 	            for (var i=0; i<this._subscribers.length; i++){
 	                this._subscribers[i](_event());
-	                console.log('ok');
 	            }
 	        } 
 	    };
 
-	    var notifyField= function(event){
-	        document.getElementById('field').dispatchEvent(event);
-	    };
-
 	    var findCellAndChange = function (x,y,width) {
 	        var cell = width/_n;
-	        var xCell= Math.ceil(x/cell)-1;
-	        var yCell= Math.ceil(y/cell)-1;
+	        var xCell= Math.floor(x/cell);
+	        var yCell= Math.floor(y/cell);
 	        if(_board[xCell][yCell]===0)
 	            _board[xCell][yCell]=1;
 	        else
@@ -168,6 +163,7 @@
 	        },
 	        nextState: function(testboard){
 	            return nextState(testboard);
+	            _changeStateBoard.notifySubscribers(); //можно реализовать кнопку перехода в следующее состояние
 	        },
 	        startLife: function(){
 	            startLife(_speed);

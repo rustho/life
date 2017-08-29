@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test:single": "karma start karma.conf.js --browsers PhantomJS"
+    "test:single": "karma start karma.conf.js",
+    "start": "webpack"
   },
   "author": "",
   "license": "ISC",
