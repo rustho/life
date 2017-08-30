@@ -1,7 +1,7 @@
 module.exports = function() {
     
-    var _width=5;
-    var _height=5;
+    var _width=20;
+    var _height=20;
     var _timer=false;
     var _speed = 1000;
     var _cellSquare= 20;
@@ -99,7 +99,8 @@ module.exports = function() {
         },
         setBoard: function(testboard){
             _board = testboard
-            _n = testboard.length;
+            _height = testboard.length;
+            _width = testboard[0].length;
         },
         nextState: function(testboard){
             return nextState(testboard);
