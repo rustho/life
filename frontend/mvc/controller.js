@@ -21,14 +21,18 @@ module.exports = function(model,view) {
             case 'clearBoard':
                 _model.clearBoard();
                 break;
-            case 'changeSize':
-                _view.changeSize();
+            case 'changeHeight':
+                _view.changeSize(event.detail.width,event.detail.height);
+                _model.changeQuantityCell(event.detail.width,event.detail.height);
+                console.log('height')
                 break;
-            case 'changeQuantityCell':
-                _model.changeQuantityCell(event.detail.n);
+            case 'changeWidth':
+                _view.changeSize(event.detail.width,event.detail.height);
+                _model.changeQuantityCell(event.detail.width,event.detail.height);
+                console.log('width')
                 break;
             case 'clickOnCell':
-                _model.findCellAndChange(event.detail.x,event.detail.y,event.detail.width);
+                _model.findCellAndChange(event.detail.x,event.detail.y);
                 break;
             case 'changeSpeed':
                 _model.changeSpeed(event.detail.speed); 

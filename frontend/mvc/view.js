@@ -1,5 +1,4 @@
 module.exports = function() {
-
     var _publisher =  {
         _subscribers : [],
         addSubscriber : function(object){
@@ -28,19 +27,27 @@ module.exports = function() {
             _publisher.notifySubscribers(clearBoard);
         };
 
-        document.getElementById('change_size').onclick = function() {
-            var changeSize = new CustomEvent('changeSize', {bubbles:true,})
-            _publisher.notifySubscribers(changeSize);
+        document.getElementById('change_width').onblur = function() {
+            var width = parseInt(document.getElementById('change_width').value);
+            console.log(width);
+            var height = document.getElementById('field').height;
+            console.log(height);
+            var changeWidth = new CustomEvent('changeWidth', {
+                bubbles:true,
+                detail:{width:width,height:height}
+            })
+            _publisher.notifySubscribers(changeWidth);
 
         };
 
-        document.getElementById('change_cell').onclick = function() {
-            var n = parseInt(prompt('cells?',20)); 
-            var changeQuantityCell = new CustomEvent('changeQuantityCell', {
+        document.getElementById('change_height').onblur = function() {
+            var height = parseInt(document.getElementById('change_height').value);
+            var width = document.getElementById('field').width;
+            var changeHeight = new CustomEvent('changeHeight', {
                 bubbles:true,
-                detail:{n:n}
+                detail:{width:width,height:height}
             })
-            _publisher.notifySubscribers(changeQuantityCell);
+            _publisher.notifySubscribers(changeHeight);
         };
 
         document.getElementById('change_speed').onclick = function() {
@@ -60,31 +67,31 @@ module.exports = function() {
             var width = document.getElementById('field').width;
             var clickOnCell = new CustomEvent('clickOnCell', {
                 bubbles:true,
-                detail:{x:x-xo,y:y-yo,width:width}
+                detail:{x:x-xo,y:y-yo,}
             })
             _publisher.notifySubscribers(clickOnCell); 
         }; 
     }
     
-    var changeSize = function () {
-        var width = parseInt(prompt('width?',500));
+    var changeSize = function (width,height) {
         var canvas = document.getElementById('field');
         canvas.width = width;
-        canvas.height = width;
+        canvas.height = height;
     }
 
     var drawCanvas = function(board){
         var canvas = document.getElementById('field');
         ctx = canvas.getContext('2d');
-        var n = board.length;
-        var cellsquare = canvas.width / n;
+        var height = board.length;
+        var width = board[0].length;
+        var cellsquare = 20;
         ctx.clearRect(0,0,canvas.width,canvas.height);
-        for (var i=0; i<n;i++){
-            for(var j=0;j<n;j++){
+        for (var i=0; i<height;i++){
+            for(var j=0;j<width;j++){
                 if(board[i][j]===1)
-                    ctx.fillRect(i*cellsquare,j*cellsquare,cellsquare,cellsquare)
+                    ctx.fillRect(j*cellsquare,i*cellsquare,cellsquare,cellsquare)
                 if(board[i][j]===0)
-                    ctx.strokeRect(i*cellsquare,j*cellsquare,cellsquare,cellsquare)
+                    ctx.strokeRect(j*cellsquare,i*cellsquare,cellsquare,cellsquare)
             }
         }
     }
@@ -93,8 +100,8 @@ module.exports = function() {
         
         publisher:_publisher,
 
-        changeSize:function(){
-            changeSize();
+        changeSize:function(width,height){
+            changeSize(width,height);
         },
         
         addEvents:function(){

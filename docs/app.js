@@ -61,21 +61,23 @@
 
 	module.exports = function() {
 	    
-	    var _n=5;
+	    var _width=5;
+	    var _height=5;
 	    var _timer=false;
 	    var _speed = 1000;
-	    var newBoard = function(n){
+	    var _cellSquare= 20;
+	    var newBoard = function(){
 	        var board=[] ;
-	        for(var i=0;i<n;i++){
+	        for(var i=0;i<_height;i++){
 	            board[i]=[];
-	            for(var j=0;j<n;j++){
+	            for(var j=0;j<_width;j++){
 	                board[i][j]=0;
 	            }
 	        }
 	        return board;
 	    }
 
-	    var _board=newBoard(_n) ;
+	    var _board=newBoard() ;
 
 	    var _event = function(){
 	    var event = new CustomEvent('changeStateBoard', {
@@ -97,14 +99,13 @@
 	        } 
 	    };
 
-	    var findCellAndChange = function (x,y,width) {
-	        var cell = width/_n;
-	        var xCell= Math.floor(x/cell);
-	        var yCell= Math.floor(y/cell);
-	        if(_board[xCell][yCell]===0)
-	            _board[xCell][yCell]=1;
+	    var findCellAndChange = function (x,y) {
+	        var xCell= Math.floor(x/_cellSquare);
+	        var yCell= Math.floor(y/_cellSquare);
+	        if(_board[yCell][xCell]===0)
+	            _board[yCell][xCell]=1;
 	        else
-	            _board[xCell][yCell]=0;
+	            _board[yCell][xCell]=0;
 	    };
 
 	    var changeStateOfCell = function(board,i,j) {
@@ -176,13 +177,14 @@
 	            _board = newBoard(_n);
 	            _changeStateBoard.notifySubscribers();
 	        },
-	        changeQuantityCell:function(n){
-	            _n = n;
-	            _board = newBoard(_n);
+	        changeQuantityCell:function(width,height){
+	            _width=Math.floor(width/_cellSquare);
+	            _height=Math.floor(height/_cellSquare);
+	            _board = newBoard();
 	            _changeStateBoard.notifySubscribers();
 	        },
-	        findCellAndChange:function(x,y,width){
-	            findCellAndChange(x,y,width);
+	        findCellAndChange:function(x,y){
+	            findCellAndChange(x,y);
 	            _changeStateBoard.notifySubscribers();
 	        },
 	        changeSpeed: function(speed) {
@@ -200,7 +202,6 @@
 /***/ (function(module, exports) {
 
 	module.exports = function() {
-
 	    var _publisher =  {
 	        _subscribers : [],
 	        addSubscriber : function(object){
@@ -229,19 +230,27 @@
 	            _publisher.notifySubscribers(clearBoard);
 	        };
 
-	        document.getElementById('change_size').onclick = function() {
-	            var changeSize = new CustomEvent('changeSize', {bubbles:true,})
-	            _publisher.notifySubscribers(changeSize);
+	        document.getElementById('change_width').onblur = function() {
+	            var width = parseInt(document.getElementById('change_width').value);
+	            console.log(width);
+	            var height = document.getElementById('field').height;
+	            console.log(height);
+	            var changeWidth = new CustomEvent('changeWidth', {
+	                bubbles:true,
+	                detail:{width:width,height:height}
+	            })
+	            _publisher.notifySubscribers(changeWidth);
 
 	        };
 
-	        document.getElementById('change_cell').onclick = function() {
-	            var n = parseInt(prompt('cells?',20)); 
-	            var changeQuantityCell = new CustomEvent('changeQuantityCell', {
+	        document.getElementById('change_height').onblur = function() {
+	            var height = parseInt(document.getElementById('change_height').value);
+	            var width = document.getElementById('field').width;
+	            var changeHeight = new CustomEvent('changeHeight', {
 	                bubbles:true,
-	                detail:{n:n}
+	                detail:{width:width,height:height}
 	            })
-	            _publisher.notifySubscribers(changeQuantityCell);
+	            _publisher.notifySubscribers(changeHeight);
 	        };
 
 	        document.getElementById('change_speed').onclick = function() {
@@ -261,31 +270,31 @@
 	            var width = document.getElementById('field').width;
 	            var clickOnCell = new CustomEvent('clickOnCell', {
 	                bubbles:true,
-	                detail:{x:x-xo,y:y-yo,width:width}
+	                detail:{x:x-xo,y:y-yo,}
 	            })
 	            _publisher.notifySubscribers(clickOnCell); 
 	        }; 
 	    }
 	    
-	    var changeSize = function () {
-	        var width = parseInt(prompt('width?',500));
+	    var changeSize = function (width,height) {
 	        var canvas = document.getElementById('field');
 	        canvas.width = width;
-	        canvas.height = width;
+	        canvas.height = height;
 	    }
 
 	    var drawCanvas = function(board){
 	        var canvas = document.getElementById('field');
 	        ctx = canvas.getContext('2d');
-	        var n = board.length;
-	        var cellsquare = canvas.width / n;
+	        var height = board.length;
+	        var width = board[0].length;
+	        var cellsquare = 20;
 	        ctx.clearRect(0,0,canvas.width,canvas.height);
-	        for (var i=0; i<n;i++){
-	            for(var j=0;j<n;j++){
+	        for (var i=0; i<height;i++){
+	            for(var j=0;j<width;j++){
 	                if(board[i][j]===1)
-	                    ctx.fillRect(i*cellsquare,j*cellsquare,cellsquare,cellsquare)
+	                    ctx.fillRect(j*cellsquare,i*cellsquare,cellsquare,cellsquare)
 	                if(board[i][j]===0)
-	                    ctx.strokeRect(i*cellsquare,j*cellsquare,cellsquare,cellsquare)
+	                    ctx.strokeRect(j*cellsquare,i*cellsquare,cellsquare,cellsquare)
 	            }
 	        }
 	    }
@@ -294,8 +303,8 @@
 	        
 	        publisher:_publisher,
 
-	        changeSize:function(){
-	            changeSize();
+	        changeSize:function(width,height){
+	            changeSize(width,height);
 	        },
 	        
 	        addEvents:function(){
@@ -335,14 +344,18 @@
 	            case 'clearBoard':
 	                _model.clearBoard();
 	                break;
-	            case 'changeSize':
-	                _view.changeSize();
+	            case 'changeHeight':
+	                _view.changeSize(event.detail.width,event.detail.height);
+	                _model.changeQuantityCell(event.detail.width,event.detail.height);
+	                console.log('height')
 	                break;
-	            case 'changeQuantityCell':
-	                _model.changeQuantityCell(event.detail.n);
+	            case 'changeWidth':
+	                _view.changeSize(event.detail.width,event.detail.height);
+	                _model.changeQuantityCell(event.detail.width,event.detail.height);
+	                console.log('width')
 	                break;
 	            case 'clickOnCell':
-	                _model.findCellAndChange(event.detail.x,event.detail.y,event.detail.width);
+	                _model.findCellAndChange(event.detail.x,event.detail.y);
 	                break;
 	            case 'changeSpeed':
 	                _model.changeSpeed(event.detail.speed); 

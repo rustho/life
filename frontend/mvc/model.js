@@ -1,20 +1,22 @@
 module.exports = function() {
     
-    var _n=5;
+    var _width=5;
+    var _height=5;
     var _timer=false;
     var _speed = 1000;
-    var newBoard = function(n){
+    var _cellSquare= 20;
+    var newBoard = function(){
         var board=[] ;
-        for(var i=0;i<n;i++){
+        for(var i=0;i<_height;i++){
             board[i]=[];
-            for(var j=0;j<n;j++){
+            for(var j=0;j<_width;j++){
                 board[i][j]=0;
             }
         }
         return board;
     }
 
-    var _board=newBoard(_n) ;
+    var _board=newBoard() ;
 
     var _event = function(){
     var event = new CustomEvent('changeStateBoard', {
@@ -36,14 +38,13 @@ module.exports = function() {
         } 
     };
 
-    var findCellAndChange = function (x,y,width) {
-        var cell = width/_n;
-        var xCell= Math.floor(x/cell);
-        var yCell= Math.floor(y/cell);
-        if(_board[xCell][yCell]===0)
-            _board[xCell][yCell]=1;
+    var findCellAndChange = function (x,y) {
+        var xCell= Math.floor(x/_cellSquare);
+        var yCell= Math.floor(y/_cellSquare);
+        if(_board[yCell][xCell]===0)
+            _board[yCell][xCell]=1;
         else
-            _board[xCell][yCell]=0;
+            _board[yCell][xCell]=0;
     };
 
     var changeStateOfCell = function(board,i,j) {
@@ -115,13 +116,14 @@ module.exports = function() {
             _board = newBoard(_n);
             _changeStateBoard.notifySubscribers();
         },
-        changeQuantityCell:function(n){
-            _n = n;
-            _board = newBoard(_n);
+        changeQuantityCell:function(width,height){
+            _width=Math.floor(width/_cellSquare);
+            _height=Math.floor(height/_cellSquare);
+            _board = newBoard();
             _changeStateBoard.notifySubscribers();
         },
-        findCellAndChange:function(x,y,width){
-            findCellAndChange(x,y,width);
+        findCellAndChange:function(x,y){
+            findCellAndChange(x,y);
             _changeStateBoard.notifySubscribers();
         },
         changeSpeed: function(speed) {
