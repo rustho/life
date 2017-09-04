@@ -1,12 +1,12 @@
-module.exports = function(model,view) {
-    _model = model;
-    _view = view;
+export default function(model,view) {
+    let _model = model;
+    let _view = view;
     
     var modelObserver = function(event){
         _view.drawCanvas(event.detail.board);
     };
 
-    _model.changeStateBoard.addSubscriber(modelObserver)
+    _model._changeStateBoard.addSubscriber(modelObserver);
 
     _view.addEvents();
     
@@ -24,22 +24,20 @@ module.exports = function(model,view) {
             case 'changeHeight':
                 _view.changeSize(event.detail.width,event.detail.height);
                 _model.changeQuantityCell(event.detail.width,event.detail.height);
-                console.log('height')
                 break;
             case 'changeWidth':
                 _view.changeSize(event.detail.width,event.detail.height);
                 _model.changeQuantityCell(event.detail.width,event.detail.height);
-                console.log('width')
                 break;
             case 'clickOnCell':
                 _model.findCellAndChange(event.detail.x,event.detail.y);
                 break;
             case 'changeSpeed':
-                _model.changeSpeed(event.detail.speed); 
+                _model.changeSpeed=event.detail.speed; 
                 break;
         }
     }
 
-    _view.publisher.addSubscriber(viewObserver);
+    _view._publisher.addSubscriber(viewObserver);
     
 }

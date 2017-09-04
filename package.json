@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/jquery": "^3.2.12",
+    "awesome-typescript-loader": "^3.2.3",
     "chai": "^4.1.1",
     "jasmine-core": "^2.7.0",
     "jquery": "^3.2.1",
@@ -27,6 +29,8 @@
     "mocha": "^3.5.0",
     "phantomjs-prebuilt": "^2.1.15",
     "sinon": "^3.2.1",
-    "webpack": "^1.15.0"
-  }
+    "typescript": "^2.5.2",
+    "webpack": "^3.5.5"
+  },
+  "dependencies": {}
 }

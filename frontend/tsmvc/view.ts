@@ -1,87 +1,89 @@
-module.exports = function() {
-    var _publisher =  {
+import * as $ from 'jquery';
+export default class {
+    
+    _publisher =  {
         _subscribers : [],
-        addSubscriber : function(object){
+        addSubscriber(object){
             this._subscribers.push(object);
         },
-        notifySubscribers : function(event) {
+        notifySubscribers (event) {
             for (var i=0; i<this._subscribers.length; i++){
                 this._subscribers[i](event);
             }
         } 
     };
-        
-    var addEvents = function(){
-        document.getElementById('start').onclick = function(){
+    public addEvents() {
+        let _publisher = this._publisher;
+
+        $('#start').click ( function(){
             var startLife = new CustomEvent('startLife', {bubbles:true,})
             _publisher.notifySubscribers(startLife);
-        };
+        });
 
-        document.getElementById('stop').onclick = function(){
+        $('#stop').click ( function(){
             var stopLife = new CustomEvent('stopLife', {bubbles:true,})
             _publisher.notifySubscribers(stopLife);
-        };
+        });
 
-        document.getElementById('clear').onclick = function(){
+        $('#clear').click ( function(){
             var clearBoard = new CustomEvent('clearBoard', {bubbles:true,})
             _publisher.notifySubscribers(clearBoard);
-        };
+        });
 
-        document.getElementById('change_width').onblur = function() {
-            var width = parseInt(document.getElementById('change_width').value);
-            console.log(width);
-            var height = document.getElementById('field').height;
-            console.log(height);
+        $('#change_width').blur( function() {
+            var width = parseInt($('#change_width').val().toString());
+            var height = $('#field').height();
             var changeWidth = new CustomEvent('changeWidth', {
                 bubbles:true,
                 detail:{width:width,height:height}
             })
             _publisher.notifySubscribers(changeWidth);
 
-        };
+        });
 
-        document.getElementById('change_height').onblur = function() {
-            var height = parseInt(document.getElementById('change_height').value);
-            var width = document.getElementById('field').width;
+        $('#change_height').blur( function() {
+            var height = parseInt($('#change_height').val().toString());
+            var width = $('#field').width();
             var changeHeight = new CustomEvent('changeHeight', {
                 bubbles:true,
                 detail:{width:width,height:height}
             })
             _publisher.notifySubscribers(changeHeight);
-        };
+        });
 
-        document.getElementById('change_speed').onclick = function() {
-            var speed = parseInt(prompt('speed in mlsec?',500));
+        $('#change_speed').click ( function() {
+            var speed = parseInt(prompt('speed in mlsec?', '500'));
             var changeSpeed = new CustomEvent('changeSpeed', {
                 bubbles:true,
                 detail:{speed:speed}
             })
             _publisher.notifySubscribers(changeSpeed);
-        };
+        });
         
-        document.getElementById('field').onclick = function(e) {
+        $('#field').click ( function(e) {
             var x = e.pageX ;
             var xo= this.offsetLeft;
             var y = e.pageY ;
             var yo= this.offsetTop;
-            var width = document.getElementById('field').width;
+            var width = $('#field').width;
             var clickOnCell = new CustomEvent('clickOnCell', {
                 bubbles:true,
                 detail:{x:x-xo,y:y-yo,}
             })
             _publisher.notifySubscribers(clickOnCell); 
-        }; 
+        }); 
     }
     
-    var changeSize = function (width,height) {
-        var canvas = document.getElementById('field');
-        canvas.width = width;
-        canvas.height = height;
+    
+    public changeSize (width,height) {
+        var canvas = <HTMLCanvasElement> $('#field').get(0);
+        canvas.width=width;
+        canvas.height= height;;
     }
 
-    var drawCanvas = function(board){
-        var canvas = document.getElementById('field');
-        ctx = canvas.getContext('2d');
+    public drawCanvas (board){
+        var canvas = <HTMLCanvasElement> $('#field').get(0);
+        var ctx = canvas.getContext("2d");
         var height = board.length;
         var width = board[0].length;
         var cellsquare = 20;
@@ -96,20 +98,4 @@ module.exports = function() {
         }
     }
 
-    return {
-        
-        publisher:_publisher,
-
-        changeSize:function(width,height){
-            changeSize(width,height);
-        },
-        
-        addEvents:function(){
-            addEvents();
-        },
-
-        drawCanvas: function(board){
-            drawCanvas(board);
-        }
-    }
  }
