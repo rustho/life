@@ -11,8 +11,16 @@ module.exports = {
     filename: '[name].js'
   },
   module:{
-     rules: [
+    rules: [
       {
+        test: /\.ts$/,
+        enforce: "pre",
+          options: {
+            fix: true,
+          },
+			  loader: 'tslint-loader',
+			  exclude: /node_modules/,
+		  },{
         test: /\.ts?$/,
         use: {
           loader:'awesome-typescript-loader'

@@ -1,4 +1,14 @@
 #Conway's game life
-for webpack use npm start
-for test use npm test:single
-in docs html page with script
+it's educational project for FSD. 
+Project was written on TypeScript. 
+###install
+for install extrafiles in project use 'npm install' 
+###webpack 
+for assemble use npm start
+###test 
+for launch test use npm test
+For Unit test used Karma, Mocha, Chai
+### Architecture 
+Project use MVC Architecture pattern 
+###Clean code
+For clean code used tslint 
