@@ -69,16 +69,16 @@
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tsmvc_model__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tsmvc_view__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tsmvc_controller__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tsmvc_controller__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tsmvc_model__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tsmvc_view__ = __webpack_require__(3);
 
 
 
-document.addEventListener("DOMContentLoaded", function () {
-    var model = new __WEBPACK_IMPORTED_MODULE_0__tsmvc_model__["a" /* default */];
-    var view = new __WEBPACK_IMPORTED_MODULE_1__tsmvc_view__["a" /* default */];
-    var controller = Object(__WEBPACK_IMPORTED_MODULE_2__tsmvc_controller__["a" /* default */])(model, view);
+document.addEventListener("DOMContentLoaded", () => {
+    const model = new __WEBPACK_IMPORTED_MODULE_1__tsmvc_model__["a" /* default */]();
+    const view = new __WEBPACK_IMPORTED_MODULE_2__tsmvc_view__["a" /* default */]();
+    const controller = Object(__WEBPACK_IMPORTED_MODULE_0__tsmvc_controller__["a" /* default */])(model, view);
 });
 
 
@@ -87,99 +87,109 @@ document.addEventListener("DOMContentLoaded", function () {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-class changeStateBoard {
-    constructor() {
-        this._subscribers = [];
-    }
-    addSubscriber(subs) {
-        this._subscribers.push(subs);
-    }
-    ;
-    notifySubscribers(event) {
-        for (let i = 0; i < this._subscribers.length; i++) {
-            this._subscribers[i](event);
+/* harmony default export */ __webpack_exports__["a"] = (function (model, view) {
+    const _model = model;
+    const _view = view;
+    const modelObserver = (event) => _view.drawCanvas(event.detail.board);
+    _model.changeStateBoard.addSubscriber(modelObserver);
+    _view.addEvents();
+    const viewObserver = (event) => {
+        switch (event.type) {
+            case "startLife":
+                _model.startLife();
+                break;
+            case "stopLife":
+                _model.stopLife();
+                break;
+            case "clearBoard":
+                _model.clearBoard();
+                break;
+            case "changeHeight":
+                _view.changeSize(event.detail.width, event.detail.height);
+                _model.changeQuantityCell(event.detail.width, event.detail.height);
+                break;
+            case "changeWidth":
+                _view.changeSize(event.detail.width, event.detail.height);
+                _model.changeQuantityCell(event.detail.width, event.detail.height);
+                break;
+            case "clickOnCell":
+                _model.findCellAndChange(event.detail.x, event.detail.y);
+                break;
+            case "changeSpeed":
+                _model.changeSpeed = event.detail.speed;
+                break;
         }
-    }
-}
-;
+    };
+    _view.publisher.addSubscriber(viewObserver);
+});
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony default export */ __webpack_exports__["a"] = (class {
     constructor() {
         this.CELL_SQUARE = 20;
-        this._width = 20;
-        this._height = 20;
-        this._timer = false;
-        this._speed = 1000;
-        this._board = this.newBoard();
-        this._changeStateBoard = new changeStateBoard();
+        this.changeStateBoard = {
+            _subscribers: [],
+            addSubscriber(object) {
+                this._subscribers.push(object);
+            },
+            notifySubscribers(event) {
+                for (const item of this._subscribers) {
+                    item(event);
+                }
+            },
+        };
+        this.width = 20;
+        this.height = 20;
+        this.timer = false;
+        this.speed = 1000;
+        this.board = this.newBoard();
     }
-    ;
-    newBoard() {
-        let board = [];
-        for (let i = 0; i < this._height; i++) {
-            board[i] = [];
-            for (let j = 0; j < this._width; j++) {
-                board[i][j] = 0;
-            }
-        }
-        return board;
-    }
-    ;
-    get getBoard() {
-        return this._board;
-    }
-    ;
-    set setBoard(testboard) {
-        this._board = testboard;
-        this._height = testboard.length;
-        this._width = testboard[0].length;
-    }
-    ;
     _event() {
-        let event = new CustomEvent('changeStateBoard', {
+        const event = new CustomEvent("changeStateBoard", {
             bubbles: true,
-            detail: { board: this._board }
+            detail: { board: this.board },
         });
         return event;
     }
-    ;
     findCellAndChange(x, y) {
-        let xCell = Math.floor(x / this.CELL_SQUARE);
-        let yCell = Math.floor(y / this.CELL_SQUARE);
-        if (this._board[yCell][xCell] === 0)
-            this._board[yCell][xCell] = 1;
-        else
-            this._board[yCell][xCell] = 0;
-        this._changeStateBoard.notifySubscribers(this._event());
+        const xCell = Math.floor(x / this.CELL_SQUARE);
+        const yCell = Math.floor(y / this.CELL_SQUARE);
+        if (this.board[yCell][xCell] === 0) {
+            this.board[yCell][xCell] = 1;
+        }
+        else {
+            this.board[yCell][xCell] = 0;
+        }
+        this.changeStateBoard.notifySubscribers(this._event());
     }
-    ;
     changeStateOfCell(i, j) {
         let livingcell = 0;
         for (let il = i - 1; il <= i + 1; il++) {
             for (let jl = j - 1; jl <= j + 1; jl++) {
                 let ii = il;
-                let jj = jl;
-                if (il === -1)
-                    ii = this._height - 1; //проверка для моделирования поверхности тора
-                if (jl === -1)
-                    jj = this._width - 1;
-                if (il === this._height)
-                    ii = 0;
-                if (jl === this._width)
-                    jj = 0;
-                if (this._board[ii][jj] === 1)
+                let jj = jl; // проверка для моделирования поверхности тора
+                ii = (il === -1) ? this.height - 1 : ii;
+                jj = (jl === -1) ? jj = this.width - 1 : jj;
+                ii = (il === this.height) ? ii = 0 : ii;
+                jj = (jl === this.width) ? jj = 0 : jj;
+                if (this.board[ii][jj] === 1) {
                     livingcell += 1;
+                }
             }
         }
         let res = 0;
-        if (this._board[i][j] === 0 && livingcell === 3)
+        if (livingcell === 3 || (this.board[i][j] === 1 && livingcell === 4)) {
             res = 1;
-        if (this._board[i][j] === 1 && (livingcell === 3 || livingcell === 4))
-            res = 1;
+        }
         return res;
     }
-    ;
     nextState(board) {
-        let newboard = [];
+        const newboard = [];
         for (let i = 0; i < board.length; i++) {
             newboard[i] = [];
             for (let j = 0; j < board[0].length; j++) {
@@ -191,161 +201,178 @@ class changeStateBoard {
                 newboard[i][j] = this.changeStateOfCell(i, j);
             }
         }
-        this._board = newboard;
-        this._changeStateBoard.notifySubscribers(this._event());
+        this.board = newboard;
+        this.changeStateBoard.notifySubscribers(this._event());
     }
-    ;
     startLife() {
-        var self = this;
-        if (this._timer === false) {
-            this._timer = setInterval(function () {
-                self.nextState(self._board);
-            }, this._speed);
+        const self = this;
+        if (this.timer === false) {
+            this.timer = setInterval(() => self.nextState(self.board), this.speed);
         }
     }
-    ;
     stopLife() {
-        if (this._timer !== false) {
-            clearInterval(this._timer);
-            this._timer = false;
+        if (this.timer !== false) {
+            clearInterval(this.timer);
+            this.timer = false;
         }
     }
-    ;
+    clearBoard() {
+        this.board = this.newBoard();
+        this.changeStateBoard.notifySubscribers(this._event());
+    }
+    changeQuantityCell(width, height) {
+        this.width = Math.floor(width / this.CELL_SQUARE);
+        this.height = Math.floor(height / this.CELL_SQUARE);
+        this.board = this.newBoard();
+        this.changeStateBoard.notifySubscribers(this._event());
+    }
+    newBoard() {
+        const board = [];
+        for (let i = 0; i < this.height; i++) {
+            board[i] = [];
+            for (let j = 0; j < this.width; j++) {
+                board[i][j] = 0;
+            }
+        }
+        return board;
+    }
+    get getBoard() {
+        return this.board;
+    }
+    set setBoard(testboard) {
+        this.board = testboard;
+        this.height = testboard.length;
+        this.width = testboard[0].length;
+    }
     set setSpeed(speed) {
         if (speed > 0) {
-            clearInterval(this._timer);
-            this._timer = false;
-            this._speed = speed;
+            clearInterval(this.timer);
+            this.timer = false;
+            this.speed = speed;
             this.startLife();
         }
-        else
-            console.log('mockerror');
+        else {
+            // mockerror
+        }
     }
-    ;
     set changeSpeed(speed) {
-        if (speed > 0)
-            this._speed = speed;
+        if (speed > 0) {
+            this.speed = speed;
+        }
         this.stopLife();
         this.startLife();
-    }
-    ;
-    clearBoard() {
-        this._board = this.newBoard();
-        this._changeStateBoard.notifySubscribers(this._event());
-    }
-    ;
-    changeQuantityCell(width, height) {
-        this._width = Math.floor(width / this.CELL_SQUARE);
-        this._height = Math.floor(height / this.CELL_SQUARE);
-        this._board = this.newBoard();
-        this._changeStateBoard.notifySubscribers(this._event());
-    }
-    ;
-});
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
-
-/* harmony default export */ __webpack_exports__["a"] = (class {
-    constructor() {
-        this._publisher = {
-            _subscribers: [],
-            addSubscriber(object) {
-                this._subscribers.push(object);
-            },
-            notifySubscribers(event) {
-                for (var i = 0; i < this._subscribers.length; i++) {
-                    this._subscribers[i](event);
-                }
-            }
-        };
-    }
-    addEvents() {
-        let _publisher = this._publisher;
-        __WEBPACK_IMPORTED_MODULE_0_jquery__('#start').click(function () {
-            var startLife = new CustomEvent('startLife', { bubbles: true, });
-            _publisher.notifySubscribers(startLife);
-        });
-        __WEBPACK_IMPORTED_MODULE_0_jquery__('#stop').click(function () {
-            var stopLife = new CustomEvent('stopLife', { bubbles: true, });
-            _publisher.notifySubscribers(stopLife);
-        });
-        __WEBPACK_IMPORTED_MODULE_0_jquery__('#clear').click(function () {
-            var clearBoard = new CustomEvent('clearBoard', { bubbles: true, });
-            _publisher.notifySubscribers(clearBoard);
-        });
-        __WEBPACK_IMPORTED_MODULE_0_jquery__('#change_width').blur(function () {
-            var width = parseInt(__WEBPACK_IMPORTED_MODULE_0_jquery__('#change_width').val().toString());
-            var height = __WEBPACK_IMPORTED_MODULE_0_jquery__('#field').height();
-            var changeWidth = new CustomEvent('changeWidth', {
-                bubbles: true,
-                detail: { width: width, height: height }
-            });
-            _publisher.notifySubscribers(changeWidth);
-        });
-        __WEBPACK_IMPORTED_MODULE_0_jquery__('#change_height').blur(function () {
-            var height = parseInt(__WEBPACK_IMPORTED_MODULE_0_jquery__('#change_height').val().toString());
-            var width = __WEBPACK_IMPORTED_MODULE_0_jquery__('#field').width();
-            var changeHeight = new CustomEvent('changeHeight', {
-                bubbles: true,
-                detail: { width: width, height: height }
-            });
-            _publisher.notifySubscribers(changeHeight);
-        });
-        __WEBPACK_IMPORTED_MODULE_0_jquery__('#change_speed').click(function () {
-            var speed = parseInt(prompt('speed in mlsec?', '500'));
-            var changeSpeed = new CustomEvent('changeSpeed', {
-                bubbles: true,
-                detail: { speed: speed }
-            });
-            _publisher.notifySubscribers(changeSpeed);
-        });
-        __WEBPACK_IMPORTED_MODULE_0_jquery__('#field').click(function (e) {
-            var x = e.pageX;
-            var xo = this.offsetLeft;
-            var y = e.pageY;
-            var yo = this.offsetTop;
-            var width = __WEBPACK_IMPORTED_MODULE_0_jquery__('#field').width;
-            var clickOnCell = new CustomEvent('clickOnCell', {
-                bubbles: true,
-                detail: { x: x - xo, y: y - yo, }
-            });
-            _publisher.notifySubscribers(clickOnCell);
-        });
-    }
-    changeSize(width, height) {
-        var canvas = __WEBPACK_IMPORTED_MODULE_0_jquery__('#field').get(0);
-        canvas.width = width;
-        canvas.height = height;
-        ;
-    }
-    drawCanvas(board) {
-        var canvas = __WEBPACK_IMPORTED_MODULE_0_jquery__('#field').get(0);
-        var ctx = canvas.getContext("2d");
-        var height = board.length;
-        var width = board[0].length;
-        var cellsquare = 20;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (var i = 0; i < height; i++) {
-            for (var j = 0; j < width; j++) {
-                if (board[i][j] === 1)
-                    ctx.fillRect(j * cellsquare, i * cellsquare, cellsquare, cellsquare);
-                if (board[i][j] === 0)
-                    ctx.strokeRect(j * cellsquare, i * cellsquare, cellsquare, cellsquare);
-            }
-        }
     }
 });
 
 
 /***/ }),
 /* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
+
+/* harmony default export */ __webpack_exports__["a"] = (class {
+    constructor() {
+        this.publisher = {
+            _subscribers: [],
+            addSubscriber(object) {
+                this._subscribers.push(object);
+            },
+            notifySubscribers(event) {
+                for (const item of this._subscribers) {
+                    item(event);
+                }
+            },
+        };
+    }
+    addEvents() {
+        const self = this;
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#start").click(() => self._startLife());
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#stop").click(() => self._stopLife());
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#clear").click(() => self._clearBord());
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_width").blur(() => self._changeWidth());
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_height").blur(() => self._changeHeight());
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_speed").click(() => self._changeSpeed());
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#field").click(function (e) {
+            const x = e.pageX;
+            const xo = this.offsetLeft;
+            const y = e.pageY;
+            const yo = this.offsetTop;
+            const clickOnCell = new CustomEvent("clickOnCell", {
+                bubbles: true,
+                detail: { x: x - xo, y: y - yo },
+            });
+            self.publisher.notifySubscribers(clickOnCell);
+        });
+    }
+    changeSize(width, height) {
+        const canvas = __WEBPACK_IMPORTED_MODULE_0_jquery__("#field").get(0);
+        canvas.width = width;
+        canvas.height = height;
+    }
+    drawCanvas(board) {
+        const canvas = __WEBPACK_IMPORTED_MODULE_0_jquery__("#field").get(0);
+        const ctx = canvas.getContext("2d");
+        const height = board.length;
+        const width = board[0].length;
+        const cellsquare = 20;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < height; i++) {
+            for (let j = 0; j < width; j++) {
+                if (board[i][j] === 1) {
+                    ctx.fillRect(j * cellsquare, i * cellsquare, cellsquare, cellsquare);
+                }
+                if (board[i][j] === 0) {
+                    ctx.strokeRect(j * cellsquare, i * cellsquare, cellsquare, cellsquare);
+                }
+            }
+        }
+    }
+    _startLife() {
+        const startLife = new CustomEvent("startLife", { bubbles: true });
+        this.publisher.notifySubscribers(startLife);
+    }
+    _stopLife() {
+        const stopLife = new CustomEvent("stopLife", { bubbles: true });
+        this.publisher.notifySubscribers(stopLife);
+    }
+    _clearBord() {
+        const clearBoard = new CustomEvent("clearBoard", { bubbles: true });
+        this.publisher.notifySubscribers(clearBoard);
+    }
+    _changeWidth() {
+        const width = parseInt(__WEBPACK_IMPORTED_MODULE_0_jquery__("#change_width").val().toString(), 10);
+        const height = __WEBPACK_IMPORTED_MODULE_0_jquery__("#field").height();
+        const changeWidth = new CustomEvent("changeWidth", {
+            bubbles: true,
+            detail: { width, height },
+        });
+        this.publisher.notifySubscribers(changeWidth);
+    }
+    _changeHeight() {
+        const height = parseInt(__WEBPACK_IMPORTED_MODULE_0_jquery__("#change_height").val().toString(), 10);
+        const width = __WEBPACK_IMPORTED_MODULE_0_jquery__("#field").width();
+        const changeHeight = new CustomEvent("changeHeight", {
+            bubbles: true,
+            detail: { width, height },
+        });
+        this.publisher.notifySubscribers(changeHeight);
+    }
+    _changeSpeed() {
+        const speed = parseInt(prompt("speed in mlsec?", "500"), 10);
+        const changeSpeed = new CustomEvent("changeSpeed", {
+            bubbles: true,
+            detail: { speed },
+        });
+        this.publisher.notifySubscribers(changeSpeed);
+    }
+});
+
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -10602,50 +10629,6 @@ if ( !noGlobal ) {
 
 return jQuery;
 } );
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony default export */ __webpack_exports__["a"] = (function (model, view) {
-    let _model = model;
-    let _view = view;
-    var modelObserver = function (event) {
-        _view.drawCanvas(event.detail.board);
-    };
-    _model._changeStateBoard.addSubscriber(modelObserver);
-    _view.addEvents();
-    var viewObserver = function (event) {
-        switch (event.type) {
-            case 'startLife':
-                _model.startLife();
-                break;
-            case 'stopLife':
-                _model.stopLife();
-                break;
-            case 'clearBoard':
-                _model.clearBoard();
-                break;
-            case 'changeHeight':
-                _view.changeSize(event.detail.width, event.detail.height);
-                _model.changeQuantityCell(event.detail.width, event.detail.height);
-                break;
-            case 'changeWidth':
-                _view.changeSize(event.detail.width, event.detail.height);
-                _model.changeQuantityCell(event.detail.width, event.detail.height);
-                break;
-            case 'clickOnCell':
-                _model.findCellAndChange(event.detail.x, event.detail.y);
-                break;
-            case 'changeSpeed':
-                _model.changeSpeed = event.detail.speed;
-                break;
-        }
-    };
-    _view._publisher.addSubscriber(viewObserver);
-});
 
 
 /***/ })
