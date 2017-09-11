@@ -1,6 +1,6 @@
 
 import Model from '../tsmvc/model.ts';
-const model = new Model();
+var model = new Model();
 
 import * as assert from "assert";
 
@@ -29,16 +29,18 @@ describe("model.Next state", function() {
 
   it("У фигуры улей", function() {
     var board = [
-        [0,1,0,0],
-        [1,0,1,0],
-        [1,0,1,0],
-        [0,1,0,0]
+        [0,1,0,0,0],
+        [1,0,1,0,0],
+        [1,0,1,0,0],
+        [0,1,0,0,0],
+        [0,0,0,0,0]
     ]
     var rightBoard = [
-        [0,1,0,0],
-        [1,0,1,0],
-        [1,0,1,0],
-        [0,1,0,0]
+        [0,1,0,0,0],
+        [1,0,1,0,0],
+        [1,0,1,0,0],
+        [0,1,0,0,0],
+        [0,0,0,0,0]
     ]
     model.setBoard(board);
     model.nextState(board);
@@ -65,16 +67,18 @@ describe("model.Next state", function() {
   })
   it("У недвижимой фигуры квадрата", function() {
     var board = [
-        [0,1,1,0],
-        [1,0,0,1],
-        [1,0,0,1],
-        [0,1,1,0]
+        [0,1,1,0,0],
+        [1,0,0,1,0],
+        [1,0,0,1,0],
+        [0,1,1,0,0],
+        [0,0,0,0,0]
     ]
     var rightBoard = [
-        [0,1,1,0],
-        [1,0,0,1],
-        [1,0,0,1],
-        [0,1,1,0]
+        [0,1,1,0,0],
+        [1,0,0,1,0],
+        [1,0,0,1,0],
+        [0,1,1,0,0],
+        [0,0,0,0,0]
     ]
     model.setBoard(board);
     model.nextState(board);
@@ -96,8 +100,9 @@ describe("model.Next state", function() {
         [0,1,0,0,0],
         [0,0,0,0,0]
     ]
-    board = model.nextState(board);
-    assert.deepEqual(board,rightBoard,'1 шаг');
+    model.setBoard(board);
+    model.nextState(board);
+    assert.deepEqual(model.getBoard(),rightBoard,'1 шаг');
     var rightBoard = [
         [0,0,0,0,0],
         [0,0,1,0,0],
@@ -105,8 +110,8 @@ describe("model.Next state", function() {
         [0,1,1,0,0],
         [0,0,0,0,0]
     ]
-    board = model.nextState(board);
-    assert.deepEqual(board,rightBoard,'2 шаг');
+    model.nextState(model.getBoard());
+    assert.deepEqual(model.getBoard(),rightBoard,'2 шаг');
     var rightBoard = [
         [0,0,0,0,0],
         [0,1,0,0,0],
@@ -114,8 +119,8 @@ describe("model.Next state", function() {
         [0,1,1,0,0],
         [0,0,0,0,0]
     ]
-    board = model.nextState(board);
-    assert.deepEqual(board,rightBoard,'3 шаг');
+    model.nextState(model.getBoard());
+    assert.deepEqual(model.getBoard(),rightBoard,'3 шаг');
     var rightBoard = [
         [0,0,0,0,0],
         [0,0,1,0,0],
@@ -123,8 +128,8 @@ describe("model.Next state", function() {
         [0,1,1,1,0],
         [0,0,0,0,0]
     ]
-    board = model.nextState(board);
-    assert.deepEqual(board,rightBoard,'4 шаг');
+    model.nextState(model.getBoard());
+    assert.deepEqual(model.getBoard(),rightBoard,'4 шаг');
   })
 });
 describe("model.findCellAndChange", function() {
@@ -145,7 +150,7 @@ describe("model.findCellAndChange", function() {
         [0,0,0,0,0]
     ]
     model.setBoard(board);
-    model.findCellAndChange(250,250);
+    model.findCellAndChange(55,55);
     board = model.getBoard()
     assert.deepEqual(board,rightBoard,'заданная клетка не изменилась');
   });
