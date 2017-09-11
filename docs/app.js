@@ -174,9 +174,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 let ii = il;
                 let jj = jl; // проверка для моделирования поверхности тора
                 ii = (il === -1) ? this.height - 1 : ii;
-                jj = (jl === -1) ? jj = this.width - 1 : jj;
-                ii = (il === this.height) ? ii = 0 : ii;
-                jj = (jl === this.width) ? jj = 0 : jj;
+                jj = (jl === -1) ? this.width - 1 : jj;
+                ii = (il === this.height) ? 0 : ii;
+                jj = (jl === this.width) ? 0 : jj;
                 if (this.board[ii][jj] === 1) {
                     livingcell += 1;
                 }
@@ -189,13 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return res;
     }
     nextState(board) {
-        const newboard = [];
-        for (let i = 0; i < board.length; i++) {
-            newboard[i] = [];
-            for (let j = 0; j < board[0].length; j++) {
-                newboard[i][j] = 0;
-            }
-        }
+        const newboard = this.newBoard();
         for (let i = 0; i < newboard.length; i++) {
             for (let j = 0; j < newboard[0].length; j++) {
                 newboard[i][j] = this.changeStateOfCell(i, j);
