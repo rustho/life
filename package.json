@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node_modules/.bin/karma start karma.conf.js",
-    "start": "node_modules/.bin/webpack"
+    "start": "node_modules/.bin/webpack-dev-server"
   },
   "author": "",
   "license": "ISC",
@@ -35,7 +35,8 @@
     "tslint": "^5.7.0",
     "tslint-loader": "^3.5.3",
     "typescript": "^2.5.2",
-    "webpack": "^3.5.5"
+    "webpack": "^3.5.5",
+    "webpack-dev-server": "^2.7.1"
   },
   "dependencies": {}
 }
