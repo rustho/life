@@ -1,11 +1,10 @@
 
-var Model = require ('../frontend/mvc/model.js');
-var model = Model();
+import Model from '../tsmvc/model.ts';
+const model = new Model();
 
-var assert = require ('assert');
+import * as assert from "assert";
 
 describe("model.clearBoard", function() {
-  
   it("очистка поля от живых клеток", function() {
     var board = [
         [1,1,1,1],
@@ -128,28 +127,6 @@ describe("model.Next state", function() {
     assert.deepEqual(board,rightBoard,'4 шаг');
   })
 });
-describe("model.changeQuantityCell", function() {
-  
-  it("Изменение количества клеток на поле", function() {
-    var board = [
-        [1,1,1],
-        [1,1,1],
-        [1,1,1]
-    ]
-    var rightBoard = [
-        [0,0,0,0,0],
-        [0,0,0,0,0],
-        [0,0,0,0,0],
-        [0,0,0,0,0],
-        [0,0,0,0,0]
-    ]
-    model.setBoard(board);
-    model.changeQuantityCell(5);
-    board = model.getBoard()
-    assert.deepEqual(board,rightBoard,'Доска не того размера');
-  });
-
-});
 describe("model.findCellAndChange", function() {
   
   it("Изменение в середине клетки на поле по координатам", function() {
@@ -168,7 +145,7 @@ describe("model.findCellAndChange", function() {
         [0,0,0,0,0]
     ]
     model.setBoard(board);
-    model.findCellAndChange(250,250,500);
+    model.findCellAndChange(250,250);
     board = model.getBoard()
     assert.deepEqual(board,rightBoard,'заданная клетка не изменилась');
   });

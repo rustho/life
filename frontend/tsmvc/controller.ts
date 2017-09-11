@@ -1,13 +1,9 @@
 export default function(model, view) {
     const _model = model;
     const _view = view;
-
     const modelObserver = (event) => _view.drawCanvas(event.detail.board);
-
     _model.changeStateBoard.addSubscriber(modelObserver);
-
     _view.addEvents();
-
     const viewObserver = (event) => {
         switch (event.type) {
             case "startLife":
@@ -35,7 +31,5 @@ export default function(model, view) {
                 break;
         }
     };
-
     _view.publisher.addSubscriber(viewObserver);
-
 }

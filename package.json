@@ -26,6 +26,8 @@
     "karma-phantomjs-launcher": "^1.0.4",
     "karma-sinon": "^1.0.5",
     "karma-sourcemap-loader": "^0.3.7",
+    "karma-typescript": "^3.0.5",
+    "karma-typescript-preprocessor": "^0.3.1",
     "karma-webpack": "^2.0.4",
     "mocha": "^3.5.0",
     "phantomjs-prebuilt": "^2.1.15",

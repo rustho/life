@@ -236,10 +236,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         return board;
     }
-    get getBoard() {
+    getBoard() {
         return this.board;
     }
-    set setBoard(testboard) {
+    setBoard(testboard) {
         this.board = testboard;
         this.height = testboard.length;
         this.width = testboard[0].length;
