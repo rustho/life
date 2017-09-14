@@ -78,7 +78,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 document.addEventListener("DOMContentLoaded", () => {
     const model = new __WEBPACK_IMPORTED_MODULE_1__tsmvc_model__["a" /* default */]();
     const view = new __WEBPACK_IMPORTED_MODULE_2__tsmvc_view__["a" /* default */]();
-    const controller = Object(__WEBPACK_IMPORTED_MODULE_0__tsmvc_controller__["a" /* default */])(model, view);
+    const controller = new __WEBPACK_IMPORTED_MODULE_0__tsmvc_controller__["a" /* default */](model, view);
 });
 
 
@@ -87,40 +87,62 @@ document.addEventListener("DOMContentLoaded", () => {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony default export */ __webpack_exports__["a"] = (function (model, view) {
-    const _model = model;
-    const _view = view;
-    const modelObserver = (event) => _view.drawCanvas(event.detail.board);
-    _model.changeStateBoard.addSubscriber(modelObserver);
-    _view.addEvents();
-    const viewObserver = (event) => {
-        switch (event.type) {
-            case "startLife":
-                _model.startLife();
-                break;
-            case "stopLife":
-                _model.stopLife();
-                break;
-            case "clearBoard":
-                _model.clearBoard();
-                break;
-            case "changeHeight":
-                _view.changeSize(event.detail.width, event.detail.height);
-                _model.changeQuantityCell(event.detail.width, event.detail.height);
-                break;
-            case "changeWidth":
-                _view.changeSize(event.detail.width, event.detail.height);
-                _model.changeQuantityCell(event.detail.width, event.detail.height);
-                break;
-            case "clickOnCell":
-                _model.findCellAndChange(event.detail.x, event.detail.y);
-                break;
-            case "changeSpeed":
-                _model.changeSpeed = event.detail.speed;
-                break;
+/* harmony default export */ __webpack_exports__["a"] = (class {
+    constructor(model, view) {
+        this.modelObserver = (event) => this.view.drawCanvas(event.detail.board);
+        this.viewObserver = (event) => {
+            switch (event.type) {
+                case "startLife":
+                    this.startLife();
+                    break;
+                case "stopLife":
+                    this.stopLife();
+                    break;
+                case "clearBoard":
+                    this.model.clearBoard();
+                    break;
+                case "changeHeight":
+                    this.view.changeSize(event.detail.width, event.detail.height);
+                    this.model.changeQuantityCell(event.detail.width, event.detail.height);
+                    break;
+                case "changeWidth":
+                    this.view.changeSize(event.detail.width, event.detail.height);
+                    this.model.changeQuantityCell(event.detail.width, event.detail.height);
+                    break;
+                case "clickOnCell":
+                    this.model.findCellAndChange(event.detail.x, event.detail.y);
+                    break;
+                case "changeSpeed":
+                    this.changeSpeed = event.detail.speed;
+                    break;
+            }
+        };
+        this.timer = false;
+        this.speed = 1000;
+        this.model = model;
+        this.view = view;
+        this.view.addEvents();
+        this.model.changeStateBoard.addSubscriber(this.modelObserver);
+        this.view.publisher.addSubscriber(this.viewObserver);
+    }
+    startLife() {
+        if (this.timer === false) {
+            this.timer = setInterval(() => this.model.nextState(), this.speed);
         }
-    };
-    _view.publisher.addSubscriber(viewObserver);
+    }
+    stopLife() {
+        if (this.timer !== false) {
+            clearInterval(this.timer);
+            this.timer = false;
+        }
+    }
+    set changeSpeed(speed) {
+        if (speed > 0) {
+            this.speed = speed;
+        }
+        this.stopLife();
+        this.startLife();
+    }
 });
 
 
@@ -145,8 +167,6 @@ document.addEventListener("DOMContentLoaded", () => {
         };
         this.width = 20;
         this.height = 20;
-        this.timer = false;
-        this.speed = 1000;
         this.board = this.newBoard();
     }
     _event() {
@@ -188,7 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         return res;
     }
-    nextState(board) {
+    nextState() {
         const newboard = this.newBoard();
         for (let i = 0; i < newboard.length; i++) {
             for (let j = 0; j < newboard[0].length; j++) {
@@ -197,18 +217,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         this.board = newboard;
         this.changeStateBoard.notifySubscribers(this._event());
-    }
-    startLife() {
-        const self = this;
-        if (this.timer === false) {
-            this.timer = setInterval(() => self.nextState(self.board), this.speed);
-        }
-    }
-    stopLife() {
-        if (this.timer !== false) {
-            clearInterval(this.timer);
-            this.timer = false;
-        }
     }
     clearBoard() {
         this.board = this.newBoard();
@@ -238,24 +246,6 @@ document.addEventListener("DOMContentLoaded", () => {
         this.height = testboard.length;
         this.width = testboard[0].length;
     }
-    set setSpeed(speed) {
-        if (speed > 0) {
-            clearInterval(this.timer);
-            this.timer = false;
-            this.speed = speed;
-            this.startLife();
-        }
-        else {
-            // mockerror
-        }
-    }
-    set changeSpeed(speed) {
-        if (speed > 0) {
-            this.speed = speed;
-        }
-        this.stopLife();
-        this.startLife();
-    }
 });
 
 
@@ -280,26 +270,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             },
         };
+        this._startLife = this._startLife.bind(this);
+        this._stopLife = this._stopLife.bind(this);
+        this._clearBord = this._clearBord.bind(this);
+        this._changeWidth = this._changeWidth.bind(this);
+        this._changeHeight = this._changeHeight.bind(this);
+        this._changeSpeed = this._changeSpeed.bind(this);
+        this._clickCell = this._clickCell.bind(this);
     }
     addEvents() {
         const self = this;
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#start").click(() => self._startLife());
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#stop").click(() => self._stopLife());
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#clear").click(() => self._clearBord());
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_width").blur(() => self._changeWidth());
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_height").blur(() => self._changeHeight());
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_speed").click(() => self._changeSpeed());
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#field").click(function (e) {
-            const x = e.pageX;
-            const xo = this.offsetLeft;
-            const y = e.pageY;
-            const yo = this.offsetTop;
-            const clickOnCell = new CustomEvent("clickOnCell", {
-                bubbles: true,
-                detail: { x: x - xo, y: y - yo },
-            });
-            self.publisher.notifySubscribers(clickOnCell);
-        });
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#start").click({ view: this }, (e) => e.data.view._startLife(e));
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#stop").click({ view: this }, (e) => e.data.view._stopLife(e));
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#clear").click({ view: this }, (e) => e.data.view._clearBord(e));
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_width").blur({ view: this }, (e) => e.data.view._changeWidth(e));
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_height").blur({ view: this }, (e) => this._changeHeight(e));
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_speed").click({ view: this }, (e) => this._changeSpeed(e));
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#field").click({ view: this }, (e) => e.data.view._clickCell(e));
     }
     changeSize(width, height) {
         const canvas = __WEBPACK_IMPORTED_MODULE_0_jquery__("#field").get(0);
@@ -324,43 +311,54 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     }
-    _startLife() {
+    _startLife(e) {
         const startLife = new CustomEvent("startLife", { bubbles: true });
-        this.publisher.notifySubscribers(startLife);
+        e.data.view.publisher.notifySubscribers(startLife);
     }
-    _stopLife() {
+    _stopLife(e) {
         const stopLife = new CustomEvent("stopLife", { bubbles: true });
-        this.publisher.notifySubscribers(stopLife);
+        e.data.view.publisher.notifySubscribers(stopLife);
     }
-    _clearBord() {
+    _clearBord(e) {
         const clearBoard = new CustomEvent("clearBoard", { bubbles: true });
-        this.publisher.notifySubscribers(clearBoard);
+        e.data.view.publisher.notifySubscribers(clearBoard);
     }
-    _changeWidth() {
+    _changeWidth(e) {
         const width = parseInt(__WEBPACK_IMPORTED_MODULE_0_jquery__("#change_width").val().toString(), 10);
         const height = __WEBPACK_IMPORTED_MODULE_0_jquery__("#field").height();
         const changeWidth = new CustomEvent("changeWidth", {
             bubbles: true,
             detail: { width, height },
         });
-        this.publisher.notifySubscribers(changeWidth);
+        e.data.view.publisher.notifySubscribers(changeWidth);
     }
-    _changeHeight() {
+    _changeHeight(e) {
         const height = parseInt(__WEBPACK_IMPORTED_MODULE_0_jquery__("#change_height").val().toString(), 10);
         const width = __WEBPACK_IMPORTED_MODULE_0_jquery__("#field").width();
         const changeHeight = new CustomEvent("changeHeight", {
             bubbles: true,
             detail: { width, height },
         });
-        this.publisher.notifySubscribers(changeHeight);
+        e.data.view.publisher.notifySubscribers(changeHeight);
     }
-    _changeSpeed() {
+    _changeSpeed(e) {
         const speed = parseInt(prompt("speed in mlsec?", "500"), 10);
         const changeSpeed = new CustomEvent("changeSpeed", {
             bubbles: true,
             detail: { speed },
         });
-        this.publisher.notifySubscribers(changeSpeed);
+        e.data.view.publisher.notifySubscribers(changeSpeed);
+    }
+    _clickCell(e) {
+        const x = e.pageX;
+        const xo = e.offsetLeft;
+        const y = e.pageY;
+        const yo = e.offsetTop;
+        const clickOnCell = new CustomEvent("clickOnCell", {
+            bubbles: true,
+            detail: { x: x - xo, y: y - yo },
+        });
+        e.data.view.publisher.notifySubscribers(clickOnCell);
     }
 });
 

@@ -43,7 +43,7 @@ describe("model.Next state", function() {
         [0,0,0,0,0]
     ]
     model.setBoard(board);
-    model.nextState(board);
+    model.nextState();
     board = model.getBoard()
     assert.deepEqual(board,rightBoard,'недвижимая фигура двигается');
   })
@@ -61,7 +61,7 @@ describe("model.Next state", function() {
         [0,0,0,0]
     ]
     model.setBoard(board);
-    model.nextState(board);
+    model.nextState();
     board = model.getBoard()
     assert.deepEqual(board,rightBoard,'недвижимая фигура двигается');
   })
@@ -81,7 +81,7 @@ describe("model.Next state", function() {
         [0,0,0,0,0]
     ]
     model.setBoard(board);
-    model.nextState(board);
+    model.nextState();
     board = model.getBoard()
     assert.deepEqual(board,rightBoard,'недвижимая фигура двигается');
   })
@@ -101,7 +101,7 @@ describe("model.Next state", function() {
         [0,0,0,0,0]
     ]
     model.setBoard(board);
-    model.nextState(board);
+    model.nextState();
     assert.deepEqual(model.getBoard(),rightBoard,'1 шаг');
     var rightBoard = [
         [0,0,0,0,0],
@@ -110,7 +110,7 @@ describe("model.Next state", function() {
         [0,1,1,0,0],
         [0,0,0,0,0]
     ]
-    model.nextState(model.getBoard());
+    model.nextState();
     assert.deepEqual(model.getBoard(),rightBoard,'2 шаг');
     var rightBoard = [
         [0,0,0,0,0],
@@ -119,7 +119,7 @@ describe("model.Next state", function() {
         [0,1,1,0,0],
         [0,0,0,0,0]
     ]
-    model.nextState(model.getBoard());
+    model.nextState();
     assert.deepEqual(model.getBoard(),rightBoard,'3 шаг');
     var rightBoard = [
         [0,0,0,0,0],

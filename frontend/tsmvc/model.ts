@@ -1,12 +1,9 @@
 export default class {
-
+    public changeStateBoard: any;
     private width: number;
     private height: number;
-    private timer: any;
-    private speed: number;
     private board: number[][];
     private CELL_SQUARE: number;
-    private changeStateBoard: any;
 
     constructor() {
         this.CELL_SQUARE = 20;
@@ -23,18 +20,16 @@ export default class {
         };
         this.width = 20;
         this.height = 20;
-        this.timer = false;
-        this.speed = 1000;
         this.board = this.newBoard();
     }
-    public _event() {
+    public _event(): CustomEvent {
         const event = new CustomEvent("changeStateBoard", {
             bubbles: true,
             detail: { board: this.board },
         });
         return event;
     }
-    public findCellAndChange(x, y) {
+    public findCellAndChange(x: number, y: number): void {
         const xCell = Math.floor(x / this.CELL_SQUARE);
         const yCell = Math.floor(y / this.CELL_SQUARE);
         if (this.board[yCell][xCell] === 0) {
@@ -44,7 +39,7 @@ export default class {
         }
         this.changeStateBoard.notifySubscribers(this._event());
     }
-    public changeStateOfCell(i, j) {
+    public changeStateOfCell(i: number, j: number): number {
         let livingcell = 0;
         for (let il = i - 1; il <= i + 1; il++) {
             for (let jl = j - 1; jl <= j + 1; jl++) {
@@ -65,7 +60,7 @@ export default class {
         }
         return res;
     }
-    public nextState(board) {
+    public nextState(): void {
         const newboard = this.newBoard();
         for (let i = 0; i < newboard.length; i++) {
             for (let j = 0; j < newboard[0].length; j++) {
@@ -75,29 +70,17 @@ export default class {
         this.board = newboard;
         this.changeStateBoard.notifySubscribers(this._event());
     }
-    public startLife() {
-        const self = this;
-        if (this.timer === false) {
-            this.timer = setInterval(() => self.nextState(self.board), this.speed);
-        }
-    }
-    public stopLife() {
-        if (this.timer !== false) {
-            clearInterval(this.timer);
-            this.timer = false;
-        }
-    }
-    public clearBoard() {
+    public clearBoard(): void {
         this.board = this.newBoard();
         this.changeStateBoard.notifySubscribers(this._event());
     }
-    public changeQuantityCell(width, height) {
+    public changeQuantityCell(width: number, height: number): void {
         this.width = Math.floor(width / this.CELL_SQUARE);
         this.height = Math.floor(height / this.CELL_SQUARE);
         this.board = this.newBoard();
         this.changeStateBoard.notifySubscribers(this._event());
     }
-    public newBoard() {
+    public newBoard(): number[][] {
         const board = [];
         for (let i = 0; i < this.height; i++) {
             board[i] = [];
@@ -107,29 +90,12 @@ export default class {
         }
         return board;
     }
-    public getBoard() {
+    public getBoard(): number[][] {
         return this.board;
     }
-    public setBoard(testboard) {
+    public setBoard(testboard: number[][]): void {
         this.board = testboard;
         this.height = testboard.length;
         this.width = testboard[0].length;
-    }
-    public set setSpeed(speed) {
-        if (speed > 0) {
-            clearInterval(this.timer);
-            this.timer = false;
-            this.speed = speed;
-            this.startLife();
-        } else {
-            // mockerror
-        }
-    }
-    public set changeSpeed(speed) {
-        if (speed > 0) {
-            this.speed = speed;
-        }
-        this.stopLife();
-        this.startLife();
     }
 }

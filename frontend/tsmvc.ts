@@ -5,5 +5,5 @@ import View from "./tsmvc/view";
 document.addEventListener("DOMContentLoaded", () => {
     const model = new Model();
     const view = new View();
-    const controller = Controller(model, view);
+    const controller = new Controller(model, view);
 });
