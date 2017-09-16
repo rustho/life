@@ -14,6 +14,7 @@ export default class {
         this.model.changeStateBoard.addSubscriber(this.modelObserver);
         this.view.publisher.addSubscriber(this.viewObserver);
         this.startLife();
+        this.stopLife();
     }
     public startLife() {
         if (this.timer === false) {
