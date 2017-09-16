@@ -14,13 +14,15 @@ export default class {
                 }
             },
         };
-        this._startLife = this._startLife.bind(this);
-        this._stopLife = this._stopLife.bind(this);
-        this._clearBord = this._clearBord.bind(this);
-        this._changeWidth = this._changeWidth.bind(this);
-        this._changeHeight = this._changeHeight.bind(this);
-        this._changeSpeed = this._changeSpeed.bind(this);
-        this._clickCell = this._clickCell.bind(this);
+
+        for (const property in this) {
+            if (typeof this[property] !== typeof Function) {
+                continue;
+            }
+            const method: string = property.toString();
+            this[method] = this[method].bind(this);
+        }
+
         this.addEvents();
     }
     public addEvents(): void  {
