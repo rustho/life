@@ -11,7 +11,6 @@ export default class {
         this.speed = 1000;
         this.model = model;
         this.view = view;
-        this.view.addEvents();
         this.model.changeStateBoard.addSubscriber(this.modelObserver);
         this.view.publisher.addSubscriber(this.viewObserver);
         this.startLife();

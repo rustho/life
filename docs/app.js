@@ -119,7 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
         this.speed = 1000;
         this.model = model;
         this.view = view;
-        this.view.addEvents();
         this.model.changeStateBoard.addSubscriber(this.modelObserver);
         this.view.publisher.addSubscriber(this.viewObserver);
         this.startLife();
@@ -286,26 +285,16 @@ document.addEventListener("DOMContentLoaded", () => {
             const method = property.toString();
             this[method] = this[method].bind(this);
         }
+        this.addItems();
         this.addEvents();
     }
-    addEvents() {
-        const self = this;
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#start").click({ view: this }, this._startLife);
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#stop").click({ view: this }, this._stopLife);
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#clear").click({ view: this }, this._clearBord);
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_width").blur({ view: this }, this._changeWidth);
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_height").blur({ view: this }, this._changeHeight);
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_speed").click({ view: this }, this._changeSpeed);
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_speed").click({ view: this }, this._changeSpeed);
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#field").off("click").on("click", { view: this }, this._clickCell);
-    }
     changeSize(width, height) {
-        const canvas = __WEBPACK_IMPORTED_MODULE_0_jquery__("#field").get(0);
+        const canvas = this.$field.get(0);
         canvas.width = width;
         canvas.height = height;
     }
     drawCanvas(board) {
-        const canvas = __WEBPACK_IMPORTED_MODULE_0_jquery__("#field").get(0);
+        const canvas = this.$field.get(0);
         const ctx = canvas.getContext("2d");
         const height = board.length;
         const width = board[0].length;
@@ -322,6 +311,24 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     }
+    addItems() {
+        this.$start = __WEBPACK_IMPORTED_MODULE_0_jquery__("#start");
+        this.$stop = __WEBPACK_IMPORTED_MODULE_0_jquery__("#stop");
+        this.$clear = __WEBPACK_IMPORTED_MODULE_0_jquery__("#clear");
+        this.$changeWidth = __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_width");
+        this.$changeHeight = __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_height");
+        this.$changeSpeed = __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_speed");
+        this.$field = __WEBPACK_IMPORTED_MODULE_0_jquery__("#field");
+    }
+    addEvents() {
+        this.$start.click({ view: this }, this._startLife);
+        this.$stop.click({ view: this }, this._stopLife);
+        this.$clear.click({ view: this }, this._clearBord);
+        this.$changeWidth.blur({ view: this }, this._changeWidth);
+        this.$changeHeight.blur({ view: this }, this._changeHeight);
+        this.$changeSpeed.click({ view: this }, this._changeSpeed);
+        this.$field.off("click").on("click", { view: this }, this._clickCell);
+    }
     _startLife(e) {
         const startLife = new CustomEvent("startLife", { bubbles: true });
         e.data.view.publisher.notifySubscribers(startLife);
@@ -335,8 +342,8 @@ document.addEventListener("DOMContentLoaded", () => {
         e.data.view.publisher.notifySubscribers(clearBoard);
     }
     _changeWidth(e) {
-        const width = parseInt(__WEBPACK_IMPORTED_MODULE_0_jquery__("#change_width").val().toString(), 10);
-        const height = __WEBPACK_IMPORTED_MODULE_0_jquery__("#field").height();
+        const width = parseInt(e.data.view.$changeWidth.val().toString(), 10);
+        const height = e.data.view.$field.height();
         const changeWidth = new CustomEvent("changeWidth", {
             bubbles: true,
             detail: { width, height },
@@ -344,8 +351,8 @@ document.addEventListener("DOMContentLoaded", () => {
         e.data.view.publisher.notifySubscribers(changeWidth);
     }
     _changeHeight(e) {
-        const height = parseInt(__WEBPACK_IMPORTED_MODULE_0_jquery__("#change_height").val().toString(), 10);
-        const width = __WEBPACK_IMPORTED_MODULE_0_jquery__("#field").width();
+        const height = parseInt(e.data.view.$changeHeight.val().toString(), 10);
+        const width = e.data.view.$field.width();
         const changeHeight = new CustomEvent("changeHeight", {
             bubbles: true,
             detail: { width, height },

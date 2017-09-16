@@ -1,6 +1,13 @@
 import * as $ from "jquery";
 export default class {
     public publisher: any;
+    private $field: any;
+    private $start: any;
+    private $stop: any;
+    private $clear: any;
+    private $changeHeight: any;
+    private $changeWidth: any;
+    private $changeSpeed: any;
 
     constructor() {
         this.publisher = {
@@ -22,27 +29,17 @@ export default class {
             const method: string = property.toString();
             this[method] = this[method].bind(this);
         }
-
+        this.addItems();
         this.addEvents();
     }
-    public addEvents(): void  {
-        const self = this;
-        $("#start").click({view: this}, this._startLife);
-        $("#stop").click({view: this}, this._stopLife);
-        $("#clear").click({view: this}, this._clearBord);
-        $("#change_width").blur({view: this}, this._changeWidth);
-        $("#change_height").blur({view: this}, this._changeHeight);
-        $("#change_speed").click({view: this}, this._changeSpeed);
-        $("#change_speed").click({view: this}, this._changeSpeed);
-        $("#field").off("click").on("click", {view: this}, this._clickCell );
-    }
+
     public changeSize(width: number, height: number): void {
-        const canvas = $("#field").get(0) as HTMLCanvasElement;
+        const canvas = this.$field.get(0) as HTMLCanvasElement;
         canvas.width = width;
         canvas.height = height;
     }
     public drawCanvas(board: number[][]): void {
-        const canvas = $("#field").get(0) as HTMLCanvasElement;
+        const canvas = this.$field.get(0) as HTMLCanvasElement;
         const ctx = canvas.getContext("2d");
         const height = board.length;
         const width = board[0].length;
@@ -59,37 +56,55 @@ export default class {
             }
         }
     }
-    public _startLife(e) {
-            const startLife = new CustomEvent("startLife", { bubbles: true });
-            e.data.view.publisher.notifySubscribers(startLife);
+    private addItems(): void {
+        this.$start = $("#start");
+        this.$stop = $("#stop");
+        this.$clear = $("#clear");
+        this.$changeWidth = $("#change_width");
+        this.$changeHeight = $("#change_height");
+        this.$changeSpeed = $("#change_speed");
+        this.$field = $("#field");
     }
-    public _stopLife(e) {
+    private addEvents(): void  {
+        this.$start.click({view: this}, this._startLife);
+        this.$stop.click({view: this}, this._stopLife);
+        this.$clear.click({view: this}, this._clearBord);
+        this.$changeWidth.blur({view: this}, this._changeWidth);
+        this.$changeHeight.blur({view: this}, this._changeHeight);
+        this.$changeSpeed.click({view: this}, this._changeSpeed);
+        this.$field.off("click").on("click", {view: this}, this._clickCell );
+    }
+    private _startLife(e) {
+        const startLife = new CustomEvent("startLife", { bubbles: true });
+        e.data.view.publisher.notifySubscribers(startLife);
+    }
+    private _stopLife(e) {
         const stopLife = new CustomEvent("stopLife", { bubbles: true });
         e.data.view.publisher.notifySubscribers(stopLife);
     }
-    public _clearBord(e) {
+    private _clearBord(e) {
         const clearBoard = new CustomEvent("clearBoard", { bubbles: true });
         e.data.view.publisher.notifySubscribers(clearBoard);
     }
-    public _changeWidth(e) {
-        const width = parseInt($("#change_width").val().toString(), 10);
-        const height = $("#field").height();
+    private _changeWidth(e) {
+        const width = parseInt(e.data.view.$changeWidth.val().toString(), 10);
+        const height = e.data.view.$field.height();
         const changeWidth = new CustomEvent("changeWidth", {
             bubbles: true,
             detail: { width, height },
         });
         e.data.view.publisher.notifySubscribers(changeWidth);
     }
-    public _changeHeight(e) {
-        const height = parseInt($("#change_height").val().toString(), 10);
-        const width = $("#field").width();
+    private _changeHeight(e) {
+        const height = parseInt(e.data.view.$changeHeight.val().toString(), 10);
+        const width = e.data.view.$field.width();
         const changeHeight = new CustomEvent("changeHeight", {
             bubbles: true,
             detail: { width, height },
         });
         e.data.view.publisher.notifySubscribers(changeHeight);
     }
-    public _changeSpeed(e) {
+    private _changeSpeed(e) {
         const speed = parseInt(prompt("speed in mlsec?", "500"), 10);
         const changeSpeed = new CustomEvent("changeSpeed", {
             bubbles: true,
@@ -98,7 +113,7 @@ export default class {
         e.data.view.publisher.notifySubscribers(changeSpeed);
     }
 
-    public _clickCell(e) {
+    private _clickCell(e) {
             const xo = e.offsetX;
             const yo = e.offsetY;
             const clickOnCell = new CustomEvent("clickOnCell", {
