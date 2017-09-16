@@ -14,6 +14,7 @@ export default class {
         this.view.addEvents();
         this.model.changeStateBoard.addSubscriber(this.modelObserver);
         this.view.publisher.addSubscriber(this.viewObserver);
+        this.startLife();
     }
     public startLife() {
         if (this.timer === false) {
@@ -26,6 +27,19 @@ export default class {
             this.timer = false;
         }
     }
+
+    public clearBoard() {
+        this.model.clearBoard();
+    }
+
+    public changeSize(width: number, height: number) {
+        this.view.changeSize(width, height);
+        this.model.changeQuantityCell(width, height);
+    }
+
+    public clickOnCell(x: number, y: number) {
+        this.model.findCellAndChange(x, y);
+    }
     public set changeSpeed(speed: number) {
         if (speed > 0) {
             this.speed = speed;
@@ -33,6 +47,8 @@ export default class {
         this.stopLife();
         this.startLife();
     }
+
+
     public modelObserver = (event) => this.view.drawCanvas(event.detail.board);
     public viewObserver = (event) => {
         switch (event.type) {
@@ -43,18 +59,16 @@ export default class {
                 this.stopLife();
                 break;
             case "clearBoard":
-                this.model.clearBoard();
+                this.clearBoard();
                 break;
             case "changeHeight":
-                this.view.changeSize(event.detail.width, event.detail.height);
-                this.model.changeQuantityCell(event.detail.width, event.detail.height);
+                this.changeSize(event.detail.width, event.detail.height);
                 break;
             case "changeWidth":
-                this.view.changeSize(event.detail.width, event.detail.height);
-                this.model.changeQuantityCell(event.detail.width, event.detail.height);
+                this.changeSize(event.detail.width, event.detail.height);
                 break;
             case "clickOnCell":
-                this.model.findCellAndChange(event.detail.x, event.detail.y);
+                this.clickOnCell(event.detail.x, event.detail.y);
                 break;
             case "changeSpeed":
                 this.changeSpeed = event.detail.speed;

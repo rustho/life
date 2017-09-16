@@ -99,18 +99,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     this.stopLife();
                     break;
                 case "clearBoard":
-                    this.model.clearBoard();
+                    this.clearBoard();
                     break;
                 case "changeHeight":
-                    this.view.changeSize(event.detail.width, event.detail.height);
-                    this.model.changeQuantityCell(event.detail.width, event.detail.height);
+                    this.changeSize(event.detail.width, event.detail.height);
                     break;
                 case "changeWidth":
-                    this.view.changeSize(event.detail.width, event.detail.height);
-                    this.model.changeQuantityCell(event.detail.width, event.detail.height);
+                    this.changeSize(event.detail.width, event.detail.height);
                     break;
                 case "clickOnCell":
-                    this.model.findCellAndChange(event.detail.x, event.detail.y);
+                    this.clickOnCell(event.detail.x, event.detail.y);
                     break;
                 case "changeSpeed":
                     this.changeSpeed = event.detail.speed;
@@ -124,6 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
         this.view.addEvents();
         this.model.changeStateBoard.addSubscriber(this.modelObserver);
         this.view.publisher.addSubscriber(this.viewObserver);
+        this.startLife();
     }
     startLife() {
         if (this.timer === false) {
@@ -135,6 +134,16 @@ document.addEventListener("DOMContentLoaded", () => {
             clearInterval(this.timer);
             this.timer = false;
         }
+    }
+    clearBoard() {
+        this.model.clearBoard();
+    }
+    changeSize(width, height) {
+        this.view.changeSize(width, height);
+        this.model.changeQuantityCell(width, height);
+    }
+    clickOnCell(x, y) {
+        this.model.findCellAndChange(x, y);
     }
     set changeSpeed(speed) {
         if (speed > 0) {
@@ -241,7 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
     getBoard() {
         return this.board;
     }
-    setBoard(testboard) {
+    set setBoard(testboard) {
         this.board = testboard;
         this.height = testboard.length;
         this.width = testboard[0].length;
@@ -277,16 +286,18 @@ document.addEventListener("DOMContentLoaded", () => {
         this._changeHeight = this._changeHeight.bind(this);
         this._changeSpeed = this._changeSpeed.bind(this);
         this._clickCell = this._clickCell.bind(this);
+        this.addEvents();
     }
     addEvents() {
         const self = this;
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#start").click({ view: this }, (e) => e.data.view._startLife(e));
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#stop").click({ view: this }, (e) => e.data.view._stopLife(e));
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#clear").click({ view: this }, (e) => e.data.view._clearBord(e));
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_width").blur({ view: this }, (e) => e.data.view._changeWidth(e));
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_height").blur({ view: this }, (e) => this._changeHeight(e));
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_speed").click({ view: this }, (e) => this._changeSpeed(e));
-        __WEBPACK_IMPORTED_MODULE_0_jquery__("#field").click({ view: this }, (e) => e.data.view._clickCell(e));
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#start").click({ view: this }, this._startLife);
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#stop").click({ view: this }, this._stopLife);
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#clear").click({ view: this }, this._clearBord);
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_width").blur({ view: this }, this._changeWidth);
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_height").blur({ view: this }, this._changeHeight);
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_speed").click({ view: this }, this._changeSpeed);
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_speed").click({ view: this }, this._changeSpeed);
+        __WEBPACK_IMPORTED_MODULE_0_jquery__("#field").off("click").on("click", { view: this }, this._clickCell);
     }
     changeSize(width, height) {
         const canvas = __WEBPACK_IMPORTED_MODULE_0_jquery__("#field").get(0);
@@ -350,13 +361,11 @@ document.addEventListener("DOMContentLoaded", () => {
         e.data.view.publisher.notifySubscribers(changeSpeed);
     }
     _clickCell(e) {
-        const x = e.pageX;
-        const xo = e.offsetLeft;
-        const y = e.pageY;
-        const yo = e.offsetTop;
+        const xo = e.offsetX;
+        const yo = e.offsetY;
         const clickOnCell = new CustomEvent("clickOnCell", {
             bubbles: true,
-            detail: { x: x - xo, y: y - yo },
+            detail: { x: xo, y: yo },
         });
         e.data.view.publisher.notifySubscribers(clickOnCell);
     }

@@ -93,7 +93,7 @@ export default class {
     public getBoard(): number[][] {
         return this.board;
     }
-    public setBoard(testboard: number[][]): void {
+    public set setBoard(testboard: number[][]) {
         this.board = testboard;
         this.height = testboard.length;
         this.width = testboard[0].length;

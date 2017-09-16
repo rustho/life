@@ -21,16 +21,18 @@ export default class {
         this._changeHeight = this._changeHeight.bind(this);
         this._changeSpeed = this._changeSpeed.bind(this);
         this._clickCell = this._clickCell.bind(this);
+        this.addEvents();
     }
     public addEvents(): void  {
         const self = this;
-        $("#start").click({view: this}, (e) => e.data.view._startLife(e));
-        $("#stop").click({view: this}, (e) => e.data.view._stopLife(e));
-        $("#clear").click({view: this}, (e) => e.data.view._clearBord(e));
-        $("#change_width").blur({view: this}, (e) => e.data.view._changeWidth(e));
-        $("#change_height").blur({view: this}, (e) => this._changeHeight(e));
-        $("#change_speed").click({view: this}, (e) => this._changeSpeed(e));
-        $("#field").click({view: this}, (e) => e.data.view._clickCell(e) );
+        $("#start").click({view: this}, this._startLife);
+        $("#stop").click({view: this}, this._stopLife);
+        $("#clear").click({view: this}, this._clearBord);
+        $("#change_width").blur({view: this}, this._changeWidth);
+        $("#change_height").blur({view: this}, this._changeHeight);
+        $("#change_speed").click({view: this}, this._changeSpeed);
+        $("#change_speed").click({view: this}, this._changeSpeed);
+        $("#field").off("click").on("click", {view: this}, this._clickCell );
     }
     public changeSize(width: number, height: number): void {
         const canvas = $("#field").get(0) as HTMLCanvasElement;
@@ -95,13 +97,11 @@ export default class {
     }
 
     public _clickCell(e) {
-            const x = e.pageX;
-            const xo = e.offsetLeft;
-            const y = e.pageY;
-            const yo = e.offsetTop;
+            const xo = e.offsetX;
+            const yo = e.offsetY;
             const clickOnCell = new CustomEvent("clickOnCell", {
                 bubbles: true,
-                detail: { x: x - xo, y: y - yo },
+                detail: { x: xo , y: yo },
             });
             e.data.view.publisher.notifySubscribers(clickOnCell);
         }
