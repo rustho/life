@@ -1,6 +1,7 @@
 import * as $ from "jquery";
+import EventEmiter from "./EventEmiter";
 export default class {
-    public publisher: any;
+    public eventEmiter: any;
     private $field: any;
     private $start: any;
     private $stop: any;
@@ -10,27 +11,16 @@ export default class {
     private $changeSpeed: any;
 
     constructor() {
-        this.publisher = {
-            _subscribers: [],
-            addSubscriber(object) {
-                this._subscribers.push(object);
-            },
-            notifySubscribers(event) {
-                for (const item of this._subscribers) {
-                    item(event);
-                }
-            },
-        };
-
-        for (const property in this) {
-            if (typeof this[property] !== typeof Function) {
-                continue;
-            }
-            const method: string = property.toString();
-            this[method] = this[method].bind(this);
-        }
+        this.eventEmiter = new EventEmiter();
         this.addItems();
         this.addEvents();
+        this._changeHeight = this._changeHeight.bind(this);
+        this._changeWidth = this._changeWidth.bind (this);
+        this._changeSpeed = this._changeSpeed.bind(this);
+        this._clearBord = this._clearBord.bind(this);
+        this._clickCell = this._clickCell.bind(this);
+        this._startLife = this._startLife.bind(this);
+        this._stopLife = this._stopLife.bind(this);
     }
 
     public changeSize(width: number, height: number): void {
@@ -75,51 +65,32 @@ export default class {
         this.$field.off("click").on("click", {view: this}, this._clickCell );
     }
     private _startLife(e) {
-        const startLife = new CustomEvent("startLife", { bubbles: true });
-        e.data.view.publisher.notifySubscribers(startLife);
+        e.data.view.eventEmiter.emit("startLife");
     }
     private _stopLife(e) {
-        const stopLife = new CustomEvent("stopLife", { bubbles: true });
-        e.data.view.publisher.notifySubscribers(stopLife);
+        e.data.view.eventEmiter.emit("stopLife");
     }
     private _clearBord(e) {
-        const clearBoard = new CustomEvent("clearBoard", { bubbles: true });
-        e.data.view.publisher.notifySubscribers(clearBoard);
+        e.data.view.eventEmiter.emit("clearBoard");
     }
     private _changeWidth(e) {
         const width = parseInt(e.data.view.$changeWidth.val().toString(), 10);
         const height = e.data.view.$field.height();
-        const changeWidth = new CustomEvent("changeWidth", {
-            bubbles: true,
-            detail: { width, height },
-        });
-        e.data.view.publisher.notifySubscribers(changeWidth);
+        e.data.view.eventEmiter.emit("changeWidth", {width, height});
     }
     private _changeHeight(e) {
         const height = parseInt(e.data.view.$changeHeight.val().toString(), 10);
         const width = e.data.view.$field.width();
-        const changeHeight = new CustomEvent("changeHeight", {
-            bubbles: true,
-            detail: { width, height },
-        });
-        e.data.view.publisher.notifySubscribers(changeHeight);
+        e.data.view.eventEmiter.emit("changeHeight", {width, height});
     }
     private _changeSpeed(e) {
         const speed = parseInt(prompt("speed in mlsec?", "500"), 10);
-        const changeSpeed = new CustomEvent("changeSpeed", {
-            bubbles: true,
-            detail: { speed },
-        });
-        e.data.view.publisher.notifySubscribers(changeSpeed);
+        e.data.view.eventEmiter.emit("changeSpeed", {speed});
     }
 
     private _clickCell(e) {
             const xo = e.offsetX;
             const yo = e.offsetY;
-            const clickOnCell = new CustomEvent("clickOnCell", {
-                bubbles: true,
-                detail: { x: xo , y: yo },
-            });
-            e.data.view.publisher.notifySubscribers(clickOnCell);
+            e.data.view.eventEmiter.emit("clickCell", {x: xo, y: yo});
         }
 }

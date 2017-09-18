@@ -21,6 +21,11 @@ export default class {
         this.width = 20;
         this.height = 20;
         this.board = this.newBoard();
+        this.changeQuantityCell = this.changeQuantityCell.bind(this);
+        this.changeStateOfCell = this.changeStateOfCell.bind(this);
+        this.clearBoard = this.clearBoard.bind(this);
+        this.findCellAndChange = this.findCellAndChange.bind(this);
+        this.nextState = this.nextState.bind(this);
     }
     public _event(): CustomEvent {
         const event = new CustomEvent("changeStateBoard", {
@@ -32,6 +37,8 @@ export default class {
     public findCellAndChange(x: number, y: number): void {
         const xCell = Math.floor(x / this.CELL_SQUARE);
         const yCell = Math.floor(y / this.CELL_SQUARE);
+        console.log(xCell);
+        console.log(yCell);
         if (this.board[yCell][xCell] === 0) {
             this.board[yCell][xCell] = 1;
         } else {

@@ -90,43 +90,30 @@ document.addEventListener("DOMContentLoaded", () => {
 /* harmony default export */ __webpack_exports__["a"] = (class {
     constructor(model, view) {
         this.modelObserver = (event) => this.view.drawCanvas(event.detail.board);
-        this.viewObserver = (event) => {
-            switch (event.type) {
-                case "startLife":
-                    this.startLife();
-                    break;
-                case "stopLife":
-                    this.stopLife();
-                    break;
-                case "clearBoard":
-                    this.clearBoard();
-                    break;
-                case "changeHeight":
-                    this.changeSize(event.detail.width, event.detail.height);
-                    break;
-                case "changeWidth":
-                    this.changeSize(event.detail.width, event.detail.height);
-                    break;
-                case "clickOnCell":
-                    this.clickOnCell(event.detail.x, event.detail.y);
-                    break;
-                case "changeSpeed":
-                    this.changeSpeed = event.detail.speed;
-                    break;
-            }
-        };
         this.timer = false;
         this.speed = 1000;
         this.model = model;
         this.view = view;
+        this.startLife = this.startLife.bind(this);
+        this.stopLife = this.stopLife.bind(this);
+        this.changeSize = this.changeSize.bind(this);
+        this.clearBoard = this.clearBoard.bind(this);
+        this.clickOnCell = this.clickOnCell.bind(this);
+        this.changeSpeed = this.changeSpeed.bind(this);
+        this.view.eventEmiter.subscribe("startLife", this.startLife);
+        this.view.eventEmiter.subscribe("stopLife", this.stopLife);
+        this.view.eventEmiter.subscribe("clearBoard", this.clearBoard);
+        this.view.eventEmiter.subscribe("clickCell", this.clickOnCell);
+        this.view.eventEmiter.subscribe("changeWidth", this.changeSize);
+        this.view.eventEmiter.subscribe("changeHeight", this.changeSize);
+        this.view.eventEmiter.subscribe("changeSpeed", this.changeSpeed);
         this.model.changeStateBoard.addSubscriber(this.modelObserver);
-        this.view.publisher.addSubscriber(this.viewObserver);
         this.startLife();
         this.stopLife();
     }
     startLife() {
-        if (this.timer === false) {
-            this.timer = setInterval(() => this.model.nextState(), this.speed);
+        if (!this.timer) {
+            this.timer = setInterval(this.model.nextState, this.speed);
         }
     }
     stopLife() {
@@ -138,14 +125,19 @@ document.addEventListener("DOMContentLoaded", () => {
     clearBoard() {
         this.model.clearBoard();
     }
-    changeSize(width, height) {
+    changeSize(options) {
+        const width = options.width;
+        const height = options.height;
         this.view.changeSize(width, height);
         this.model.changeQuantityCell(width, height);
     }
-    clickOnCell(x, y) {
+    clickOnCell(options) {
+        const x = options.x;
+        const y = options.y;
         this.model.findCellAndChange(x, y);
     }
-    set changeSpeed(speed) {
+    changeSpeed(options) {
+        const speed = options.speed;
         if (speed > 0) {
             this.speed = speed;
         }
@@ -177,6 +169,11 @@ document.addEventListener("DOMContentLoaded", () => {
         this.width = 20;
         this.height = 20;
         this.board = this.newBoard();
+        this.changeQuantityCell = this.changeQuantityCell.bind(this);
+        this.changeStateOfCell = this.changeStateOfCell.bind(this);
+        this.clearBoard = this.clearBoard.bind(this);
+        this.findCellAndChange = this.findCellAndChange.bind(this);
+        this.nextState = this.nextState.bind(this);
     }
     _event() {
         const event = new CustomEvent("changeStateBoard", {
@@ -188,6 +185,8 @@ document.addEventListener("DOMContentLoaded", () => {
     findCellAndChange(x, y) {
         const xCell = Math.floor(x / this.CELL_SQUARE);
         const yCell = Math.floor(y / this.CELL_SQUARE);
+        console.log(xCell);
+        console.log(yCell);
         if (this.board[yCell][xCell] === 0) {
             this.board[yCell][xCell] = 1;
         }
@@ -265,29 +264,21 @@ document.addEventListener("DOMContentLoaded", () => {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__EventEmiter__ = __webpack_require__(5);
+
 
 /* harmony default export */ __webpack_exports__["a"] = (class {
     constructor() {
-        this.publisher = {
-            _subscribers: [],
-            addSubscriber(object) {
-                this._subscribers.push(object);
-            },
-            notifySubscribers(event) {
-                for (const item of this._subscribers) {
-                    item(event);
-                }
-            },
-        };
-        for (const property in this) {
-            if (typeof this[property] !== typeof Function) {
-                continue;
-            }
-            const method = property.toString();
-            this[method] = this[method].bind(this);
-        }
+        this.eventEmiter = new __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */]();
         this.addItems();
         this.addEvents();
+        this._changeHeight = this._changeHeight.bind(this);
+        this._changeWidth = this._changeWidth.bind(this);
+        this._changeSpeed = this._changeSpeed.bind(this);
+        this._clearBord = this._clearBord.bind(this);
+        this._clickCell = this._clickCell.bind(this);
+        this._startLife = this._startLife.bind(this);
+        this._stopLife = this._stopLife.bind(this);
     }
     changeSize(width, height) {
         const canvas = this.$field.get(0);
@@ -295,6 +286,7 @@ document.addEventListener("DOMContentLoaded", () => {
         canvas.height = height;
     }
     drawCanvas(board) {
+        console.log("draw");
         const canvas = this.$field.get(0);
         const ctx = canvas.getContext("2d");
         const height = board.length;
@@ -331,51 +323,32 @@ document.addEventListener("DOMContentLoaded", () => {
         this.$field.off("click").on("click", { view: this }, this._clickCell);
     }
     _startLife(e) {
-        const startLife = new CustomEvent("startLife", { bubbles: true });
-        e.data.view.publisher.notifySubscribers(startLife);
+        e.data.view.eventEmiter.emit("startLife");
     }
     _stopLife(e) {
-        const stopLife = new CustomEvent("stopLife", { bubbles: true });
-        e.data.view.publisher.notifySubscribers(stopLife);
+        e.data.view.eventEmiter.emit("stopLife");
     }
     _clearBord(e) {
-        const clearBoard = new CustomEvent("clearBoard", { bubbles: true });
-        e.data.view.publisher.notifySubscribers(clearBoard);
+        e.data.view.eventEmiter.emit("clearBord");
     }
     _changeWidth(e) {
         const width = parseInt(e.data.view.$changeWidth.val().toString(), 10);
         const height = e.data.view.$field.height();
-        const changeWidth = new CustomEvent("changeWidth", {
-            bubbles: true,
-            detail: { width, height },
-        });
-        e.data.view.publisher.notifySubscribers(changeWidth);
+        e.data.view.eventEmiter.emit("changeWidth", { width, height });
     }
     _changeHeight(e) {
         const height = parseInt(e.data.view.$changeHeight.val().toString(), 10);
         const width = e.data.view.$field.width();
-        const changeHeight = new CustomEvent("changeHeight", {
-            bubbles: true,
-            detail: { width, height },
-        });
-        e.data.view.publisher.notifySubscribers(changeHeight);
+        e.data.view.eventEmiter.emit("changeHeight", { width, height });
     }
     _changeSpeed(e) {
         const speed = parseInt(prompt("speed in mlsec?", "500"), 10);
-        const changeSpeed = new CustomEvent("changeSpeed", {
-            bubbles: true,
-            detail: { speed },
-        });
-        e.data.view.publisher.notifySubscribers(changeSpeed);
+        e.data.view.eventEmiter.emit("changeSpeed", { speed });
     }
     _clickCell(e) {
         const xo = e.offsetX;
         const yo = e.offsetY;
-        const clickOnCell = new CustomEvent("clickOnCell", {
-            bubbles: true,
-            detail: { x: xo, y: yo },
-        });
-        e.data.view.publisher.notifySubscribers(clickOnCell);
+        e.data.view.eventEmiter.emit("clickCell", { x: xo, y: yo });
     }
 });
 
@@ -10638,6 +10611,37 @@ if ( !noGlobal ) {
 
 return jQuery;
 } );
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony default export */ __webpack_exports__["a"] = (class {
+    constructor() {
+        this.events = {};
+    }
+    emit(eventName, data) {
+        const event = this.events[eventName];
+        if (event) {
+            event.forEach((fn) => {
+                console.log(data);
+                fn.call(null, data);
+            });
+        }
+    }
+    subscribe(eventName, fn) {
+        console.log(fn);
+        if (!this.events[eventName]) {
+            this.events[eventName] = [];
+        }
+        this.events[eventName].push(fn);
+        return () => {
+            this.events[eventName] = this.events[eventName].filter((eventFn) => fn !== eventFn);
+        };
+    }
+});
 
 
 /***/ })
