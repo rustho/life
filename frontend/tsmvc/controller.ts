@@ -4,22 +4,18 @@ import Model from "./model";
 import View from "./view";
 
 export default class {
+
     private model: Model;
     private view: View;
     private timer: any;
     private speed: number;
+
     constructor(model: Model, view: View) {
+
         this.timer = false;
         this.speed = 1000;
         this.model = model;
         this.view = view;
-
-        this.startLife = this.startLife.bind(this);
-        this.stopLife = this.stopLife.bind(this);
-        this.changeSize = this.changeSize.bind(this);
-        this.clearBoard = this.clearBoard.bind(this);
-        this.clickOnCell = this.clickOnCell.bind(this);
-        this.changeSpeed = this.changeSpeed.bind(this);
 
         this.view.eventEmiter.subscribe("startLife", this.startLife);
         this.view.eventEmiter.subscribe("stopLife", this.stopLife);
@@ -29,42 +25,47 @@ export default class {
         this.view.eventEmiter.subscribe("changeHeight", this.changeSize);
         this.view.eventEmiter.subscribe("changeSpeed", this.changeSpeed);
 
-        this.model.changeStateBoard.addSubscriber(this.modelObserver);
-        this.startLife();
-        this.stopLife();
+        this.model.eventEmiter.subscribe("updateBoard", this.updateCanvas );
+
+        this.model.nextState();
 
     }
 
-    public startLife(): void {
+    public updateCanvas = (options: any): void => {
+        this.view.drawCanvas(options.board);
+    }
+
+    public startLife = (): void => {
         if (!this.timer) {
             this.timer = setInterval(this.model.nextState, this.speed);
         }
     }
 
-    public stopLife() {
+    private stopLife = (): void => {
         if (this.timer !== false) {
             clearInterval(this.timer);
             this.timer = false;
         }
     }
 
-    public clearBoard() {
+    private clearBoard = (): void => {
         this.model.clearBoard();
     }
 
-    public changeSize(options: any) {
+    private changeSize = (options: any): void => {
         const width: number = options.width;
         const height: number = options.height;
         this.view.changeSize(width, height);
         this.model.changeQuantityCell(width, height);
     }
 
-    public clickOnCell(options: any) {
+    private clickOnCell = (options: any): void => {
         const x: number = options.x;
         const y: number = options.y;
         this.model.findCellAndChange(x, y);
     }
-    public changeSpeed(options: any) {
+
+    private changeSpeed = (options: any): void => {
         const speed: number = options.speed;
         if (speed > 0) {
             this.speed = speed;
@@ -72,7 +73,4 @@ export default class {
         this.stopLife();
         this.startLife();
     }
-
-
-    public modelObserver = (event) => this.view.drawCanvas(event.detail.board);
 }

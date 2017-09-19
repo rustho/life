@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -68,10 +68,39 @@
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony default export */ __webpack_exports__["a"] = (class {
+    constructor() {
+        this.events = {};
+    }
+    emit(eventName, data) {
+        const event = this.events[eventName];
+        if (event) {
+            event.forEach((fn) => {
+                fn.call(null, data);
+            });
+        }
+    }
+    subscribe(eventName, fn) {
+        if (!this.events[eventName]) {
+            this.events[eventName] = [];
+        }
+        this.events[eventName].push(fn);
+        return () => {
+            this.events[eventName] = this.events[eventName].filter((eventFn) => fn !== eventFn);
+        };
+    }
+});
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tsmvc_controller__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tsmvc_model__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tsmvc_view__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tsmvc_controller__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tsmvc_model__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tsmvc_view__ = __webpack_require__(4);
 
 
 
@@ -83,23 +112,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony default export */ __webpack_exports__["a"] = (class {
     constructor(model, view) {
-        this.modelObserver = (event) => this.view.drawCanvas(event.detail.board);
+        this.updateCanvas = (options) => {
+            this.view.drawCanvas(options.board);
+        };
+        this.startLife = () => {
+            if (!this.timer) {
+                this.timer = setInterval(this.model.nextState, this.speed);
+            }
+        };
+        this.stopLife = () => {
+            if (this.timer !== false) {
+                clearInterval(this.timer);
+                this.timer = false;
+            }
+        };
+        this.clearBoard = () => {
+            this.model.clearBoard();
+        };
+        this.changeSize = (options) => {
+            const width = options.width;
+            const height = options.height;
+            this.view.changeSize(width, height);
+            this.model.changeQuantityCell(width, height);
+        };
+        this.clickOnCell = (options) => {
+            const x = options.x;
+            const y = options.y;
+            this.model.findCellAndChange(x, y);
+        };
+        this.changeSpeed = (options) => {
+            const speed = options.speed;
+            if (speed > 0) {
+                this.speed = speed;
+            }
+            this.stopLife();
+            this.startLife();
+        };
         this.timer = false;
         this.speed = 1000;
         this.model = model;
         this.view = view;
-        this.startLife = this.startLife.bind(this);
-        this.stopLife = this.stopLife.bind(this);
-        this.changeSize = this.changeSize.bind(this);
-        this.clearBoard = this.clearBoard.bind(this);
-        this.clickOnCell = this.clickOnCell.bind(this);
-        this.changeSpeed = this.changeSpeed.bind(this);
         this.view.eventEmiter.subscribe("startLife", this.startLife);
         this.view.eventEmiter.subscribe("stopLife", this.stopLife);
         this.view.eventEmiter.subscribe("clearBoard", this.clearBoard);
@@ -107,147 +165,91 @@ document.addEventListener("DOMContentLoaded", () => {
         this.view.eventEmiter.subscribe("changeWidth", this.changeSize);
         this.view.eventEmiter.subscribe("changeHeight", this.changeSize);
         this.view.eventEmiter.subscribe("changeSpeed", this.changeSpeed);
-        this.model.changeStateBoard.addSubscriber(this.modelObserver);
-        this.startLife();
-        this.stopLife();
-    }
-    startLife() {
-        if (!this.timer) {
-            this.timer = setInterval(this.model.nextState, this.speed);
-        }
-    }
-    stopLife() {
-        if (this.timer !== false) {
-            clearInterval(this.timer);
-            this.timer = false;
-        }
-    }
-    clearBoard() {
-        this.model.clearBoard();
-    }
-    changeSize(options) {
-        const width = options.width;
-        const height = options.height;
-        this.view.changeSize(width, height);
-        this.model.changeQuantityCell(width, height);
-    }
-    clickOnCell(options) {
-        const x = options.x;
-        const y = options.y;
-        this.model.findCellAndChange(x, y);
-    }
-    changeSpeed(options) {
-        const speed = options.speed;
-        if (speed > 0) {
-            this.speed = speed;
-        }
-        this.stopLife();
-        this.startLife();
+        this.model.eventEmiter.subscribe("updateBoard", this.updateCanvas);
+        this.model.nextState();
     }
 });
 
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__EventEmiter__ = __webpack_require__(0);
+
 /* harmony default export */ __webpack_exports__["a"] = (class {
     constructor() {
-        this.CELL_SQUARE = 20;
-        this.changeStateBoard = {
-            _subscribers: [],
-            addSubscriber(object) {
-                this._subscribers.push(object);
-            },
-            notifySubscribers(event) {
-                for (const item of this._subscribers) {
-                    item(event);
-                }
-            },
+        this.findCellAndChange = (x, y) => {
+            const xCell = Math.floor(x / this.CELL_SQUARE);
+            const yCell = Math.floor(y / this.CELL_SQUARE);
+            if (this.board[yCell][xCell] === 0) {
+                this.board[yCell][xCell] = 1;
+            }
+            else {
+                this.board[yCell][xCell] = 0;
+            }
+            this.eventEmiter.emit("updateBoard", { board: this.board });
         };
+        this.changeStateOfCell = (i, j) => {
+            let livingcell = 0;
+            for (let il = i - 1; il <= i + 1; il++) {
+                for (let jl = j - 1; jl <= j + 1; jl++) {
+                    let ii = il;
+                    let jj = jl; // проверка для моделирования поверхности тора
+                    ii = (il === -1) ? this.height - 1 : ii;
+                    jj = (jl === -1) ? this.width - 1 : jj;
+                    ii = (il === this.height) ? 0 : ii;
+                    jj = (jl === this.width) ? 0 : jj;
+                    if (this.board[ii][jj] === 1) {
+                        livingcell += 1;
+                    }
+                }
+            }
+            let res = 0;
+            if (livingcell === 3 || (this.board[i][j] === 1 && livingcell === 4)) {
+                res = 1;
+            }
+            return res;
+        };
+        this.nextState = () => {
+            const newboard = this.newBoard();
+            for (let i = 0; i < newboard.length; i++) {
+                for (let j = 0; j < newboard[0].length; j++) {
+                    newboard[i][j] = this.changeStateOfCell(i, j);
+                }
+            }
+            this.board = newboard;
+            this.eventEmiter.emit("updateBoard", { board: this.board });
+        };
+        this.clearBoard = () => {
+            this.board = this.newBoard();
+            this.eventEmiter.emit("updateBoard", { board: this.board });
+        };
+        this.changeQuantityCell = (width, height) => {
+            this.width = Math.floor(width / this.CELL_SQUARE);
+            this.height = Math.floor(height / this.CELL_SQUARE);
+            this.board = this.newBoard();
+            this.eventEmiter.emit("updateBoard", { board: this.board });
+        };
+        this.newBoard = () => {
+            const board = [];
+            for (let i = 0; i < this.height; i++) {
+                board[i] = [];
+                for (let j = 0; j < this.width; j++) {
+                    board[i][j] = 0;
+                }
+            }
+            return board;
+        };
+        this.getBoard = () => {
+            return this.board;
+        };
+        this.CELL_SQUARE = 20;
+        this.eventEmiter = new __WEBPACK_IMPORTED_MODULE_0__EventEmiter__["a" /* default */]();
         this.width = 20;
         this.height = 20;
         this.board = this.newBoard();
-        this.changeQuantityCell = this.changeQuantityCell.bind(this);
-        this.changeStateOfCell = this.changeStateOfCell.bind(this);
-        this.clearBoard = this.clearBoard.bind(this);
-        this.findCellAndChange = this.findCellAndChange.bind(this);
-        this.nextState = this.nextState.bind(this);
-    }
-    _event() {
-        const event = new CustomEvent("changeStateBoard", {
-            bubbles: true,
-            detail: { board: this.board },
-        });
-        return event;
-    }
-    findCellAndChange(x, y) {
-        const xCell = Math.floor(x / this.CELL_SQUARE);
-        const yCell = Math.floor(y / this.CELL_SQUARE);
-        console.log(xCell);
-        console.log(yCell);
-        if (this.board[yCell][xCell] === 0) {
-            this.board[yCell][xCell] = 1;
-        }
-        else {
-            this.board[yCell][xCell] = 0;
-        }
-        this.changeStateBoard.notifySubscribers(this._event());
-    }
-    changeStateOfCell(i, j) {
-        let livingcell = 0;
-        for (let il = i - 1; il <= i + 1; il++) {
-            for (let jl = j - 1; jl <= j + 1; jl++) {
-                let ii = il;
-                let jj = jl; // проверка для моделирования поверхности тора
-                ii = (il === -1) ? this.height - 1 : ii;
-                jj = (jl === -1) ? this.width - 1 : jj;
-                ii = (il === this.height) ? 0 : ii;
-                jj = (jl === this.width) ? 0 : jj;
-                if (this.board[ii][jj] === 1) {
-                    livingcell += 1;
-                }
-            }
-        }
-        let res = 0;
-        if (livingcell === 3 || (this.board[i][j] === 1 && livingcell === 4)) {
-            res = 1;
-        }
-        return res;
-    }
-    nextState() {
-        const newboard = this.newBoard();
-        for (let i = 0; i < newboard.length; i++) {
-            for (let j = 0; j < newboard[0].length; j++) {
-                newboard[i][j] = this.changeStateOfCell(i, j);
-            }
-        }
-        this.board = newboard;
-        this.changeStateBoard.notifySubscribers(this._event());
-    }
-    clearBoard() {
-        this.board = this.newBoard();
-        this.changeStateBoard.notifySubscribers(this._event());
-    }
-    changeQuantityCell(width, height) {
-        this.width = Math.floor(width / this.CELL_SQUARE);
-        this.height = Math.floor(height / this.CELL_SQUARE);
-        this.board = this.newBoard();
-        this.changeStateBoard.notifySubscribers(this._event());
-    }
-    newBoard() {
-        const board = [];
-        for (let i = 0; i < this.height; i++) {
-            board[i] = [];
-            for (let j = 0; j < this.width; j++) {
-                board[i][j] = 0;
-            }
-        }
-        return board;
-    }
-    getBoard() {
-        return this.board;
     }
     set setBoard(testboard) {
         this.board = testboard;
@@ -258,103 +260,95 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__EventEmiter__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__EventEmiter__ = __webpack_require__(0);
 
 
 /* harmony default export */ __webpack_exports__["a"] = (class {
     constructor() {
+        this.changeSize = (width, height) => {
+            const canvas = this.$field.get(0);
+            canvas.width = width;
+            canvas.height = height;
+        };
+        this.drawCanvas = (board) => {
+            const canvas = this.$field.get(0);
+            const ctx = canvas.getContext("2d");
+            const height = board.length;
+            const width = board[0].length;
+            const cellsquare = 20;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < height; i++) {
+                for (let j = 0; j < width; j++) {
+                    if (board[i][j] === 1) {
+                        ctx.fillRect(j * cellsquare, i * cellsquare, cellsquare, cellsquare);
+                    }
+                    if (board[i][j] === 0) {
+                        ctx.strokeRect(j * cellsquare, i * cellsquare, cellsquare, cellsquare);
+                    }
+                }
+            }
+        };
+        this.addItems = () => {
+            this.$start = __WEBPACK_IMPORTED_MODULE_0_jquery__("#start");
+            this.$stop = __WEBPACK_IMPORTED_MODULE_0_jquery__("#stop");
+            this.$clear = __WEBPACK_IMPORTED_MODULE_0_jquery__("#clear");
+            this.$changeWidth = __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_width");
+            this.$changeHeight = __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_height");
+            this.$changeSpeed = __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_speed");
+            this.$field = __WEBPACK_IMPORTED_MODULE_0_jquery__("#field");
+        };
+        this.addEvents = () => {
+            this.$start.click({ view: this }, this.startLife);
+            this.$stop.click({ view: this }, this.stopLife);
+            this.$clear.click({ view: this }, this.clearBord);
+            this.$changeWidth.blur({ view: this }, this.changeWidth);
+            this.$changeHeight.blur({ view: this }, this.changeHeight);
+            this.$changeSpeed.click({ view: this }, this.changeSpeed);
+            this.$field.off("click").on("click", { view: this }, this.clickCell);
+        };
+        this.startLife = (e) => {
+            e.data.view.eventEmiter.emit("startLife");
+        };
+        this.stopLife = (e) => {
+            e.data.view.eventEmiter.emit("stopLife");
+        };
+        this.clearBord = (e) => {
+            e.data.view.eventEmiter.emit("clearBoard");
+        };
+        this.changeWidth = (e) => {
+            const width = parseInt(e.data.view.$changeWidth.val().toString(), 10);
+            const height = e.data.view.$field.height();
+            e.data.view.eventEmiter.emit("changeWidth", { width, height });
+        };
+        this.changeHeight = (e) => {
+            const height = parseInt(e.data.view.$changeHeight.val().toString(), 10);
+            const width = e.data.view.$field.width();
+            e.data.view.eventEmiter.emit("changeHeight", { width, height });
+        };
+        this.changeSpeed = (e) => {
+            const speed = parseInt(prompt("speed in mlsec?", "500"), 10);
+            e.data.view.eventEmiter.emit("changeSpeed", { speed });
+        };
+        this.clickCell = (e) => {
+            const xo = e.offsetX;
+            const yo = e.offsetY;
+            e.data.view.eventEmiter.emit("clickCell", { x: xo, y: yo });
+        };
         this.eventEmiter = new __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */]();
         this.addItems();
         this.addEvents();
-        this._changeHeight = this._changeHeight.bind(this);
-        this._changeWidth = this._changeWidth.bind(this);
-        this._changeSpeed = this._changeSpeed.bind(this);
-        this._clearBord = this._clearBord.bind(this);
-        this._clickCell = this._clickCell.bind(this);
-        this._startLife = this._startLife.bind(this);
-        this._stopLife = this._stopLife.bind(this);
-    }
-    changeSize(width, height) {
-        const canvas = this.$field.get(0);
-        canvas.width = width;
-        canvas.height = height;
-    }
-    drawCanvas(board) {
-        console.log("draw");
-        const canvas = this.$field.get(0);
-        const ctx = canvas.getContext("2d");
-        const height = board.length;
-        const width = board[0].length;
-        const cellsquare = 20;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < height; i++) {
-            for (let j = 0; j < width; j++) {
-                if (board[i][j] === 1) {
-                    ctx.fillRect(j * cellsquare, i * cellsquare, cellsquare, cellsquare);
-                }
-                if (board[i][j] === 0) {
-                    ctx.strokeRect(j * cellsquare, i * cellsquare, cellsquare, cellsquare);
-                }
-            }
-        }
-    }
-    addItems() {
-        this.$start = __WEBPACK_IMPORTED_MODULE_0_jquery__("#start");
-        this.$stop = __WEBPACK_IMPORTED_MODULE_0_jquery__("#stop");
-        this.$clear = __WEBPACK_IMPORTED_MODULE_0_jquery__("#clear");
-        this.$changeWidth = __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_width");
-        this.$changeHeight = __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_height");
-        this.$changeSpeed = __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_speed");
-        this.$field = __WEBPACK_IMPORTED_MODULE_0_jquery__("#field");
-    }
-    addEvents() {
-        this.$start.click({ view: this }, this._startLife);
-        this.$stop.click({ view: this }, this._stopLife);
-        this.$clear.click({ view: this }, this._clearBord);
-        this.$changeWidth.blur({ view: this }, this._changeWidth);
-        this.$changeHeight.blur({ view: this }, this._changeHeight);
-        this.$changeSpeed.click({ view: this }, this._changeSpeed);
-        this.$field.off("click").on("click", { view: this }, this._clickCell);
-    }
-    _startLife(e) {
-        e.data.view.eventEmiter.emit("startLife");
-    }
-    _stopLife(e) {
-        e.data.view.eventEmiter.emit("stopLife");
-    }
-    _clearBord(e) {
-        e.data.view.eventEmiter.emit("clearBord");
-    }
-    _changeWidth(e) {
-        const width = parseInt(e.data.view.$changeWidth.val().toString(), 10);
-        const height = e.data.view.$field.height();
-        e.data.view.eventEmiter.emit("changeWidth", { width, height });
-    }
-    _changeHeight(e) {
-        const height = parseInt(e.data.view.$changeHeight.val().toString(), 10);
-        const width = e.data.view.$field.width();
-        e.data.view.eventEmiter.emit("changeHeight", { width, height });
-    }
-    _changeSpeed(e) {
-        const speed = parseInt(prompt("speed in mlsec?", "500"), 10);
-        e.data.view.eventEmiter.emit("changeSpeed", { speed });
-    }
-    _clickCell(e) {
-        const xo = e.offsetX;
-        const yo = e.offsetY;
-        e.data.view.eventEmiter.emit("clickCell", { x: xo, y: yo });
     }
 });
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -10611,37 +10605,6 @@ if ( !noGlobal ) {
 
 return jQuery;
 } );
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony default export */ __webpack_exports__["a"] = (class {
-    constructor() {
-        this.events = {};
-    }
-    emit(eventName, data) {
-        const event = this.events[eventName];
-        if (event) {
-            event.forEach((fn) => {
-                console.log(data);
-                fn.call(null, data);
-            });
-        }
-    }
-    subscribe(eventName, fn) {
-        console.log(fn);
-        if (!this.events[eventName]) {
-            this.events[eventName] = [];
-        }
-        this.events[eventName].push(fn);
-        return () => {
-            this.events[eventName] = this.events[eventName].filter((eventFn) => fn !== eventFn);
-        };
-    }
-});
 
 
 /***/ })
