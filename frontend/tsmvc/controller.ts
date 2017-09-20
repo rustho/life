@@ -20,6 +20,7 @@ export default class {
         this.clearBoard = this.clearBoard.bind(this);
         this.clickOnCell = this.clickOnCell.bind(this);
         this.changeSpeed = this.changeSpeed.bind(this);
+        this.updateCanvas = this.updateCanvas.bind(this);
 
         this.view.eventEmiter.subscribe("startLife", this.startLife);
         this.view.eventEmiter.subscribe("stopLife", this.stopLife);
@@ -29,7 +30,8 @@ export default class {
         this.view.eventEmiter.subscribe("changeHeight", this.changeSize);
         this.view.eventEmiter.subscribe("changeSpeed", this.changeSpeed);
 
-        this.model.changeStateBoard.addSubscriber(this.modelObserver);
+        this.model.eventEmiter.subscribe("changeStateBoard", this.updateCanvas);
+
         this.startLife();
         this.stopLife();
 
@@ -74,5 +76,7 @@ export default class {
     }
 
 
-    public modelObserver = (event) => this.view.drawCanvas(event.detail.board);
+    public updateCanvas(options: any) {
+        this.view.drawCanvas(options.board);
+    }
 }

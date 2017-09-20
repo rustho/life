@@ -1,5 +1,6 @@
+import EventEmiter from "./EventEmiter";
 export default class {
-    public changeStateBoard: any;
+    public eventEmiter: EventEmiter;
     private width: number;
     private height: number;
     private board: number[][];
@@ -7,17 +8,7 @@ export default class {
 
     constructor() {
         this.CELL_SQUARE = 20;
-        this.changeStateBoard = {
-            _subscribers: [],
-            addSubscriber(object) {
-                this._subscribers.push(object);
-            },
-            notifySubscribers(event) {
-                for (const item of this._subscribers) {
-                    item(event);
-                }
-            },
-        };
+        this.eventEmiter = new EventEmiter();
         this.width = 20;
         this.height = 20;
         this.board = this.newBoard();
@@ -27,24 +18,15 @@ export default class {
         this.findCellAndChange = this.findCellAndChange.bind(this);
         this.nextState = this.nextState.bind(this);
     }
-    public _event(): CustomEvent {
-        const event = new CustomEvent("changeStateBoard", {
-            bubbles: true,
-            detail: { board: this.board },
-        });
-        return event;
-    }
     public findCellAndChange(x: number, y: number): void {
         const xCell = Math.floor(x / this.CELL_SQUARE);
         const yCell = Math.floor(y / this.CELL_SQUARE);
-        console.log(xCell);
-        console.log(yCell);
         if (this.board[yCell][xCell] === 0) {
             this.board[yCell][xCell] = 1;
         } else {
             this.board[yCell][xCell] = 0;
         }
-        this.changeStateBoard.notifySubscribers(this._event());
+        this.eventEmiter.emit("changeStateBoard", {board: this.board});
     }
     public changeStateOfCell(i: number, j: number): number {
         let livingcell = 0;
@@ -75,17 +57,17 @@ export default class {
             }
         }
         this.board = newboard;
-        this.changeStateBoard.notifySubscribers(this._event());
+        this.eventEmiter.emit("changeStateBoard", {board: this.board});
     }
     public clearBoard(): void {
         this.board = this.newBoard();
-        this.changeStateBoard.notifySubscribers(this._event());
+        this.eventEmiter.emit("changeStateBoard", {board: this.board});
     }
     public changeQuantityCell(width: number, height: number): void {
         this.width = Math.floor(width / this.CELL_SQUARE);
         this.height = Math.floor(height / this.CELL_SQUARE);
         this.board = this.newBoard();
-        this.changeStateBoard.notifySubscribers(this._event());
+        this.eventEmiter.emit("changeStateBoard", {board: this.board});
     }
     public newBoard(): number[][] {
         const board = [];

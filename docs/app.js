@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -68,10 +68,40 @@
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony default export */ __webpack_exports__["a"] = (class {
+    constructor() {
+        this.events = {};
+    }
+    emit(eventName, data) {
+        const event = this.events[eventName];
+        if (event) {
+            event.forEach((fn) => {
+                console.log(data);
+                fn.call(null, data);
+            });
+        }
+    }
+    subscribe(eventName, fn) {
+        if (!this.events[eventName]) {
+            this.events[eventName] = [];
+        }
+        this.events[eventName].push(fn);
+        return () => {
+            this.events[eventName] = this.events[eventName].filter((eventFn) => fn !== eventFn);
+        };
+    }
+});
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tsmvc_controller__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tsmvc_model__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tsmvc_view__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tsmvc_controller__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tsmvc_model__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tsmvc_view__ = __webpack_require__(4);
 
 
 
@@ -83,13 +113,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony default export */ __webpack_exports__["a"] = (class {
     constructor(model, view) {
-        this.modelObserver = (event) => this.view.drawCanvas(event.detail.board);
         this.timer = false;
         this.speed = 1000;
         this.model = model;
@@ -100,6 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
         this.clearBoard = this.clearBoard.bind(this);
         this.clickOnCell = this.clickOnCell.bind(this);
         this.changeSpeed = this.changeSpeed.bind(this);
+        this.updateCanvas = this.updateCanvas.bind(this);
         this.view.eventEmiter.subscribe("startLife", this.startLife);
         this.view.eventEmiter.subscribe("stopLife", this.stopLife);
         this.view.eventEmiter.subscribe("clearBoard", this.clearBoard);
@@ -107,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
         this.view.eventEmiter.subscribe("changeWidth", this.changeSize);
         this.view.eventEmiter.subscribe("changeHeight", this.changeSize);
         this.view.eventEmiter.subscribe("changeSpeed", this.changeSpeed);
-        this.model.changeStateBoard.addSubscriber(this.modelObserver);
+        this.model.eventEmiter.subscribe("changeStateBoard", this.updateCanvas);
         this.startLife();
         this.stopLife();
     }
@@ -144,28 +174,23 @@ document.addEventListener("DOMContentLoaded", () => {
         this.stopLife();
         this.startLife();
     }
+    updateCanvas(options) {
+        this.view.drawCanvas(options.board);
+    }
 });
 
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__EventEmiter__ = __webpack_require__(0);
+
 /* harmony default export */ __webpack_exports__["a"] = (class {
     constructor() {
         this.CELL_SQUARE = 20;
-        this.changeStateBoard = {
-            _subscribers: [],
-            addSubscriber(object) {
-                this._subscribers.push(object);
-            },
-            notifySubscribers(event) {
-                for (const item of this._subscribers) {
-                    item(event);
-                }
-            },
-        };
+        this.eventEmiter = new __WEBPACK_IMPORTED_MODULE_0__EventEmiter__["a" /* default */]();
         this.width = 20;
         this.height = 20;
         this.board = this.newBoard();
@@ -175,25 +200,16 @@ document.addEventListener("DOMContentLoaded", () => {
         this.findCellAndChange = this.findCellAndChange.bind(this);
         this.nextState = this.nextState.bind(this);
     }
-    _event() {
-        const event = new CustomEvent("changeStateBoard", {
-            bubbles: true,
-            detail: { board: this.board },
-        });
-        return event;
-    }
     findCellAndChange(x, y) {
         const xCell = Math.floor(x / this.CELL_SQUARE);
         const yCell = Math.floor(y / this.CELL_SQUARE);
-        console.log(xCell);
-        console.log(yCell);
         if (this.board[yCell][xCell] === 0) {
             this.board[yCell][xCell] = 1;
         }
         else {
             this.board[yCell][xCell] = 0;
         }
-        this.changeStateBoard.notifySubscribers(this._event());
+        this.eventEmiter.emit("changeStateBoard", { board: this.board });
     }
     changeStateOfCell(i, j) {
         let livingcell = 0;
@@ -224,17 +240,17 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
         this.board = newboard;
-        this.changeStateBoard.notifySubscribers(this._event());
+        this.eventEmiter.emit("changeStateBoard", { board: this.board });
     }
     clearBoard() {
         this.board = this.newBoard();
-        this.changeStateBoard.notifySubscribers(this._event());
+        this.eventEmiter.emit("changeStateBoard", { board: this.board });
     }
     changeQuantityCell(width, height) {
         this.width = Math.floor(width / this.CELL_SQUARE);
         this.height = Math.floor(height / this.CELL_SQUARE);
         this.board = this.newBoard();
-        this.changeStateBoard.notifySubscribers(this._event());
+        this.eventEmiter.emit("changeStateBoard", { board: this.board });
     }
     newBoard() {
         const board = [];
@@ -258,13 +274,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__EventEmiter__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__EventEmiter__ = __webpack_require__(0);
 
 
 /* harmony default export */ __webpack_exports__["a"] = (class {
@@ -286,7 +302,6 @@ document.addEventListener("DOMContentLoaded", () => {
         canvas.height = height;
     }
     drawCanvas(board) {
-        console.log("draw");
         const canvas = this.$field.get(0);
         const ctx = canvas.getContext("2d");
         const height = board.length;
@@ -329,7 +344,7 @@ document.addEventListener("DOMContentLoaded", () => {
         e.data.view.eventEmiter.emit("stopLife");
     }
     _clearBord(e) {
-        e.data.view.eventEmiter.emit("clearBord");
+        e.data.view.eventEmiter.emit("clearBoard");
     }
     _changeWidth(e) {
         const width = parseInt(e.data.view.$changeWidth.val().toString(), 10);
@@ -354,7 +369,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -10611,37 +10626,6 @@ if ( !noGlobal ) {
 
 return jQuery;
 } );
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony default export */ __webpack_exports__["a"] = (class {
-    constructor() {
-        this.events = {};
-    }
-    emit(eventName, data) {
-        const event = this.events[eventName];
-        if (event) {
-            event.forEach((fn) => {
-                console.log(data);
-                fn.call(null, data);
-            });
-        }
-    }
-    subscribe(eventName, fn) {
-        console.log(fn);
-        if (!this.events[eventName]) {
-            this.events[eventName] = [];
-        }
-        this.events[eventName].push(fn);
-        return () => {
-            this.events[eventName] = this.events[eventName].filter((eventFn) => fn !== eventFn);
-        };
-    }
-});
 
 
 /***/ })
