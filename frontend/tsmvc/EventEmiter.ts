@@ -8,6 +8,7 @@ export default class {
         const event = this.events[eventName];
         if ( event ) {
             event.forEach( (fn) => {
+                console.log(data);
                 fn.call(null, data);
             });
         }
