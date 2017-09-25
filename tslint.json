@@ -9,6 +9,7 @@
         "no-bitwise": true,
         "no-conditional-assignment": true,
         "no-consecutive-blank-lines": false,
+        "no-any":true,
         "no-console": {
             "options": [
                 "debug",

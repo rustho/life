@@ -88,11 +88,11 @@
     constructor() {
         this.events = {};
     }
-    emit(eventName, data) {
+    emit(eventName, ...data) {
         const event = this.events[eventName];
         if (event) {
             event.forEach((fn) => {
-                fn.call(null, data);
+                fn.call(null, ...data);
             });
         }
     }
@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /* harmony default export */ __webpack_exports__["a"] = (class {
     constructor(model, view) {
-        this.timer = false;
+        this.timer = undefined;
         this.speed = 1000;
         this.model = model;
         this.view = view;
@@ -149,44 +149,37 @@ document.addEventListener("DOMContentLoaded", () => {
         this.view.eventEmiter.subscribe("changeHeight", this.changeSize);
         this.view.eventEmiter.subscribe("changeSpeed", this.changeSpeed);
         this.model.eventEmiter.subscribe("changeStateBoard", this.updateCanvas);
-        this.startLife();
-        this.stopLife();
+        this.model.nextState();
     }
     startLife() {
-        if (!this.timer) {
+        if (typeof this.timer === "undefined") {
             this.timer = setInterval(this.model.nextState, this.speed);
         }
     }
     stopLife() {
-        if (this.timer !== false) {
+        if (!(typeof this.timer === "undefined")) {
             clearInterval(this.timer);
-            this.timer = false;
         }
     }
     clearBoard() {
         this.model.clearBoard();
     }
-    changeSize(options) {
-        const width = options.width;
-        const height = options.height;
+    changeSize(width, height) {
         this.view.changeSize(width, height);
         this.model.changeQuantityCell(width, height);
     }
-    clickOnCell(options) {
-        const x = options.x;
-        const y = options.y;
+    clickOnCell(x, y) {
         this.model.findCellAndChange(x, y);
     }
-    changeSpeed(options) {
-        const speed = options.speed;
+    changeSpeed(speed) {
         if (speed > 0) {
             this.speed = speed;
         }
         this.stopLife();
         this.startLife();
     }
-    updateCanvas(options) {
-        this.view.drawCanvas(options.board);
+    updateCanvas(board) {
+        this.view.drawCanvas(board);
     }
 });
 
@@ -218,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
         else {
             this.board[yCell][xCell] = 0;
         }
-        this.eventEmiter.emit("changeStateBoard", { board: this.board });
+        this.eventEmiter.emit("changeStateBoard", this.board);
     }
     changeStateOfCell(i, j) {
         let livingcell = 0;
@@ -249,17 +242,17 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
         this.board = newboard;
-        this.eventEmiter.emit("changeStateBoard", { board: this.board });
+        this.eventEmiter.emit("changeStateBoard", this.board);
     }
     clearBoard() {
         this.board = this.newBoard();
-        this.eventEmiter.emit("changeStateBoard", { board: this.board });
+        this.eventEmiter.emit("changeStateBoard", this.board);
     }
     changeQuantityCell(width, height) {
         this.width = Math.floor(width / this.CELL_SQUARE);
         this.height = Math.floor(height / this.CELL_SQUARE);
         this.board = this.newBoard();
-        this.eventEmiter.emit("changeStateBoard", { board: this.board });
+        this.eventEmiter.emit("changeStateBoard", this.board);
     }
     newBoard() {
         const board = [];
@@ -354,21 +347,21 @@ document.addEventListener("DOMContentLoaded", () => {
     _changeWidth(e) {
         const width = parseInt(e.data.view.$changeWidth.val().toString(), 10);
         const height = e.data.view.$field.height();
-        e.data.view.eventEmiter.emit("changeWidth", { width, height });
+        e.data.view.eventEmiter.emit("changeWidth", width, height);
     }
     _changeHeight(e) {
         const height = parseInt(e.data.view.$changeHeight.val().toString(), 10);
         const width = e.data.view.$field.width();
-        e.data.view.eventEmiter.emit("changeHeight", { width, height });
+        e.data.view.eventEmiter.emit("changeHeight", width, height);
     }
     _changeSpeed(e) {
         const speed = parseInt(prompt("speed in mlsec?", "500"), 10);
-        e.data.view.eventEmiter.emit("changeSpeed", { speed });
+        e.data.view.eventEmiter.emit("changeSpeed", speed);
     }
     _clickCell(e) {
         const xo = e.offsetX;
         const yo = e.offsetY;
-        e.data.view.eventEmiter.emit("clickCell", { x: xo, y: yo });
+        e.data.view.eventEmiter.emit("clickCell", xo, yo);
     }
 });
 

@@ -23,7 +23,7 @@ export default class {
         } else {
             this.board[yCell][xCell] = 0;
         }
-        this.eventEmiter.emit("changeStateBoard", {board: this.board});
+        this.eventEmiter.emit("changeStateBoard", this.board);
     }
     public changeStateOfCell(i: number, j: number): number {
         let livingcell = 0;
@@ -54,17 +54,17 @@ export default class {
             }
         }
         this.board = newboard;
-        this.eventEmiter.emit("changeStateBoard", {board: this.board});
+        this.eventEmiter.emit("changeStateBoard", this.board);
     }
     public clearBoard(): void {
         this.board = this.newBoard();
-        this.eventEmiter.emit("changeStateBoard", {board: this.board});
+        this.eventEmiter.emit("changeStateBoard", this.board);
     }
     public changeQuantityCell(width: number, height: number): void {
         this.width = Math.floor(width / this.CELL_SQUARE);
         this.height = Math.floor(height / this.CELL_SQUARE);
         this.board = this.newBoard();
-        this.eventEmiter.emit("changeStateBoard", {board: this.board});
+        this.eventEmiter.emit("changeStateBoard", this.board);
     }
     public newBoard(): number[][] {
         const board = [];

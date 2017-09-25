@@ -6,10 +6,10 @@ import View from "./view";
 export default class {
     private model: Model;
     private view: View;
-    private timer: any;
+    private timer: number;
     private speed: number;
     constructor(model: Model, view: View) {
-        this.timer = false;
+        this.timer = undefined;
         this.speed = 1000;
         this.model = model;
         this.view = view;
@@ -26,21 +26,19 @@ export default class {
 
         this.model.eventEmiter.subscribe("changeStateBoard", this.updateCanvas);
 
-        this.startLife();
-        this.stopLife();
+        this.model.nextState();
 
     }
 
     public startLife(): void {
-        if (!this.timer) {
+        if (typeof this.timer === "undefined") {
             this.timer = setInterval(this.model.nextState, this.speed);
         }
     }
 
     public stopLife() {
-        if (this.timer !== false) {
+        if (!(typeof this.timer === "undefined")) {
             clearInterval(this.timer);
-            this.timer = false;
         }
     }
 
@@ -48,20 +46,15 @@ export default class {
         this.model.clearBoard();
     }
 
-    public changeSize(options: any) {
-        const width: number = options.width;
-        const height: number = options.height;
+    public changeSize(width, height) {
         this.view.changeSize(width, height);
         this.model.changeQuantityCell(width, height);
     }
 
-    public clickOnCell(options: any) {
-        const x: number = options.x;
-        const y: number = options.y;
+    public clickOnCell(x, y) {
         this.model.findCellAndChange(x, y);
     }
-    public changeSpeed(options: any) {
-        const speed: number = options.speed;
+    public changeSpeed(speed) {
         if (speed > 0) {
             this.speed = speed;
         }
@@ -70,7 +63,7 @@ export default class {
     }
 
 
-    public updateCanvas(options: any) {
-        this.view.drawCanvas(options.board);
+    public updateCanvas(board) {
+        this.view.drawCanvas(board);
     }
 }

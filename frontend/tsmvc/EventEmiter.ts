@@ -4,11 +4,11 @@ export default class {
         this.events = {};
     }
 
-    public emit(eventName: string, data: any) {
+    public emit(eventName: string, ...data) {
         const event = this.events[eventName];
         if ( event ) {
             event.forEach( (fn) => {
-                fn.call(null, data);
+                fn.call(null, ...data);
             });
         }
     }
