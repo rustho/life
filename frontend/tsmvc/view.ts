@@ -1,4 +1,5 @@
 import * as $ from "jquery";
+import binding from "./binding";
 import EventEmiter from "./EventEmiter";
 export default class {
     public eventEmiter: any;
@@ -14,13 +15,7 @@ export default class {
         this.eventEmiter = new EventEmiter();
         this.addItems();
         this.addEvents();
-        this._changeHeight = this._changeHeight.bind(this);
-        this._changeWidth = this._changeWidth.bind (this);
-        this._changeSpeed = this._changeSpeed.bind(this);
-        this._clearBord = this._clearBord.bind(this);
-        this._clickCell = this._clickCell.bind(this);
-        this._startLife = this._startLife.bind(this);
-        this._stopLife = this._stopLife.bind(this);
+        binding(this);
     }
 
     public changeSize(width: number, height: number): void {

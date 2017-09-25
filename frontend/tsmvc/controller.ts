@@ -1,4 +1,4 @@
-
+import binding from "./binding";
 import EventEmiter from "./EventEmiter";
 import Model from "./model";
 import View from "./view";
@@ -14,13 +14,7 @@ export default class {
         this.model = model;
         this.view = view;
 
-        this.startLife = this.startLife.bind(this);
-        this.stopLife = this.stopLife.bind(this);
-        this.changeSize = this.changeSize.bind(this);
-        this.clearBoard = this.clearBoard.bind(this);
-        this.clickOnCell = this.clickOnCell.bind(this);
-        this.changeSpeed = this.changeSpeed.bind(this);
-        this.updateCanvas = this.updateCanvas.bind(this);
+        binding(this);
 
         this.view.eventEmiter.subscribe("startLife", this.startLife);
         this.view.eventEmiter.subscribe("stopLife", this.stopLife);

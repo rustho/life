@@ -1,3 +1,4 @@
+import binding from "./binding";
 import EventEmiter from "./EventEmiter";
 export default class {
     public eventEmiter: EventEmiter;
@@ -12,11 +13,7 @@ export default class {
         this.width = 20;
         this.height = 20;
         this.board = this.newBoard();
-        this.changeQuantityCell = this.changeQuantityCell.bind(this);
-        this.changeStateOfCell = this.changeStateOfCell.bind(this);
-        this.clearBoard = this.clearBoard.bind(this);
-        this.findCellAndChange = this.findCellAndChange.bind(this);
-        this.nextState = this.nextState.bind(this);
+        binding(this);
     }
     public findCellAndChange(x: number, y: number): void {
         const xCell = Math.floor(x / this.CELL_SQUARE);

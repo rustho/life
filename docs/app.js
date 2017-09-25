@@ -60,11 +60,27 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+
+/* harmony default export */ __webpack_exports__["a"] = (function (someClass) {
+    for (const key of Object.getOwnPropertyNames(someClass.constructor.prototype)) {
+        if (typeof someClass[key] === "function") {
+            someClass[key] = someClass[key].bind(someClass);
+        }
+    }
+    return someClass;
+});
+
+
+/***/ }),
+/* 1 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -76,7 +92,6 @@
         const event = this.events[eventName];
         if (event) {
             event.forEach((fn) => {
-                console.log(data);
                 fn.call(null, data);
             });
         }
@@ -94,14 +109,14 @@
 
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tsmvc_controller__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tsmvc_model__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tsmvc_view__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tsmvc_controller__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tsmvc_model__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tsmvc_view__ = __webpack_require__(5);
 
 
 
@@ -113,23 +128,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__binding__ = __webpack_require__(0);
+
 /* harmony default export */ __webpack_exports__["a"] = (class {
     constructor(model, view) {
         this.timer = false;
         this.speed = 1000;
         this.model = model;
         this.view = view;
-        this.startLife = this.startLife.bind(this);
-        this.stopLife = this.stopLife.bind(this);
-        this.changeSize = this.changeSize.bind(this);
-        this.clearBoard = this.clearBoard.bind(this);
-        this.clickOnCell = this.clickOnCell.bind(this);
-        this.changeSpeed = this.changeSpeed.bind(this);
-        this.updateCanvas = this.updateCanvas.bind(this);
+        Object(__WEBPACK_IMPORTED_MODULE_0__binding__["a" /* default */])(this);
         this.view.eventEmiter.subscribe("startLife", this.startLife);
         this.view.eventEmiter.subscribe("stopLife", this.stopLife);
         this.view.eventEmiter.subscribe("clearBoard", this.clearBoard);
@@ -181,24 +192,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__EventEmiter__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__binding__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__EventEmiter__ = __webpack_require__(1);
+
 
 /* harmony default export */ __webpack_exports__["a"] = (class {
     constructor() {
         this.CELL_SQUARE = 20;
-        this.eventEmiter = new __WEBPACK_IMPORTED_MODULE_0__EventEmiter__["a" /* default */]();
+        this.eventEmiter = new __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */]();
         this.width = 20;
         this.height = 20;
         this.board = this.newBoard();
-        this.changeQuantityCell = this.changeQuantityCell.bind(this);
-        this.changeStateOfCell = this.changeStateOfCell.bind(this);
-        this.clearBoard = this.clearBoard.bind(this);
-        this.findCellAndChange = this.findCellAndChange.bind(this);
-        this.nextState = this.nextState.bind(this);
+        Object(__WEBPACK_IMPORTED_MODULE_0__binding__["a" /* default */])(this);
     }
     findCellAndChange(x, y) {
         const xCell = Math.floor(x / this.CELL_SQUARE);
@@ -274,27 +283,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__EventEmiter__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__binding__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__EventEmiter__ = __webpack_require__(1);
+
 
 
 /* harmony default export */ __webpack_exports__["a"] = (class {
     constructor() {
-        this.eventEmiter = new __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */]();
+        this.eventEmiter = new __WEBPACK_IMPORTED_MODULE_2__EventEmiter__["a" /* default */]();
         this.addItems();
         this.addEvents();
-        this._changeHeight = this._changeHeight.bind(this);
-        this._changeWidth = this._changeWidth.bind(this);
-        this._changeSpeed = this._changeSpeed.bind(this);
-        this._clearBord = this._clearBord.bind(this);
-        this._clickCell = this._clickCell.bind(this);
-        this._startLife = this._startLife.bind(this);
-        this._stopLife = this._stopLife.bind(this);
+        Object(__WEBPACK_IMPORTED_MODULE_1__binding__["a" /* default */])(this);
     }
     changeSize(width, height) {
         const canvas = this.$field.get(0);
@@ -369,7 +374,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
