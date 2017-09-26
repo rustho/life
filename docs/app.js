@@ -152,13 +152,14 @@ document.addEventListener("DOMContentLoaded", () => {
         this.model.nextState();
     }
     startLife() {
-        if (typeof this.timer === "undefined") {
+        if (!this.timer) {
             this.timer = setInterval(this.model.nextState, this.speed);
         }
     }
     stopLife() {
-        if (!(typeof this.timer === "undefined")) {
+        if (this.timer) {
             clearInterval(this.timer);
+            this.timer = null;
         }
     }
     clearBoard() {
@@ -335,33 +336,33 @@ document.addEventListener("DOMContentLoaded", () => {
         this.$changeSpeed.click({ view: this }, this._changeSpeed);
         this.$field.off("click").on("click", { view: this }, this._clickCell);
     }
-    _startLife(e) {
-        e.data.view.eventEmiter.emit("startLife");
+    _startLife(event) {
+        event.data.view.eventEmiter.emit("startLife");
     }
-    _stopLife(e) {
-        e.data.view.eventEmiter.emit("stopLife");
+    _stopLife(event) {
+        event.data.view.eventEmiter.emit("stopLife");
     }
-    _clearBord(e) {
-        e.data.view.eventEmiter.emit("clearBoard");
+    _clearBord(event) {
+        event.data.view.eventEmiter.emit("clearBoard");
     }
-    _changeWidth(e) {
-        const width = parseInt(e.data.view.$changeWidth.val().toString(), 10);
-        const height = e.data.view.$field.height();
-        e.data.view.eventEmiter.emit("changeWidth", width, height);
+    _changeWidth(event) {
+        const width = parseInt(event.data.view.$changeWidth.val().toString(), 10);
+        const height = event.data.view.$field.height();
+        event.data.view.eventEmiter.emit("changeWidth", width, height);
     }
-    _changeHeight(e) {
-        const height = parseInt(e.data.view.$changeHeight.val().toString(), 10);
-        const width = e.data.view.$field.width();
-        e.data.view.eventEmiter.emit("changeHeight", width, height);
+    _changeHeight(event) {
+        const height = parseInt(event.data.view.$changeHeight.val().toString(), 10);
+        const width = event.data.view.$field.width();
+        event.data.view.eventEmiter.emit("changeHeight", width, height);
     }
-    _changeSpeed(e) {
+    _changeSpeed(event) {
         const speed = parseInt(prompt("speed in mlsec?", "500"), 10);
-        e.data.view.eventEmiter.emit("changeSpeed", speed);
+        event.data.view.eventEmiter.emit("changeSpeed", speed);
     }
-    _clickCell(e) {
-        const xo = e.offsetX;
-        const yo = e.offsetY;
-        e.data.view.eventEmiter.emit("clickCell", xo, yo);
+    _clickCell(event) {
+        const x = event.offsetX;
+        const y = event.offsetY;
+        event.data.view.eventEmiter.emit("clickCell", x, y);
     }
 });
 

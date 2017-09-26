@@ -6,7 +6,7 @@ import View from "./view";
 export default class {
     private model: Model;
     private view: View;
-    private timer: number;
+    private timer: number | null;
     private speed: number;
     constructor(model: Model, view: View) {
         this.timer = undefined;
@@ -31,14 +31,15 @@ export default class {
     }
 
     public startLife(): void {
-        if (typeof this.timer === "undefined") {
+        if (!this.timer) {
             this.timer = setInterval(this.model.nextState, this.speed);
         }
     }
 
     public stopLife() {
-        if (!(typeof this.timer === "undefined")) {
+        if (this.timer) {
             clearInterval(this.timer);
+            this.timer = null;
         }
     }
 
