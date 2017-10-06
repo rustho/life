@@ -114,16 +114,16 @@
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tsmvc_controller__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tsmvc_model__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tsmvc_view__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tsmvc_Controller__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tsmvc_Model__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tsmvc_View__ = __webpack_require__(5);
 
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    const model = new __WEBPACK_IMPORTED_MODULE_1__tsmvc_model__["a" /* default */]();
-    const view = new __WEBPACK_IMPORTED_MODULE_2__tsmvc_view__["a" /* default */]();
-    const controller = new __WEBPACK_IMPORTED_MODULE_0__tsmvc_controller__["a" /* default */](model, view);
+    const model = new __WEBPACK_IMPORTED_MODULE_1__tsmvc_Model__["a" /* default */]();
+    const view = new __WEBPACK_IMPORTED_MODULE_2__tsmvc_View__["a" /* default */]();
+    const controller = new __WEBPACK_IMPORTED_MODULE_0__tsmvc_Controller__["a" /* default */](model, view);
 });
 
 
@@ -141,14 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
         this.model = model;
         this.view = view;
         Object(__WEBPACK_IMPORTED_MODULE_0__binding__["a" /* default */])(this);
-        this.view.eventEmiter.subscribe("startLife", this.startLife);
-        this.view.eventEmiter.subscribe("stopLife", this.stopLife);
-        this.view.eventEmiter.subscribe("clearBoard", this.clearBoard);
-        this.view.eventEmiter.subscribe("clickCell", this.clickOnCell);
-        this.view.eventEmiter.subscribe("changeWidth", this.changeSize);
-        this.view.eventEmiter.subscribe("changeHeight", this.changeSize);
-        this.view.eventEmiter.subscribe("changeSpeed", this.changeSpeed);
-        this.model.eventEmiter.subscribe("changeStateBoard", this.updateCanvas);
+        this.subscribing();
         this.model.nextState();
     }
     startLife() {
@@ -164,6 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     clearBoard() {
         this.model.clearBoard();
+        this.stopLife();
     }
     changeSize(width, height) {
         this.view.changeSize(width, height);
@@ -181,6 +175,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     updateCanvas(board) {
         this.view.drawCanvas(board);
+    }
+    subscribing() {
+        this.view.eventEmiter.subscribe("startLife", this.startLife);
+        this.view.eventEmiter.subscribe("stopLife", this.stopLife);
+        this.view.eventEmiter.subscribe("clearBoard", this.clearBoard);
+        this.view.eventEmiter.subscribe("clickCell", this.clickOnCell);
+        this.view.eventEmiter.subscribe("changeWidth", this.changeSize);
+        this.view.eventEmiter.subscribe("changeHeight", this.changeSize);
+        this.view.eventEmiter.subscribe("changeSpeed", this.changeSpeed);
+        this.model.eventEmiter.subscribe("changeStateBoard", this.updateCanvas);
     }
 });
 
@@ -216,20 +220,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     changeStateOfCell(i, j) {
         let livingcell = 0;
-        for (let il = i - 1; il <= i + 1; il++) {
-            for (let jl = j - 1; jl <= j + 1; jl++) {
-                let ii = il;
-                let jj = jl; // проверка для моделирования поверхности тора
-                ii = (il === -1) ? this.height - 1 : ii;
-                jj = (jl === -1) ? this.width - 1 : jj;
-                ii = (il === this.height) ? 0 : ii;
-                jj = (jl === this.width) ? 0 : jj;
-                if (this.board[ii][jj] === 1) {
+        const arrayOfBorderY = [i - 1, i, i + 1];
+        const arrayOfBorderX = [j - 1, j, j + 1];
+        let res = 0;
+        arrayOfBorderY.forEach((indexOfRow, row) => {
+            arrayOfBorderX.forEach((indexOfColl, coll) => {
+                // проверка для моделирования поверхности тора
+                indexOfRow = (indexOfRow === -1) ? this.height - 1 : indexOfRow;
+                indexOfColl = (indexOfColl === -1) ? this.width - 1 : indexOfColl;
+                indexOfRow = (indexOfRow === this.height) ? 0 : indexOfRow;
+                indexOfColl = (indexOfColl === this.width) ? 0 : indexOfColl;
+                if (this.board[indexOfRow][indexOfColl] === 1) {
                     livingcell += 1;
                 }
-            }
-        }
-        let res = 0;
+            });
+        });
         if (livingcell === 3 || (this.board[i][j] === 1 && livingcell === 4)) {
             res = 1;
         }
@@ -237,11 +242,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     nextState() {
         const newboard = this.newBoard();
-        for (let i = 0; i < newboard.length; i++) {
-            for (let j = 0; j < newboard[0].length; j++) {
-                newboard[i][j] = this.changeStateOfCell(i, j);
-            }
-        }
+        newboard.forEach((row, indexOfRow) => {
+            newboard[indexOfRow].forEach((element, indexOfColl) => {
+                newboard[indexOfRow][indexOfColl] = this.changeStateOfCell(indexOfRow, indexOfColl);
+            });
+        });
         this.board = newboard;
         this.eventEmiter.emit("changeStateBoard", this.board);
     }
@@ -291,7 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
 /* harmony default export */ __webpack_exports__["a"] = (class {
     constructor() {
         this.eventEmiter = new __WEBPACK_IMPORTED_MODULE_2__EventEmiter__["a" /* default */]();
-        this.addItems();
+        this.findingElements();
         this.addEvents();
         Object(__WEBPACK_IMPORTED_MODULE_1__binding__["a" /* default */])(this);
     }
@@ -303,22 +308,20 @@ document.addEventListener("DOMContentLoaded", () => {
     drawCanvas(board) {
         const canvas = this.$field.get(0);
         const ctx = canvas.getContext("2d");
-        const height = board.length;
-        const width = board[0].length;
         const cellsquare = 20;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < height; i++) {
-            for (let j = 0; j < width; j++) {
-                if (board[i][j] === 1) {
-                    ctx.fillRect(j * cellsquare, i * cellsquare, cellsquare, cellsquare);
+        board.forEach((row, indexOfRow) => {
+            board.forEach((element, indexOfColl) => {
+                if (board[indexOfRow][indexOfColl] === 1) {
+                    ctx.fillRect(indexOfColl * cellsquare, indexOfRow * cellsquare, cellsquare, cellsquare);
                 }
-                if (board[i][j] === 0) {
-                    ctx.strokeRect(j * cellsquare, i * cellsquare, cellsquare, cellsquare);
+                if (board[indexOfRow][indexOfColl] === 0) {
+                    ctx.strokeRect(indexOfColl * cellsquare, indexOfRow * cellsquare, cellsquare, cellsquare);
                 }
-            }
-        }
+            });
+        });
     }
-    addItems() {
+    findingElements() {
         this.$start = __WEBPACK_IMPORTED_MODULE_0_jquery__("#start");
         this.$stop = __WEBPACK_IMPORTED_MODULE_0_jquery__("#stop");
         this.$clear = __WEBPACK_IMPORTED_MODULE_0_jquery__("#clear");
@@ -356,8 +359,9 @@ document.addEventListener("DOMContentLoaded", () => {
         event.data.view.eventEmiter.emit("changeHeight", width, height);
     }
     _changeSpeed(event) {
-        const speed = parseInt(prompt("speed in mlsec?", "500"), 10);
-        event.data.view.eventEmiter.emit("changeSpeed", speed);
+        const userText = (prompt("speed in mlsec?", "500"), 10);
+        /* const speed = parseInt
+        event.data.view.eventEmiter.emit("changeSpeed", speed); */
     }
     _clickCell(event) {
         const x = event.offsetX;

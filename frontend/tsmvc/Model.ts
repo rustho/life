@@ -27,20 +27,21 @@ export default class {
     }
     public changeStateOfCell(i: number, j: number): number {
         let livingcell = 0;
-        for (let il = i - 1; il <= i + 1; il++) {
-            for (let jl = j - 1; jl <= j + 1; jl++) {
-                let ii = il;
-                let jj = jl; // проверка для моделирования поверхности тора
-                ii = (il === -1) ? this.height - 1 : ii;
-                jj = (jl === -1) ? this.width - 1 : jj;
-                ii = (il === this.height) ?  0 : ii;
-                jj = (jl === this.width) ? 0 : jj;
-                if (this.board[ii][jj] === 1) {
+        const arrayOfBorderY: number[] = [ i - 1, i , i + 1 ];
+        const arrayOfBorderX: number[] = [ j - 1, j , j + 1 ];
+        let res = 0;
+        arrayOfBorderY.forEach((indexOfRow, row) => {
+            arrayOfBorderX.forEach((indexOfColl, coll) => {
+                // проверка для моделирования поверхности тора
+                indexOfRow = (indexOfRow === -1) ? this.height - 1 : indexOfRow;
+                indexOfColl = (indexOfColl === -1) ? this.width - 1 : indexOfColl;
+                indexOfRow = (indexOfRow === this.height) ?  0 : indexOfRow;
+                indexOfColl = (indexOfColl === this.width) ? 0 : indexOfColl;
+                if (this.board[indexOfRow][indexOfColl] === 1) {
                     livingcell += 1;
                 }
-            }
-        }
-        let res = 0;
+            });
+        });
         if (livingcell === 3 || (this.board[i][j] === 1 && livingcell === 4)) {
             res = 1;
         }
@@ -48,11 +49,11 @@ export default class {
     }
     public nextState(): void {
         const newboard = this.newBoard();
-        for (let i = 0; i < newboard.length; i++) {
-            for (let j = 0; j < newboard[0].length; j++) {
-                newboard[i][j] = this.changeStateOfCell(i, j);
-            }
-        }
+        newboard.forEach((row, indexOfRow) => {
+            newboard[indexOfRow].forEach((element, indexOfColl) => {
+                newboard[indexOfRow][indexOfColl] = this.changeStateOfCell(indexOfRow, indexOfColl);
+            });
+        });
         this.board = newboard;
         this.eventEmiter.emit("changeStateBoard", this.board);
     }

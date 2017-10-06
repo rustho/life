@@ -7,7 +7,7 @@ module.exports = {
     app: './tsmvc.ts',
   },
   output:  {
-    path:     __dirname + '/docs',
+    path:     __dirname + '/public',
     filename: '[name].js'
   },
   module:{
@@ -39,8 +39,4 @@ module.exports = {
   resolve: {
     extensions: [ ".tsx", ".ts", ".js" ]
   },
-  watch:true,
-  watchOptions:{
-    aggregateTimeout:300
-  }
 }

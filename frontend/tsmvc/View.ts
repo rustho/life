@@ -1,7 +1,7 @@
 import * as $ from "jquery";
 import binding from "./binding";
 import EventEmiter from "./EventEmiter";
-export default class {
+export default class  {
     public eventEmiter: EventEmiter;
     private $field: JQuery<HTMLElement>;
     private $start: JQuery<HTMLElement>;
@@ -13,7 +13,7 @@ export default class {
 
     constructor() {
         this.eventEmiter = new EventEmiter();
-        this.addItems();
+        this.findingElements();
         this.addEvents();
         binding(this);
     }
@@ -26,22 +26,20 @@ export default class {
     public drawCanvas(board: number[][]): void {
         const canvas = this.$field.get(0) as HTMLCanvasElement;
         const ctx = canvas.getContext("2d");
-        const height = board.length;
-        const width = board[0].length;
         const cellsquare = 20;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < height; i++) {
-            for (let j = 0; j < width; j++) {
-                if (board[i][j] === 1) {
-                    ctx.fillRect(j * cellsquare, i * cellsquare, cellsquare, cellsquare);
+        board.forEach((row, indexOfRow) => {
+            board.forEach((element, indexOfColl) => {
+                if (board[indexOfRow][indexOfColl] === 1) {
+                    ctx.fillRect(indexOfColl * cellsquare, indexOfRow * cellsquare, cellsquare, cellsquare);
                 }
-                if (board[i][j] === 0) {
-                    ctx.strokeRect(j * cellsquare, i * cellsquare, cellsquare, cellsquare);
+                if (board[indexOfRow][indexOfColl] === 0) {
+                    ctx.strokeRect(indexOfColl * cellsquare, indexOfRow * cellsquare, cellsquare, cellsquare);
                 }
-            }
-        }
+            });
+        });
     }
-    private addItems(): void {
+    private findingElements(): void {
         this.$start = $("#start");
         this.$stop = $("#stop");
         this.$clear = $("#clear");
@@ -59,13 +57,13 @@ export default class {
         this.$changeSpeed.click({view: this}, this._changeSpeed);
         this.$field.off("click").on("click", {view: this}, this._clickCell );
     }
-    private _startLife(event) {
+    private _startLife(event): void {
         event.data.view.eventEmiter.emit("startLife");
     }
-    private _stopLife(event) {
+    private _stopLife(event): void  {
         event.data.view.eventEmiter.emit("stopLife");
     }
-    private _clearBord(event) {
+    private _clearBord(event): void  {
         event.data.view.eventEmiter.emit("clearBoard");
     }
     private _changeWidth(event) {
@@ -73,17 +71,18 @@ export default class {
         const height = event.data.view.$field.height();
         event.data.view.eventEmiter.emit("changeWidth", width, height);
     }
-    private _changeHeight(event) {
+    private _changeHeight(event)  {
         const height = parseInt(event.data.view.$changeHeight.val().toString(), 10);
         const width = event.data.view.$field.width();
         event.data.view.eventEmiter.emit("changeHeight", width, height);
     }
-    private _changeSpeed(event) {
-        const speed = parseInt(prompt("speed in mlsec?", "500"), 10);
-        event.data.view.eventEmiter.emit("changeSpeed", speed);
+    private _changeSpeed(event)  {
+        const userText = (prompt("speed in mlsec?", "500"), 10);
+        /* const speed = parseInt
+        event.data.view.eventEmiter.emit("changeSpeed", speed); */
     }
 
-    private _clickCell(event) {
+    private _clickCell(event): void  {
         const x = event.offsetX;
         const y = event.offsetY;
         event.data.view.eventEmiter.emit("clickCell", x, y);

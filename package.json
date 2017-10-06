@@ -5,18 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "node_modules/.bin/karma start karma.conf.js",
-    "start": "node_modules/.bin/webpack-dev-server"
+    "start": "webpack && node_modules/.bin/webpack-dev-server"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/jquery": "^3.2.12",
-    "awesome-typescript-loader": "^3.2.3",
-    "bind-decorator": "^1.0.11",
     "chai": "^4.1.1",
-    "eslint-loader": "^1.9.0",
     "jasmine-core": "^2.7.0",
-    "jquery": "^3.2.1",
     "karma": "^1.7.0",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^2.2.0",
@@ -35,11 +30,13 @@
     "sinon": "^3.2.1",
     "tslint": "^5.7.0",
     "tslint-loader": "^3.5.3",
-    "typescript": "^2.5.2",
-    "webpack": "^3.5.5",
     "webpack-dev-server": "^2.7.1"
   },
   "dependencies": {
-    "bind-decorator": "^1.0.11"
+    "typescript": "^2.5.2",
+    "webpack": "^3.5.5",
+    "jquery": "^3.2.1",
+    "@types/jquery": "^3.2.12",
+    "awesome-typescript-loader": "^3.2.3"
   }
 }

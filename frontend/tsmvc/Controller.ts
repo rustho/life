@@ -1,7 +1,7 @@
 import binding from "./binding";
 import EventEmiter from "./EventEmiter";
-import Model from "./model";
-import View from "./view";
+import Model from "./Model";
+import View from "./View";
 
 export default class {
     private model: Model;
@@ -16,15 +16,7 @@ export default class {
 
         binding(this);
 
-        this.view.eventEmiter.subscribe("startLife", this.startLife);
-        this.view.eventEmiter.subscribe("stopLife", this.stopLife);
-        this.view.eventEmiter.subscribe("clearBoard", this.clearBoard);
-        this.view.eventEmiter.subscribe("clickCell", this.clickOnCell);
-        this.view.eventEmiter.subscribe("changeWidth", this.changeSize);
-        this.view.eventEmiter.subscribe("changeHeight", this.changeSize);
-        this.view.eventEmiter.subscribe("changeSpeed", this.changeSpeed);
-
-        this.model.eventEmiter.subscribe("changeStateBoard", this.updateCanvas);
+        this.subscribing();
 
         this.model.nextState();
 
@@ -45,6 +37,7 @@ export default class {
 
     public clearBoard() {
         this.model.clearBoard();
+        this.stopLife();
     }
 
     public changeSize(width, height) {
@@ -66,5 +59,17 @@ export default class {
 
     public updateCanvas(board) {
         this.view.drawCanvas(board);
+    }
+
+    private subscribing() {
+        this.view.eventEmiter.subscribe("startLife", this.startLife);
+        this.view.eventEmiter.subscribe("stopLife", this.stopLife);
+        this.view.eventEmiter.subscribe("clearBoard", this.clearBoard);
+        this.view.eventEmiter.subscribe("clickCell", this.clickOnCell);
+        this.view.eventEmiter.subscribe("changeWidth", this.changeSize);
+        this.view.eventEmiter.subscribe("changeHeight", this.changeSize);
+        this.view.eventEmiter.subscribe("changeSpeed", this.changeSpeed);
+
+        this.model.eventEmiter.subscribe("changeStateBoard", this.updateCanvas);
     }
 }
