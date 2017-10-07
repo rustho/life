@@ -1,9 +1,9 @@
 import binding from "./binding";
 import EventEmiter from "./EventEmiter";
-import Model from "./Model";
-import View from "./View";
+import {IAbstractModel} from "./types/IModel";
+import {IAbstractView} from "./types/IView";
 
-export default class {
+export default class<Model extends IAbstractModel, View extends IAbstractView> {
     private model: Model;
     private view: View;
     private timer: number | null;

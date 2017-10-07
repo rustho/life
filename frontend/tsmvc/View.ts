@@ -49,40 +49,40 @@ export default class  {
         this.$field = $("#field");
     }
     private addEvents(): void  {
-        this.$start.click({view: this}, this._startLife);
-        this.$stop.click({view: this}, this._stopLife);
-        this.$clear.click({view: this}, this._clearBord);
-        this.$changeWidth.blur({view: this}, this._changeWidth);
-        this.$changeHeight.blur({view: this}, this._changeHeight);
-        this.$changeSpeed.click({view: this}, this._changeSpeed);
-        this.$field.off("click").on("click", {view: this}, this._clickCell );
+        this.$start.click({view: this}, this.startLife);
+        this.$stop.click({view: this}, this.stopLife);
+        this.$clear.click({view: this}, this.clearBord);
+        this.$changeWidth.blur({view: this}, this.changeWidth);
+        this.$changeHeight.blur({view: this}, this.changeHeight);
+        this.$changeSpeed.click({view: this}, this.changeSpeed);
+        this.$field.off("click").on("click", {view: this}, this.clickCell );
     }
-    private _startLife(event): void {
+    private startLife(event) {
         event.data.view.eventEmiter.emit("startLife");
     }
-    private _stopLife(event): void  {
+    private stopLife(event): void  {
         event.data.view.eventEmiter.emit("stopLife");
     }
-    private _clearBord(event): void  {
+    private clearBord(event): void  {
         event.data.view.eventEmiter.emit("clearBoard");
     }
-    private _changeWidth(event) {
+    private changeWidth(event) {
         const width = parseInt(event.data.view.$changeWidth.val().toString(), 10);
         const height = event.data.view.$field.height();
         event.data.view.eventEmiter.emit("changeWidth", width, height);
     }
-    private _changeHeight(event)  {
+    private changeHeight(event)  {
         const height = parseInt(event.data.view.$changeHeight.val().toString(), 10);
         const width = event.data.view.$field.width();
         event.data.view.eventEmiter.emit("changeHeight", width, height);
     }
-    private _changeSpeed(event)  {
+    private changeSpeed(event)  {
         const userText = (prompt("speed in mlsec?", "500"), 10);
         /* const speed = parseInt
         event.data.view.eventEmiter.emit("changeSpeed", speed); */
     }
 
-    private _clickCell(event): void  {
+    private clickCell(event): void  {
         const x = event.offsetX;
         const y = event.offsetY;
         event.data.view.eventEmiter.emit("clickCell", x, y);

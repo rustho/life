@@ -198,7 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__EventEmiter__ = __webpack_require__(1);
 
 
-/* harmony default export */ __webpack_exports__["a"] = (class {
+class Model {
     constructor() {
         this.CELL_SQUARE = 20;
         this.eventEmiter = new __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */]();
@@ -273,12 +273,14 @@ document.addEventListener("DOMContentLoaded", () => {
     getBoard() {
         return this.board;
     }
-    set setBoard(testboard) {
-        this.board = testboard;
-        this.height = testboard.length;
-        this.width = testboard[0].length;
+    set setBoard(someBoard) {
+        this.board = someBoard;
+        this.height = someBoard.length;
+        this.width = someBoard[0].length;
     }
-});
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Model;
+
 
 
 /***/ }),
@@ -331,39 +333,39 @@ document.addEventListener("DOMContentLoaded", () => {
         this.$field = __WEBPACK_IMPORTED_MODULE_0_jquery__("#field");
     }
     addEvents() {
-        this.$start.click({ view: this }, this._startLife);
-        this.$stop.click({ view: this }, this._stopLife);
-        this.$clear.click({ view: this }, this._clearBord);
-        this.$changeWidth.blur({ view: this }, this._changeWidth);
-        this.$changeHeight.blur({ view: this }, this._changeHeight);
-        this.$changeSpeed.click({ view: this }, this._changeSpeed);
-        this.$field.off("click").on("click", { view: this }, this._clickCell);
+        this.$start.click({ view: this }, this.startLife);
+        this.$stop.click({ view: this }, this.stopLife);
+        this.$clear.click({ view: this }, this.clearBord);
+        this.$changeWidth.blur({ view: this }, this.changeWidth);
+        this.$changeHeight.blur({ view: this }, this.changeHeight);
+        this.$changeSpeed.click({ view: this }, this.changeSpeed);
+        this.$field.off("click").on("click", { view: this }, this.clickCell);
     }
-    _startLife(event) {
+    startLife(event) {
         event.data.view.eventEmiter.emit("startLife");
     }
-    _stopLife(event) {
+    stopLife(event) {
         event.data.view.eventEmiter.emit("stopLife");
     }
-    _clearBord(event) {
+    clearBord(event) {
         event.data.view.eventEmiter.emit("clearBoard");
     }
-    _changeWidth(event) {
+    changeWidth(event) {
         const width = parseInt(event.data.view.$changeWidth.val().toString(), 10);
         const height = event.data.view.$field.height();
         event.data.view.eventEmiter.emit("changeWidth", width, height);
     }
-    _changeHeight(event) {
+    changeHeight(event) {
         const height = parseInt(event.data.view.$changeHeight.val().toString(), 10);
         const width = event.data.view.$field.width();
         event.data.view.eventEmiter.emit("changeHeight", width, height);
     }
-    _changeSpeed(event) {
+    changeSpeed(event) {
         const userText = (prompt("speed in mlsec?", "500"), 10);
         /* const speed = parseInt
         event.data.view.eventEmiter.emit("changeSpeed", speed); */
     }
-    _clickCell(event) {
+    clickCell(event) {
         const x = event.offsetX;
         const y = event.offsetY;
         event.data.view.eventEmiter.emit("clickCell", x, y);

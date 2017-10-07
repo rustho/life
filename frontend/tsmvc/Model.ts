@@ -1,6 +1,7 @@
 import binding from "./binding";
 import EventEmiter from "./EventEmiter";
-export default class {
+import {IModel} from "./types/IModel";
+export default class Model implements IModel {
     public eventEmiter: EventEmiter;
     private width: number;
     private height: number;
@@ -80,9 +81,9 @@ export default class {
     public getBoard(): number[][] {
         return this.board;
     }
-    public set setBoard(testboard: number[][]) {
-        this.board = testboard;
-        this.height = testboard.length;
-        this.width = testboard[0].length;
+    public set setBoard(someBoard: number[][]) {
+        this.board = someBoard;
+        this.height = someBoard.length;
+        this.width = someBoard[0].length;
     }
 }
