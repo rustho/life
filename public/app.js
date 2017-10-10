@@ -92,6 +92,7 @@
         const event = this.events[eventName];
         if (event) {
             event.forEach((fn) => {
+                console.log(eventName);
                 fn.call(null, ...data);
             });
         }
@@ -330,7 +331,7 @@ class Model {
         this.$changeWidth = __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_width");
         this.$changeHeight = __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_height");
         this.$changeSpeed = __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_speed");
-        this.$field = __WEBPACK_IMPORTED_MODULE_0_jquery__("#field");
+        this.$field = __WEBPACK_IMPORTED_MODULE_0_jquery__("canvas");
     }
     addEvents() {
         this.$start.click({ view: this }, this.startLife);
