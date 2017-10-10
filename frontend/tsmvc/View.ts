@@ -3,8 +3,8 @@ import binding from "./binding";
 import EventEmiter from "./EventEmiter";
 export default class  {
     public eventEmiter: EventEmiter;
-    private $field: JQuery<HTMLElement>;
-    private $start: JQuery<HTMLElement>;
+    public $field: JQuery<HTMLElement>;
+    public $start: JQuery<HTMLElement>;
     private $stop: JQuery<HTMLElement>;
     private $clear: JQuery<HTMLElement>;
     private $changeHeight: JQuery<HTMLElement>;
@@ -46,7 +46,8 @@ export default class  {
         this.$changeWidth = $("#change_width");
         this.$changeHeight = $("#change_height");
         this.$changeSpeed = $("#change_speed");
-        this.$field = $("#field");
+        this.$field = $("canvas");
+
     }
     private addEvents(): void  {
         this.$start.click({view: this}, this.startLife);
