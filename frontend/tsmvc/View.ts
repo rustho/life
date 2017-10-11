@@ -9,7 +9,7 @@ export default class  {
     private $clear: JQuery<HTMLElement>;
     private $changeHeight: JQuery<HTMLElement>;
     private $changeWidth: JQuery<HTMLElement>;
-    private $changeSpeed: JQuery<HTMLElement>;
+    private $changePeriod: JQuery<HTMLElement>;
 
     constructor() {
         this.eventEmiter = new EventEmiter();
@@ -45,7 +45,7 @@ export default class  {
         this.$clear = $("#clear");
         this.$changeWidth = $("#change_width");
         this.$changeHeight = $("#change_height");
-        this.$changeSpeed = $("#change_speed");
+        this.$changePeriod = $("#change_speed");
         this.$field = $("canvas");
 
     }
@@ -55,7 +55,7 @@ export default class  {
         this.$clear.click({view: this}, this.clearBord);
         this.$changeWidth.blur({view: this}, this.changeWidth);
         this.$changeHeight.blur({view: this}, this.changeHeight);
-        this.$changeSpeed.click({view: this}, this.changeSpeed);
+        this.$changePeriod.click({view: this}, this.changePeriod);
         this.$field.off("click").on("click", {view: this}, this.clickCell );
     }
     private startLife(event) {
@@ -68,19 +68,22 @@ export default class  {
         event.data.view.eventEmiter.emit("clearBoard");
     }
     private changeWidth(event) {
-        const width = parseInt(event.data.view.$changeWidth.val().toString(), 10);
+        const width = parseInt(event.data.view.$changeWidth.val(), 10);
         const height = event.data.view.$field.height();
         event.data.view.eventEmiter.emit("changeWidth", width, height);
     }
     private changeHeight(event)  {
-        const height = parseInt(event.data.view.$changeHeight.val().toString(), 10);
+        const height = parseInt(event.data.view.$changeHeight.val(), 10);
         const width = event.data.view.$field.width();
         event.data.view.eventEmiter.emit("changeHeight", width, height);
     }
-    private changeSpeed(event)  {
-        const userText = (prompt("speed in mlsec?", "500"), 10);
-        /* const speed = parseInt
-        event.data.view.eventEmiter.emit("changeSpeed", speed); */
+    private changePeriod(event)  {
+        let userText = (prompt("period in mlsec?", "500"));
+        let period: number = 0;
+        userText = (userText === null) ? "100" : userText;
+        period = parseInt((userText), 10);
+
+        event.data.view.eventEmiter.emit("changePeriod", period);
     }
 
     private clickCell(event): void  {

@@ -7,11 +7,11 @@ import * as assert from "assert";
 describe("Controller.", function() {
     let view = new View();
     let model = new Model();
-    
+    let stubDrawCanvas = sinon.stub(view, "drawCanvas");
     describe("controller.subscribing", function() {
         let spySubscribingView;
         let spySubscribingModel;
-        let stub = sinon.stub(view, "drawCanvas");
+        
 
         before (() => {
             spySubscribingView = sinon.spy(view.eventEmiter, "subscribe");
@@ -22,7 +22,7 @@ describe("Controller.", function() {
             spySubscribingModel.restore();
         });
         
-        it("Выполнение подписки на наблюдателя", function() {
+        it("Выполнение подписки на наблюдателя, при создании объекта", function() {
             let controller = new Controller(model,view);
             assert.equal(spySubscribingView.callCount, 7, " Подписок на вью выполнено не 7!")
             assert.equal(spySubscribingModel.callCount, 1, " Подписок на вью выполнено не 7!")
@@ -88,7 +88,7 @@ describe("Controller.", function() {
     
     describe("controller.changeSize", function() {
         let controller = new Controller(model,view);
-        let stub = sinon.stub(view, "changeSize").callsFake(function () {
+        let stubChangeSize = sinon.stub(view, "changeSize").callsFake(function () {
             return 'ok';
         });
         const correctBoard = [];
@@ -107,7 +107,7 @@ describe("Controller.", function() {
 
             assert.deepEqual(controller.model.getBoard(), correctBoard, "Модель неправильно изменила размер")
             assert.deepEqual(
-                [stub.args[0][0],stub.args[0][1]], 
+                [stubChangeSize.args[0][0],stubChangeSize.args[0][1]], 
                 [100,100], 
                 " Неправильно изменился вид в канвасе ")
         });
@@ -171,6 +171,40 @@ describe("Controller.", function() {
         it("Изменение периода на -20мс", function() {
             controller.changePeriod(20);
             assert.notEqual(controller.period, -20, "Неправильно поменялся период")
+        });
+    });
+
+    describe("controller.changeSpeed", function() {
+        let controller = new Controller(model,view);
+
+        it("Изменение периода на 20мс", function() {
+            controller.changePeriod(20);
+            assert.equal(controller.period, 20, "Неправильно поменялся период")
+        });
+        it("Изменение периода на -20мс", function() {
+            controller.changePeriod(20);
+            assert.notEqual(controller.period, -20, "Неправильно поменялся период")
+        });
+    });
+
+    describe("controller.updateCanvas", function() {
+        let controller = new Controller(model,view);
+        const correctBoard = [];
+        
+        before ( () => {
+            stubDrawCanvas.restore();
+            stubDrawCanvas = sinon.stub(controller.view, "drawCanvas")
+            for (let i = 0; i < 5; i++) {
+                correctBoard[i] = [];
+                for (let j = 0; j < 5; j++) {
+                    correctBoard[i][j] = 0;
+                }
+            }
+            controller.model.setBoard = correctBoard;
+        })
+        it("Изменение периода на 20мс", function() {
+            controller.updateCanvas(controller.model.getBoard());
+            assert.deepEqual(stubDrawCanvas.args[0][0], correctBoard, "Доска неправильно дошла до вьюшки")
         });
     });
 

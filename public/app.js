@@ -92,7 +92,6 @@
         const event = this.events[eventName];
         if (event) {
             event.forEach((fn) => {
-                console.log(eventName);
                 fn.call(null, ...data);
             });
         }
@@ -138,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
 /* harmony default export */ __webpack_exports__["a"] = (class {
     constructor(model, view) {
         this.timer = undefined;
-        this.speed = 1000;
+        this.period = 1000;
         this.model = model;
         this.view = view;
         Object(__WEBPACK_IMPORTED_MODULE_0__binding__["a" /* default */])(this);
@@ -147,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     startLife() {
         if (!this.timer) {
-            this.timer = setInterval(this.model.nextState, this.speed);
+            this.timer = setInterval(this.model.nextState, this.period);
         }
     }
     stopLife() {
@@ -167,9 +166,9 @@ document.addEventListener("DOMContentLoaded", () => {
     clickOnCell(x, y) {
         this.model.findCellAndChange(x, y);
     }
-    changeSpeed(speed) {
-        if (speed > 0) {
-            this.speed = speed;
+    changePeriod(period) {
+        if (period > 0) {
+            this.period = period;
         }
         this.stopLife();
         this.startLife();
@@ -184,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
         this.view.eventEmiter.subscribe("clickCell", this.clickOnCell);
         this.view.eventEmiter.subscribe("changeWidth", this.changeSize);
         this.view.eventEmiter.subscribe("changeHeight", this.changeSize);
-        this.view.eventEmiter.subscribe("changeSpeed", this.changeSpeed);
+        this.view.eventEmiter.subscribe("changePeriod", this.changePeriod);
         this.model.eventEmiter.subscribe("changeStateBoard", this.updateCanvas);
     }
 });
@@ -330,7 +329,7 @@ class Model {
         this.$clear = __WEBPACK_IMPORTED_MODULE_0_jquery__("#clear");
         this.$changeWidth = __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_width");
         this.$changeHeight = __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_height");
-        this.$changeSpeed = __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_speed");
+        this.$changePeriod = __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_speed");
         this.$field = __WEBPACK_IMPORTED_MODULE_0_jquery__("canvas");
     }
     addEvents() {
@@ -339,7 +338,7 @@ class Model {
         this.$clear.click({ view: this }, this.clearBord);
         this.$changeWidth.blur({ view: this }, this.changeWidth);
         this.$changeHeight.blur({ view: this }, this.changeHeight);
-        this.$changeSpeed.click({ view: this }, this.changeSpeed);
+        this.$changePeriod.click({ view: this }, this.changePeriod);
         this.$field.off("click").on("click", { view: this }, this.clickCell);
     }
     startLife(event) {
@@ -352,19 +351,21 @@ class Model {
         event.data.view.eventEmiter.emit("clearBoard");
     }
     changeWidth(event) {
-        const width = parseInt(event.data.view.$changeWidth.val().toString(), 10);
+        const width = parseInt(event.data.view.$changeWidth.val(), 10);
         const height = event.data.view.$field.height();
         event.data.view.eventEmiter.emit("changeWidth", width, height);
     }
     changeHeight(event) {
-        const height = parseInt(event.data.view.$changeHeight.val().toString(), 10);
+        const height = parseInt(event.data.view.$changeHeight.val(), 10);
         const width = event.data.view.$field.width();
         event.data.view.eventEmiter.emit("changeHeight", width, height);
     }
-    changeSpeed(event) {
-        const userText = (prompt("speed in mlsec?", "500"), 10);
-        /* const speed = parseInt
-        event.data.view.eventEmiter.emit("changeSpeed", speed); */
+    changePeriod(event) {
+        let userText = (prompt("period in mlsec?", "500"));
+        let period = 0;
+        userText = (userText === null) ? "100" : userText;
+        period = parseInt((userText), 10);
+        event.data.view.eventEmiter.emit("changePeriod", period);
     }
     clickCell(event) {
         const x = event.offsetX;
