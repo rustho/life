@@ -7,11 +7,12 @@ import * as assert from "assert";
 describe("Controller.", function() {
     let view = new View();
     let model = new Model();
-    let stub = sinon.stub(view, "drawCanvas");
     
     describe("controller.subscribing", function() {
         let spySubscribingView;
         let spySubscribingModel;
+        let stub = sinon.stub(view, "drawCanvas");
+
         before (() => {
             spySubscribingView = sinon.spy(view.eventEmiter, "subscribe");
             spySubscribingModel = sinon.spy(model.eventEmiter, "subscribe");
@@ -31,11 +32,11 @@ describe("Controller.", function() {
     
     describe("controller.startLife", function() {
         let controller = new Controller(model,view);
-        it("startLife", function() {
+        it("Запуск жизни", function() {
             controller.startLife();
             assert.equal(!(controller.timer), false, "таймер не пуст")
         });
-        it("startLife after startLife", function() {
+        it("Запуск жизни уже после запуска", function() {
             controller.startLife();
             assert.equal(!(controller.timer), false, "таймер не пуст")
         });
@@ -45,12 +46,12 @@ describe("Controller.", function() {
     describe("controller.stoplife", function() {
         let controller = new Controller(model,view);
         
-        it("stoplife", function() {
+        it("Остановка", function() {
             controller.stopLife();
             assert.equal(!(controller.timer), true, "таймер не пуст")
         });
         
-        it("stoplife after stoplife", function() {
+        it("Остановка после остановки", function() {
             controller.stopLife();
             assert.equal(!(controller.timer), true, "таймер не пуст")
         });
@@ -76,7 +77,7 @@ describe("Controller.", function() {
                 }
             }
         })
-        it("clearlife with 5*5 array", function() {
+        it("Очистка жизни с доски 5*5", function() {
             
             controller.clearBoard();
             
@@ -87,15 +88,11 @@ describe("Controller.", function() {
     
     describe("controller.changeSize", function() {
         let controller = new Controller(model,view);
+        let stub = sinon.stub(view, "changeSize").callsFake(function () {
+            return 'ok';
+        });
+        const correctBoard = [];
         before(() => {
-            let testBoard = [
-                [0,1,1,0,0],
-                [1,0,0,1,0],
-                [1,0,0,1,0],
-                [0,1,1,0,0],
-                [0,0,0,0,0]
-            ]
-            controller.model.setBoard=testBoard;
 
             for (let i = 0; i < 5; i++) {
                 correctBoard[i] = [];
@@ -104,12 +101,16 @@ describe("Controller.", function() {
                 }
             }
         })
-        it("clearlife with 5*5 array", function() {
+        it("Изменение размера канваса 100px 100px", function() {
             
-            controller.clearBoard();
-            
-            assert.deepEqual(controller.model.getBoard(), correctBoard, "Модель не очистила доску")
-            assert.equal(!(controller.timer), true, "таймер не пуст")
+            controller.changeSize(100,100);
+
+            assert.deepEqual(controller.model.getBoard(), correctBoard, "Модель неправильно изменила размер")
+            assert.deepEqual(
+                [stub.args[0][0],stub.args[0][1]], 
+                [100,100], 
+                " Неправильно изменился вид в канвасе ")
         });
     });
+    
 });

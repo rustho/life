@@ -58,7 +58,7 @@ export default class  {
         this.$changeSpeed.click({view: this}, this.changeSpeed);
         this.$field.off("click").on("click", {view: this}, this.clickCell );
     }
-    public startLife(event) {
+    private startLife(event) {
         event.data.view.eventEmiter.emit("startLife");
     }
     private stopLife(event): void  {
