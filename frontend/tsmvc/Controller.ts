@@ -7,10 +7,10 @@ export default class<Model extends IAbstractModel, View extends IAbstractView> {
     private model: Model;
     private view: View;
     private timer: number | null;
-    private speed: number;
+    private period: number;
     constructor(model: Model, view: View) {
         this.timer = undefined;
-        this.speed = 1000;
+        this.period = 1000;
         this.model = model;
         this.view = view;
 
@@ -24,7 +24,7 @@ export default class<Model extends IAbstractModel, View extends IAbstractView> {
 
     public startLife(): void {
         if (!this.timer) {
-            this.timer = setInterval(this.model.nextState, this.speed);
+            this.timer = setInterval(this.model.nextState, this.period);
         }
     }
 
@@ -48,9 +48,10 @@ export default class<Model extends IAbstractModel, View extends IAbstractView> {
     public clickOnCell(x, y) {
         this.model.findCellAndChange(x, y);
     }
-    public changeSpeed(speed) {
-        if (speed > 0) {
-            this.speed = speed;
+
+    public changePeriod(period) {
+        if (period > 0) {
+            this.period = period;
         }
         this.stopLife();
         this.startLife();
@@ -68,7 +69,7 @@ export default class<Model extends IAbstractModel, View extends IAbstractView> {
         this.view.eventEmiter.subscribe("clickCell", this.clickOnCell);
         this.view.eventEmiter.subscribe("changeWidth", this.changeSize);
         this.view.eventEmiter.subscribe("changeHeight", this.changeSize);
-        this.view.eventEmiter.subscribe("changeSpeed", this.changeSpeed);
+        this.view.eventEmiter.subscribe("changePeriod", this.changePeriod);
 
         this.model.eventEmiter.subscribe("changeStateBoard", this.updateCanvas);
     }

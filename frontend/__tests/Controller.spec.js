@@ -112,5 +112,66 @@ describe("Controller.", function() {
                 " Неправильно изменился вид в канвасе ")
         });
     });
-    
+
+    describe("controller.clickOnCell", function() {
+        let controller = new Controller(model,view);
+        const correctBoard = [];
+        beforeEach(() => {
+            for (let i = 0; i < 5; i++) {
+                correctBoard[i] = [];
+                for (let j = 0; j < 5; j++) {
+                    correctBoard[i][j] = 0;
+                }
+            }
+            controller.model.setBoard = correctBoard;
+        })
+        it("Нажатие на клетку с координатами нажатия (50,50) (board[2][2]", function() {
+            correctBoard[2][2] = 1;
+            controller.clickOnCell(50,50);
+            assert.deepEqual(controller.model.getBoard(), correctBoard, "Модель неправильно изменила клетку")
+        });
+        it("Нажатие на клетку с координатами нажатия (99,99) (board[2][2]", function() {
+            correctBoard[4][4] = 1;
+            controller.clickOnCell(99,99);
+            assert.deepEqual(controller.model.getBoard(), correctBoard, "Модель неправильно изменила клетку")
+        });
+    });
+
+    describe("controller.clickOnCell", function() {
+        let controller = new Controller(model,view);
+        const correctBoard = [];
+        beforeEach(() => {
+            for (let i = 0; i < 5; i++) {
+                correctBoard[i] = [];
+                for (let j = 0; j < 5; j++) {
+                    correctBoard[i][j] = 0;
+                }
+            }
+            controller.model.setBoard = correctBoard;
+        })
+        it("Нажатие на клетку с координатами нажатия (50,50) (board[2][2]", function() {
+            correctBoard[2][2] = 1;
+            controller.clickOnCell(50,50);
+            assert.deepEqual(controller.model.getBoard(), correctBoard, "Модель неправильно изменила клетку")
+        });
+        it("Нажатие на клетку с координатами нажатия (99,99) (board[2][2]", function() {
+            correctBoard[4][4] = 1;
+            controller.clickOnCell(99,99);
+            assert.deepEqual(controller.model.getBoard(), correctBoard, "Модель неправильно изменила клетку")
+        });
+    });
+
+    describe("controller.changeSpeed", function() {
+        let controller = new Controller(model,view);
+
+        it("Изменение периода на 20мс", function() {
+            controller.changePeriod(20);
+            assert.equal(controller.period, 20, "Неправильно поменялся период")
+        });
+        it("Изменение периода на -20мс", function() {
+            controller.changePeriod(20);
+            assert.notEqual(controller.period, -20, "Неправильно поменялся период")
+        });
+    });
+
 });
