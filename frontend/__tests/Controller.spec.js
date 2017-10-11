@@ -8,6 +8,7 @@ describe("Controller.", function() {
     let view = new View();
     let model = new Model();
     let stub = sinon.stub(view, "drawCanvas");
+    
     describe("controller.subscribing", function() {
         let spySubscribingView;
         let spySubscribingModel;
@@ -27,6 +28,7 @@ describe("Controller.", function() {
             
         });
     });
+    
     describe("controller.startLife", function() {
         let controller = new Controller(model,view);
         it("startLife", function() {
@@ -39,14 +41,74 @@ describe("Controller.", function() {
         });
 
     });
+    
     describe("controller.stoplife", function() {
         let controller = new Controller(model,view);
+        
         it("stoplife", function() {
             controller.stopLife();
-            assert.equal(!(controller.timer), true, "таймер пуст")
+            assert.equal(!(controller.timer), true, "таймер не пуст")
         });
+        
         it("stoplife after stoplife", function() {
             controller.stopLife();
+            assert.equal(!(controller.timer), true, "таймер не пуст")
+        });
+    });
+
+    describe("controller.clearBoard", function() {
+        let controller = new Controller(model,view);
+        const correctBoard = [];
+        before(() => {
+            let testBoard = [
+                [0,1,1,0,0],
+                [1,0,0,1,0],
+                [1,0,0,1,0],
+                [0,1,1,0,0],
+                [0,0,0,0,0]
+            ]
+            controller.model.setBoard=testBoard;
+
+            for (let i = 0; i < 5; i++) {
+                correctBoard[i] = [];
+                for (let j = 0; j < 5; j++) {
+                    correctBoard[i][j] = 0;
+                }
+            }
+        })
+        it("clearlife with 5*5 array", function() {
+            
+            controller.clearBoard();
+            
+            assert.deepEqual(controller.model.getBoard(), correctBoard, "Модель не очистила доску")
+            assert.equal(!(controller.timer), true, "таймер не пуст")
+        });
+    });
+    
+    describe("controller.changeSize", function() {
+        let controller = new Controller(model,view);
+        before(() => {
+            let testBoard = [
+                [0,1,1,0,0],
+                [1,0,0,1,0],
+                [1,0,0,1,0],
+                [0,1,1,0,0],
+                [0,0,0,0,0]
+            ]
+            controller.model.setBoard=testBoard;
+
+            for (let i = 0; i < 5; i++) {
+                correctBoard[i] = [];
+                for (let j = 0; j < 5; j++) {
+                    correctBoard[i][j] = 0;
+                }
+            }
+        })
+        it("clearlife with 5*5 array", function() {
+            
+            controller.clearBoard();
+            
+            assert.deepEqual(controller.model.getBoard(), correctBoard, "Модель не очистила доску")
             assert.equal(!(controller.timer), true, "таймер не пуст")
         });
     });
