@@ -40,14 +40,13 @@ export default class  {
         });
     }
     private findingElements(): void {
-        this.$start = $("#start");
-        this.$stop = $("#stop");
-        this.$clear = $("#clear");
-        this.$changeWidth = $("#change_width");
-        this.$changeHeight = $("#change_height");
-        this.$changePeriod = $("#change_speed");
+        this.$start = $(".start");
+        this.$stop = $(".stop");
+        this.$clear = $(".clear");
+        this.$changeWidth = $(".change_width");
+        this.$changeHeight = $(".change_height");
+        this.$changePeriod = $(".change_speed");
         this.$field = $("canvas");
-
     }
     private addEvents(): void  {
         this.$start.click({view: this}, this.startLife);
@@ -56,7 +55,7 @@ export default class  {
         this.$changeWidth.blur({view: this}, this.changeWidth);
         this.$changeHeight.blur({view: this}, this.changeHeight);
         this.$changePeriod.click({view: this}, this.changePeriod);
-        this.$field.off("click").on("click", {view: this}, this.clickCell );
+        this.$field.first().off("click").on("click", {view: this}, this.clickCell );
     }
     private startLife(event) {
         event.data.view.eventEmiter.emit("startLife");

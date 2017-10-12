@@ -324,12 +324,12 @@ class Model {
         });
     }
     findingElements() {
-        this.$start = __WEBPACK_IMPORTED_MODULE_0_jquery__("#start");
-        this.$stop = __WEBPACK_IMPORTED_MODULE_0_jquery__("#stop");
-        this.$clear = __WEBPACK_IMPORTED_MODULE_0_jquery__("#clear");
-        this.$changeWidth = __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_width");
-        this.$changeHeight = __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_height");
-        this.$changePeriod = __WEBPACK_IMPORTED_MODULE_0_jquery__("#change_speed");
+        this.$start = __WEBPACK_IMPORTED_MODULE_0_jquery__(".start");
+        this.$stop = __WEBPACK_IMPORTED_MODULE_0_jquery__(".stop");
+        this.$clear = __WEBPACK_IMPORTED_MODULE_0_jquery__(".clear");
+        this.$changeWidth = __WEBPACK_IMPORTED_MODULE_0_jquery__(".change_width");
+        this.$changeHeight = __WEBPACK_IMPORTED_MODULE_0_jquery__(".change_height");
+        this.$changePeriod = __WEBPACK_IMPORTED_MODULE_0_jquery__(".change_speed");
         this.$field = __WEBPACK_IMPORTED_MODULE_0_jquery__("canvas");
     }
     addEvents() {
@@ -339,7 +339,7 @@ class Model {
         this.$changeWidth.blur({ view: this }, this.changeWidth);
         this.$changeHeight.blur({ view: this }, this.changeHeight);
         this.$changePeriod.click({ view: this }, this.changePeriod);
-        this.$field.off("click").on("click", { view: this }, this.clickCell);
+        this.$field.first().off("click").on("click", { view: this }, this.clickCell);
     }
     startLife(event) {
         event.data.view.eventEmiter.emit("startLife");
