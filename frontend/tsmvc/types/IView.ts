@@ -1,8 +1,10 @@
-import EventEmiter from "../EventEmiter";
 export interface IAbstractView {
-    eventEmiter: EventEmiter;
+    subscribe: (eventName: string, fn) => void;
     changeSize: (width: number, height: number) => void;
     drawCanvas: (board: number[][]) => void;
+}
+export interface IView extends IAbstractView {
+    emit: (eventName: string, ...data) => void;
 }
 
 

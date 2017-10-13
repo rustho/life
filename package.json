@@ -30,13 +30,13 @@
     "sinon": "^3.2.1",
     "tslint": "^5.7.0",
     "tslint-loader": "^3.5.3",
+    "webpack": "^3.5.5",
+    "awesome-typescript-loader": "^3.2.3",
     "webpack-dev-server": "^2.7.1"
   },
   "dependencies": {
     "typescript": "^2.5.2",
-    "webpack": "^3.5.5",
     "jquery": "^3.2.1",
-    "@types/jquery": "^3.2.12",
-    "awesome-typescript-loader": "^3.2.3"
+    "@types/jquery": "^3.2.12"
   }
 }

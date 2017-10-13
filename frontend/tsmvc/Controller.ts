@@ -63,14 +63,14 @@ export default class<Model extends IAbstractModel, View extends IAbstractView> {
     }
 
     private subscribing() {
-        this.view.eventEmiter.subscribe("startLife", this.startLife);
-        this.view.eventEmiter.subscribe("stopLife", this.stopLife);
-        this.view.eventEmiter.subscribe("clearBoard", this.clearBoard);
-        this.view.eventEmiter.subscribe("clickCell", this.clickOnCell);
-        this.view.eventEmiter.subscribe("changeWidth", this.changeSize);
-        this.view.eventEmiter.subscribe("changeHeight", this.changeSize);
-        this.view.eventEmiter.subscribe("changePeriod", this.changePeriod);
+        this.view.subscribe("startLife", this.startLife);
+        this.view.subscribe("stopLife", this.stopLife);
+        this.view.subscribe("clearBoard", this.clearBoard);
+        this.view.subscribe("clickCell", this.clickOnCell);
+        this.view.subscribe("changeWidth", this.changeSize);
+        this.view.subscribe("changeHeight", this.changeSize);
+        this.view.subscribe("changePeriod", this.changePeriod);
 
-        this.model.eventEmiter.subscribe("changeStateBoard", this.updateCanvas);
+        this.model.subscribe("changeStateBoard", this.updateCanvas);
     }
 }

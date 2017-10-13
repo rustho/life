@@ -1,8 +1,8 @@
 import * as $ from "jquery";
 import binding from "./binding";
 import EventEmiter from "./EventEmiter";
-export default class  {
-    public eventEmiter: EventEmiter;
+import {IView} from "./types/IView";
+export default class View extends EventEmiter implements IView {
     public $field: JQuery<HTMLElement>;
     public $start: JQuery<HTMLElement>;
     private $stop: JQuery<HTMLElement>;
@@ -12,7 +12,7 @@ export default class  {
     private $changePeriod: JQuery<HTMLElement>;
 
     constructor() {
-        this.eventEmiter = new EventEmiter();
+        super();
         this.findingElements();
         this.addEvents();
         binding(this);
@@ -58,23 +58,23 @@ export default class  {
         this.$field.first().off("click").on("click", {view: this}, this.clickCell );
     }
     private startLife(event) {
-        event.data.view.eventEmiter.emit("startLife");
+        event.data.view.emit("startLife");
     }
     private stopLife(event): void  {
-        event.data.view.eventEmiter.emit("stopLife");
+        event.data.view.emit("stopLife");
     }
     private clearBord(event): void  {
-        event.data.view.eventEmiter.emit("clearBoard");
+        event.data.view.emit("clearBoard");
     }
     private changeWidth(event) {
         const width = parseInt(event.data.view.$changeWidth.val(), 10);
         const height = event.data.view.$field.height();
-        event.data.view.eventEmiter.emit("changeWidth", width, height);
+        event.data.view.emit("changeWidth", width, height);
     }
     private changeHeight(event)  {
         const height = parseInt(event.data.view.$changeHeight.val(), 10);
         const width = event.data.view.$field.width();
-        event.data.view.eventEmiter.emit("changeHeight", width, height);
+        event.data.view.emit("changeHeight", width, height);
     }
     private changePeriod(event)  {
         let userText = (prompt("period in mlsec?", "500"));
@@ -82,12 +82,12 @@ export default class  {
         userText = (userText === null) ? "100" : userText;
         period = parseInt((userText), 10);
 
-        event.data.view.eventEmiter.emit("changePeriod", period);
+        event.data.view.emit("changePeriod", period);
     }
 
     private clickCell(event): void  {
         const x = event.offsetX;
         const y = event.offsetY;
-        event.data.view.eventEmiter.emit("clickCell", x, y);
+        event.data.view.emit("clickCell", x, y);
    }
 }

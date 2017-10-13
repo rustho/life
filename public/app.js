@@ -177,14 +177,14 @@ document.addEventListener("DOMContentLoaded", () => {
         this.view.drawCanvas(board);
     }
     subscribing() {
-        this.view.eventEmiter.subscribe("startLife", this.startLife);
-        this.view.eventEmiter.subscribe("stopLife", this.stopLife);
-        this.view.eventEmiter.subscribe("clearBoard", this.clearBoard);
-        this.view.eventEmiter.subscribe("clickCell", this.clickOnCell);
-        this.view.eventEmiter.subscribe("changeWidth", this.changeSize);
-        this.view.eventEmiter.subscribe("changeHeight", this.changeSize);
-        this.view.eventEmiter.subscribe("changePeriod", this.changePeriod);
-        this.model.eventEmiter.subscribe("changeStateBoard", this.updateCanvas);
+        this.view.subscribe("startLife", this.startLife);
+        this.view.subscribe("stopLife", this.stopLife);
+        this.view.subscribe("clearBoard", this.clearBoard);
+        this.view.subscribe("clickCell", this.clickOnCell);
+        this.view.subscribe("changeWidth", this.changeSize);
+        this.view.subscribe("changeHeight", this.changeSize);
+        this.view.subscribe("changePeriod", this.changePeriod);
+        this.model.subscribe("changeStateBoard", this.updateCanvas);
     }
 });
 
@@ -198,10 +198,10 @@ document.addEventListener("DOMContentLoaded", () => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__EventEmiter__ = __webpack_require__(1);
 
 
-class Model {
+class Model extends __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */] {
     constructor() {
+        super();
         this.CELL_SQUARE = 20;
-        this.eventEmiter = new __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */]();
         this.width = 20;
         this.height = 20;
         this.board = this.newBoard();
@@ -216,7 +216,7 @@ class Model {
         else {
             this.board[yCell][xCell] = 0;
         }
-        this.eventEmiter.emit("changeStateBoard", this.board);
+        this.emit("changeStateBoard", this.board);
     }
     changeStateOfCell(i, j) {
         let livingcell = 0;
@@ -248,17 +248,17 @@ class Model {
             });
         });
         this.board = newboard;
-        this.eventEmiter.emit("changeStateBoard", this.board);
+        this.emit("changeStateBoard", this.board);
     }
     clearBoard() {
         this.board = this.newBoard();
-        this.eventEmiter.emit("changeStateBoard", this.board);
+        this.emit("changeStateBoard", this.board);
     }
     changeQuantityCell(width, height) {
         this.width = Math.floor(width / this.CELL_SQUARE);
         this.height = Math.floor(height / this.CELL_SQUARE);
         this.board = this.newBoard();
-        this.eventEmiter.emit("changeStateBoard", this.board);
+        this.emit("changeStateBoard", this.board);
     }
     newBoard() {
         const board = [];
@@ -295,9 +295,9 @@ class Model {
 
 
 
-/* harmony default export */ __webpack_exports__["a"] = (class {
+class View extends __WEBPACK_IMPORTED_MODULE_2__EventEmiter__["a" /* default */] {
     constructor() {
-        this.eventEmiter = new __WEBPACK_IMPORTED_MODULE_2__EventEmiter__["a" /* default */]();
+        super();
         this.findingElements();
         this.addEvents();
         Object(__WEBPACK_IMPORTED_MODULE_1__binding__["a" /* default */])(this);
@@ -342,37 +342,39 @@ class Model {
         this.$field.first().off("click").on("click", { view: this }, this.clickCell);
     }
     startLife(event) {
-        event.data.view.eventEmiter.emit("startLife");
+        event.data.view.emit("startLife");
     }
     stopLife(event) {
-        event.data.view.eventEmiter.emit("stopLife");
+        event.data.view.emit("stopLife");
     }
     clearBord(event) {
-        event.data.view.eventEmiter.emit("clearBoard");
+        event.data.view.emit("clearBoard");
     }
     changeWidth(event) {
         const width = parseInt(event.data.view.$changeWidth.val(), 10);
         const height = event.data.view.$field.height();
-        event.data.view.eventEmiter.emit("changeWidth", width, height);
+        event.data.view.emit("changeWidth", width, height);
     }
     changeHeight(event) {
         const height = parseInt(event.data.view.$changeHeight.val(), 10);
         const width = event.data.view.$field.width();
-        event.data.view.eventEmiter.emit("changeHeight", width, height);
+        event.data.view.emit("changeHeight", width, height);
     }
     changePeriod(event) {
         let userText = (prompt("period in mlsec?", "500"));
         let period = 0;
         userText = (userText === null) ? "100" : userText;
         period = parseInt((userText), 10);
-        event.data.view.eventEmiter.emit("changePeriod", period);
+        event.data.view.emit("changePeriod", period);
     }
     clickCell(event) {
         const x = event.offsetX;
         const y = event.offsetY;
-        event.data.view.eventEmiter.emit("clickCell", x, y);
+        event.data.view.emit("clickCell", x, y);
     }
-});
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = View;
+
 
 
 /***/ }),

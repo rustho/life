@@ -1,16 +1,15 @@
 import binding from "./binding";
 import EventEmiter from "./EventEmiter";
 import {IModel} from "./types/IModel";
-export default class Model implements IModel {
-    public eventEmiter: EventEmiter;
+export default class Model extends EventEmiter  implements IModel {
     private width: number;
     private height: number;
     private board: number[][];
     private CELL_SQUARE: number;
 
     constructor() {
+        super();
         this.CELL_SQUARE = 20;
-        this.eventEmiter = new EventEmiter();
         this.width = 20;
         this.height = 20;
         this.board = this.newBoard();
@@ -24,7 +23,7 @@ export default class Model implements IModel {
         } else {
             this.board[yCell][xCell] = 0;
         }
-        this.eventEmiter.emit("changeStateBoard", this.board);
+        this.emit("changeStateBoard", this.board);
     }
     public changeStateOfCell(i: number, j: number): number {
         let livingcell = 0;
@@ -56,17 +55,17 @@ export default class Model implements IModel {
             });
         });
         this.board = newboard;
-        this.eventEmiter.emit("changeStateBoard", this.board);
+        this.emit("changeStateBoard", this.board);
     }
     public clearBoard(): void {
         this.board = this.newBoard();
-        this.eventEmiter.emit("changeStateBoard", this.board);
+        this.emit("changeStateBoard", this.board);
     }
     public changeQuantityCell(width: number, height: number): void {
         this.width = Math.floor(width / this.CELL_SQUARE);
         this.height = Math.floor(height / this.CELL_SQUARE);
         this.board = this.newBoard();
-        this.eventEmiter.emit("changeStateBoard", this.board);
+        this.emit("changeStateBoard", this.board);
     }
     public newBoard(): number[][] {
         const board = [];
