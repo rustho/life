@@ -142,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
         this.view = view;
         Object(__WEBPACK_IMPORTED_MODULE_0__binding__["a" /* default */])(this);
         this.subscribing();
-        this.model.nextState();
+        this.startGame();
     }
     startLife() {
         if (!this.timer) {
@@ -175,6 +175,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     updateCanvas(board) {
         this.view.drawCanvas(board);
+    }
+    startGame() {
+        this.model.nextState();
     }
     subscribing() {
         this.view.subscribe("startLife", this.startLife);
@@ -291,11 +294,13 @@ class Model extends __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__binding__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__EventEmiter__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ErrorCanvas__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__EventEmiter__ = __webpack_require__(1);
 
 
 
-class View extends __WEBPACK_IMPORTED_MODULE_2__EventEmiter__["a" /* default */] {
+
+class View extends __WEBPACK_IMPORTED_MODULE_3__EventEmiter__["a" /* default */] {
     constructor() {
         super();
         this.findingElements();
@@ -330,7 +335,13 @@ class View extends __WEBPACK_IMPORTED_MODULE_2__EventEmiter__["a" /* default */]
         this.$changeWidth = __WEBPACK_IMPORTED_MODULE_0_jquery__(".change_width");
         this.$changeHeight = __WEBPACK_IMPORTED_MODULE_0_jquery__(".change_height");
         this.$changePeriod = __WEBPACK_IMPORTED_MODULE_0_jquery__(".change_speed");
-        this.$field = __WEBPACK_IMPORTED_MODULE_0_jquery__("canvas");
+        if (!__WEBPACK_IMPORTED_MODULE_0_jquery__("canvas")[1]) {
+            this.$field = __WEBPACK_IMPORTED_MODULE_0_jquery__("canvas");
+        }
+        else {
+            const errorCanvas = new __WEBPACK_IMPORTED_MODULE_2__ErrorCanvas__["a" /* default */]();
+            throw (errorCanvas);
+        }
     }
     addEvents() {
         this.$start.click({ view: this }, this.startLife);
@@ -10635,6 +10646,20 @@ if ( !noGlobal ) {
 
 return jQuery;
 } );
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class ErrorCanvas extends Error {
+    constructor() {
+        super("More than 1 canvas");
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = ErrorCanvas;
+
 
 
 /***/ })

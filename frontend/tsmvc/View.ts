@@ -1,7 +1,9 @@
 import * as $ from "jquery";
 import binding from "./binding";
+import ErrorCanvas from "./ErrorCanvas";
 import EventEmiter from "./EventEmiter";
 import {IView} from "./types/IView";
+
 export default class View extends EventEmiter implements IView {
     public $field: JQuery<HTMLElement>;
     public $start: JQuery<HTMLElement>;
@@ -46,7 +48,12 @@ export default class View extends EventEmiter implements IView {
         this.$changeWidth = $(".change_width");
         this.$changeHeight = $(".change_height");
         this.$changePeriod = $(".change_speed");
-        this.$field = $("canvas");
+        if (!$("canvas")[1]) {
+            this.$field = $("canvas");
+        } else {
+            const errorCanvas = new ErrorCanvas();
+            throw(errorCanvas);
+        }
     }
     private addEvents(): void  {
         this.$start.click({view: this}, this.startLife);
@@ -91,3 +98,4 @@ export default class View extends EventEmiter implements IView {
         event.data.view.emit("clickCell", x, y);
    }
 }
+

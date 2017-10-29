@@ -18,7 +18,7 @@ export default class<Model extends IAbstractModel, View extends IAbstractView> {
 
         this.subscribing();
 
-        this.model.nextState();
+        this.startGame();
 
     }
 
@@ -60,6 +60,10 @@ export default class<Model extends IAbstractModel, View extends IAbstractView> {
 
     public updateCanvas(board) {
         this.view.drawCanvas(board);
+    }
+
+    private startGame(): void {
+        this.model.nextState();
     }
 
     private subscribing() {
