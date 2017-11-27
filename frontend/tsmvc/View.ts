@@ -42,14 +42,14 @@ export default class View extends EventEmiter implements IView {
         });
     }
     private findingElements(): void {
-        this.$start = $(".start");
-        this.$stop = $(".stop");
-        this.$clear = $(".clear");
-        this.$changeWidth = $(".change_width");
-        this.$changeHeight = $(".change_height");
-        this.$changePeriod = $(".change_speed");
-        if (!$("canvas")[1]) {
-            this.$field = $("canvas");
+        this.$start = $(".js-start");
+        this.$stop = $(".js-stop");
+        this.$clear = $(".js-clear");
+        this.$changeWidth = $(".js-change_width");
+        this.$changeHeight = $(".js-change_height");
+        this.$changePeriod = $(".js-change_speed");
+        if (!$(".js-field")[1]) {
+            this.$field = $(".js-field");
         } else {
             const errorCanvas = new ErrorCanvas();
             throw(errorCanvas);
