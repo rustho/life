@@ -329,14 +329,14 @@ class View extends __WEBPACK_IMPORTED_MODULE_3__EventEmiter__["a" /* default */]
         });
     }
     findingElements() {
-        this.$start = __WEBPACK_IMPORTED_MODULE_0_jquery__(".start");
-        this.$stop = __WEBPACK_IMPORTED_MODULE_0_jquery__(".stop");
-        this.$clear = __WEBPACK_IMPORTED_MODULE_0_jquery__(".clear");
-        this.$changeWidth = __WEBPACK_IMPORTED_MODULE_0_jquery__(".change_width");
-        this.$changeHeight = __WEBPACK_IMPORTED_MODULE_0_jquery__(".change_height");
-        this.$changePeriod = __WEBPACK_IMPORTED_MODULE_0_jquery__(".change_speed");
-        if (!__WEBPACK_IMPORTED_MODULE_0_jquery__("canvas")[1]) {
-            this.$field = __WEBPACK_IMPORTED_MODULE_0_jquery__("canvas");
+        this.$start = __WEBPACK_IMPORTED_MODULE_0_jquery__(".js-start");
+        this.$stop = __WEBPACK_IMPORTED_MODULE_0_jquery__(".js-stop");
+        this.$clear = __WEBPACK_IMPORTED_MODULE_0_jquery__(".js-clear");
+        this.$changeWidth = __WEBPACK_IMPORTED_MODULE_0_jquery__(".js-change_width");
+        this.$changeHeight = __WEBPACK_IMPORTED_MODULE_0_jquery__(".js-change_height");
+        this.$changePeriod = __WEBPACK_IMPORTED_MODULE_0_jquery__(".js-change_speed");
+        if (!__WEBPACK_IMPORTED_MODULE_0_jquery__(".js-field")[1]) {
+            this.$field = __WEBPACK_IMPORTED_MODULE_0_jquery__(".js-field");
         }
         else {
             const errorCanvas = new __WEBPACK_IMPORTED_MODULE_2__ErrorCanvas__["a" /* default */]();
