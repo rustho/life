@@ -3,6 +3,8 @@ import EventEmiter from "./EventEmiter";
 import {IAbstractModel} from "./types/IModel";
 import {IAbstractView} from "./types/IView";
 
+import * as config from "./config/config.json";
+
 export default class<Model extends IAbstractModel, View extends IAbstractView> {
     private model: Model;
     private view: View;
@@ -10,7 +12,7 @@ export default class<Model extends IAbstractModel, View extends IAbstractView> {
     private period: number;
     constructor(model: Model, view: View) {
         this.timer = undefined;
-        this.period = 1000;
+        this.period = config.period;
         this.model = model;
         this.view = view;
 

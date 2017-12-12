@@ -1,6 +1,9 @@
 import binding from "./binding";
 import EventEmiter from "./EventEmiter";
 import {IModel} from "./types/IModel";
+
+import * as config from "./config/config.json";
+
 export default class Model extends EventEmiter  implements IModel {
     private width: number;
     private height: number;
@@ -9,7 +12,7 @@ export default class Model extends EventEmiter  implements IModel {
 
     constructor() {
         super();
-        this.CELL_SQUARE = 20;
+        this.CELL_SQUARE = (config).CELL_SQUARE;
         this.width = 20;
         this.height = 20;
         this.board = this.newBoard();

@@ -25,6 +25,11 @@ module.exports = {
         use: {
           loader:'awesome-typescript-loader'
         },
+      },{
+        test: /\.json?$/,
+        use: {
+          loader:'json-loader'
+        },
       }
     ]
   },

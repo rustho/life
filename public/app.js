@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -81,6 +81,12 @@
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports) {
+
+module.exports = {"period":1000,"CELL_SQUARE":20}
+
+/***/ }),
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -109,14 +115,14 @@
 
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tsmvc_Controller__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tsmvc_Model__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tsmvc_View__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tsmvc_Controller__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tsmvc_Model__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tsmvc_View__ = __webpack_require__(6);
 
 
 
@@ -128,16 +134,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__binding__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__config_config_json__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__config_config_json___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__config_config_json__);
+
 
 /* harmony default export */ __webpack_exports__["a"] = (class {
     constructor(model, view) {
         this.timer = undefined;
-        this.period = 1000;
+        this.period = __WEBPACK_IMPORTED_MODULE_1__config_config_json__["period"];
         this.model = model;
         this.view = view;
         Object(__WEBPACK_IMPORTED_MODULE_0__binding__["a" /* default */])(this);
@@ -193,18 +202,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__binding__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__EventEmiter__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__EventEmiter__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__config_config_json__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__config_config_json___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__config_config_json__);
+
 
 
 class Model extends __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */] {
     constructor() {
         super();
-        this.CELL_SQUARE = 20;
+        this.CELL_SQUARE = __WEBPACK_IMPORTED_MODULE_2__config_config_json__["CELL_SQUARE"];
         this.width = 20;
         this.height = 20;
         this.board = this.newBoard();
@@ -287,15 +299,15 @@ class Model extends __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__binding__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ErrorCanvas__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__EventEmiter__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ErrorCanvas__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__EventEmiter__ = __webpack_require__(2);
 
 
 
@@ -389,7 +401,7 @@ class View extends __WEBPACK_IMPORTED_MODULE_3__EventEmiter__["a" /* default */]
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -10649,7 +10661,7 @@ return jQuery;
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
