@@ -5,11 +5,12 @@ import {IAbstractView} from "./types/IView";
 
 import * as config from "./config/config.json";
 
-export default class<Model extends IAbstractModel, View extends IAbstractView> {
+export default class <Model extends IAbstractModel, View extends IAbstractView> {
     private model: Model;
     private view: View;
     private timer: number | null;
     private period: number;
+
     constructor(model: Model, view: View) {
         this.timer = undefined;
         this.period = config.period;

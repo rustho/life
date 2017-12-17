@@ -1,9 +1,9 @@
 "use strict";
-export default function(someClass) {
-    for (const key of Object.getOwnPropertyNames(someClass.constructor.prototype)) {
-        if ( typeof someClass[key] === "function" ) {
-            someClass[key] = someClass[key].bind(someClass);
+export default function(currentClass) {
+    for (const key of Object.getOwnPropertyNames(currentClass.constructor.prototype)) {
+        if ( typeof currentClass[key] === "function" ) {
+            currentClass[key] = currentClass[key].bind(currentClass);
         }
     }
-    return someClass;
+    return currentClass;
 }

@@ -5,6 +5,7 @@ import {IModel} from "./types/IModel";
 import * as config from "./config/config.json";
 
 export default class Model extends EventEmiter  implements IModel {
+
     private width: number;
     private height: number;
     private board: number[][];
@@ -18,6 +19,7 @@ export default class Model extends EventEmiter  implements IModel {
         this.board = this.newBoard();
         binding(this);
     }
+
     public findCellAndChange(x: number, y: number): void {
         const xCell = Math.floor(x / this.CELL_SQUARE);
         const yCell = Math.floor(y / this.CELL_SQUARE);
@@ -28,6 +30,7 @@ export default class Model extends EventEmiter  implements IModel {
         }
         this.emit("changeStateBoard", this.board);
     }
+
     public changeStateOfCell(i: number, j: number): number {
         let livingcell = 0;
         const arrayOfBorderY: number[] = [ i - 1, i , i + 1 ];
@@ -50,6 +53,7 @@ export default class Model extends EventEmiter  implements IModel {
         }
         return res;
     }
+
     public nextState(): void {
         const newboard = this.newBoard();
         newboard.forEach((row, indexOfRow) => {
@@ -60,16 +64,19 @@ export default class Model extends EventEmiter  implements IModel {
         this.board = newboard;
         this.emit("changeStateBoard", this.board);
     }
+
     public clearBoard(): void {
         this.board = this.newBoard();
         this.emit("changeStateBoard", this.board);
     }
+
     public changeQuantityCell(width: number, height: number): void {
         this.width = Math.floor(width / this.CELL_SQUARE);
         this.height = Math.floor(height / this.CELL_SQUARE);
         this.board = this.newBoard();
         this.emit("changeStateBoard", this.board);
     }
+
     public newBoard(): number[][] {
         const board = [];
         for (let i = 0; i < this.height; i++) {
@@ -80,9 +87,11 @@ export default class Model extends EventEmiter  implements IModel {
         }
         return board;
     }
+
     public getBoard(): number[][] {
         return this.board;
     }
+
     public set setBoard(someBoard: number[][]) {
         this.board = someBoard;
         this.height = someBoard.length;

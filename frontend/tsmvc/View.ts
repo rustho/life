@@ -56,34 +56,34 @@ export default class View extends EventEmiter implements IView {
         }
     }
     private addEvents(): void  {
-        this.$start.click({view: this}, this.startLife);
-        this.$stop.click({view: this}, this.stopLife);
-        this.$clear.click({view: this}, this.clearBord);
-        this.$changeWidth.blur({view: this}, this.changeWidth);
-        this.$changeHeight.blur({view: this}, this.changeHeight);
-        this.$changePeriod.click({view: this}, this.changePeriod);
+        this.$start.click( {view: this}, this.startLife);
+        this.$stop.click( {view: this}, this.stopLife);
+        this.$clear.click( {view: this}, this.clearBord);
+        this.$changeWidth.blur( {view: this}, this.changeWidth);
+        this.$changeHeight.blur( {view: this}, this.changeHeight);
+        this.$changePeriod.click( {view: this}, this.changePeriod);
         this.$field.first().off("click").on("click", {view: this}, this.clickCell );
     }
-    private startLife(event) {
+    private startLife(event: JQuery.Event<HTMLElement, {view}>): void {
         event.data.view.emit("startLife");
     }
-    private stopLife(event): void  {
+    private stopLife(event: JQuery.Event<HTMLElement, {view}>): void  {
         event.data.view.emit("stopLife");
     }
-    private clearBord(event): void  {
+    private clearBord(event: JQuery.Event<HTMLElement, {view}>): void  {
         event.data.view.emit("clearBoard");
     }
-    private changeWidth(event) {
+    private changeWidth(event: JQuery.Event<HTMLElement, {view}>): void {
         const width = parseInt(event.data.view.$changeWidth.val(), 10);
         const height = event.data.view.$field.height();
         event.data.view.emit("changeWidth", width, height);
     }
-    private changeHeight(event)  {
+    private changeHeight(event: JQuery.Event<HTMLElement, {view}>): void  {
         const height = parseInt(event.data.view.$changeHeight.val(), 10);
         const width = event.data.view.$field.width();
         event.data.view.emit("changeHeight", width, height);
     }
-    private changePeriod(event)  {
+    private changePeriod(event: JQuery.Event<HTMLElement, {view}>): void   {
         let userText = (prompt("period in mlsec?", "500"));
         let period: number = 0;
         userText = (userText === null) ? "100" : userText;
@@ -92,7 +92,7 @@ export default class View extends EventEmiter implements IView {
         event.data.view.emit("changePeriod", period);
     }
 
-    private clickCell(event): void  {
+    private clickCell(event: JQuery.Event<HTMLElement, {view}>): void   {
         const x = event.offsetX;
         const y = event.offsetY;
         event.data.view.emit("clickCell", x, y);

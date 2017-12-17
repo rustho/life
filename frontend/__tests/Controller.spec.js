@@ -5,17 +5,19 @@ import Controller from '../tsmvc/Controller.ts';
 import * as assert from "assert";
 
 describe("Controller.", function() {
+    
     let view = new View();
     let model = new Model();
     let stubDrawCanvas = sinon.stub(view, "drawCanvas");
+    
     describe("controller.subscribing", function() {
         let spySubscribingView;
         let spySubscribingModel;
         
 
         before (() => {
-            spySubscribingView = sinon.spy(view.eventEmiter, "subscribe");
-            spySubscribingModel = sinon.spy(model.eventEmiter, "subscribe");
+            spySubscribingView = sinon.spy(view, "subscribe");
+            spySubscribingModel = sinon.spy(model, "subscribe");
         });
         after (() => {
             spySubscribingView.restore();
@@ -31,6 +33,7 @@ describe("Controller.", function() {
     });
     
     describe("controller.startLife", function() {
+        
         let controller = new Controller(model,view);
         it("Запуск жизни", function() {
             controller.startLife();
@@ -44,6 +47,7 @@ describe("Controller.", function() {
     });
     
     describe("controller.stoplife", function() {
+        
         let controller = new Controller(model,view);
         
         it("Остановка", function() {
@@ -58,8 +62,10 @@ describe("Controller.", function() {
     });
 
     describe("controller.clearBoard", function() {
+        
         let controller = new Controller(model,view);
         const correctBoard = [];
+        
         before(() => {
             let testBoard = [
                 [0,1,1,0,0],
@@ -77,6 +83,7 @@ describe("Controller.", function() {
                 }
             }
         })
+        
         it("Очистка жизни с доски 5*5", function() {
             
             controller.clearBoard();
@@ -87,11 +94,13 @@ describe("Controller.", function() {
     });
     
     describe("controller.changeSize", function() {
+        
         let controller = new Controller(model,view);
         let stubChangeSize = sinon.stub(view, "changeSize").callsFake(function () {
             return 'ok';
         });
         const correctBoard = [];
+        
         before(() => {
 
             for (let i = 0; i < 5; i++) {
@@ -101,6 +110,7 @@ describe("Controller.", function() {
                 }
             }
         })
+        
         it("Изменение размера канваса 100px 100px", function() {
             
             controller.changeSize(100,100);
@@ -114,8 +124,10 @@ describe("Controller.", function() {
     });
 
     describe("controller.clickOnCell", function() {
+        
         let controller = new Controller(model,view);
         const correctBoard = [];
+        
         beforeEach(() => {
             for (let i = 0; i < 5; i++) {
                 correctBoard[i] = [];
@@ -125,11 +137,13 @@ describe("Controller.", function() {
             }
             controller.model.setBoard = correctBoard;
         })
+        
         it("Нажатие на клетку с координатами нажатия (50,50) (board[2][2]", function() {
             correctBoard[2][2] = 1;
             controller.clickOnCell(50,50);
             assert.deepEqual(controller.model.getBoard(), correctBoard, "Модель неправильно изменила клетку")
         });
+        
         it("Нажатие на клетку с координатами нажатия (99,99) (board[2][2]", function() {
             correctBoard[4][4] = 1;
             controller.clickOnCell(99,99);
@@ -138,8 +152,10 @@ describe("Controller.", function() {
     });
 
     describe("controller.clickOnCell", function() {
+        
         let controller = new Controller(model,view);
         const correctBoard = [];
+        
         beforeEach(() => {
             for (let i = 0; i < 5; i++) {
                 correctBoard[i] = [];
@@ -149,11 +165,13 @@ describe("Controller.", function() {
             }
             controller.model.setBoard = correctBoard;
         })
+        
         it("Нажатие на клетку с координатами нажатия (50,50) (board[2][2]", function() {
             correctBoard[2][2] = 1;
             controller.clickOnCell(50,50);
             assert.deepEqual(controller.model.getBoard(), correctBoard, "Модель неправильно изменила клетку")
         });
+        
         it("Нажатие на клетку с координатами нажатия (99,99) (board[2][2]", function() {
             correctBoard[4][4] = 1;
             controller.clickOnCell(99,99);
@@ -162,12 +180,14 @@ describe("Controller.", function() {
     });
 
     describe("controller.changeSpeed", function() {
+        
         let controller = new Controller(model,view);
 
         it("Изменение периода на 20мс", function() {
             controller.changePeriod(20);
             assert.equal(controller.period, 20, "Неправильно поменялся период")
         });
+        
         it("Изменение периода на -20мс", function() {
             controller.changePeriod(20);
             assert.notEqual(controller.period, -20, "Неправильно поменялся период")
@@ -175,12 +195,14 @@ describe("Controller.", function() {
     });
 
     describe("controller.changeSpeed", function() {
+        
         let controller = new Controller(model,view);
 
         it("Изменение периода на 20мс", function() {
             controller.changePeriod(20);
             assert.equal(controller.period, 20, "Неправильно поменялся период")
         });
+        
         it("Изменение периода на -20мс", function() {
             controller.changePeriod(20);
             assert.notEqual(controller.period, -20, "Неправильно поменялся период")
@@ -188,6 +210,7 @@ describe("Controller.", function() {
     });
 
     describe("controller.updateCanvas", function() {
+        
         let controller = new Controller(model,view);
         const correctBoard = [];
         
@@ -202,6 +225,7 @@ describe("Controller.", function() {
             }
             controller.model.setBoard = correctBoard;
         })
+        
         it("Изменение периода на 20мс", function() {
             controller.updateCanvas(controller.model.getBoard());
             assert.deepEqual(stubDrawCanvas.args[0][0], correctBoard, "Доска неправильно дошла до вьюшки")

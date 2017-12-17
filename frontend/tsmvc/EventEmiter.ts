@@ -1,5 +1,7 @@
 export default class {
+
     private events: object;
+
     constructor() {
         this.events = {};
     }
@@ -12,6 +14,7 @@ export default class {
             });
         }
     }
+
     public subscribe(eventName: string, fn) {
         if (!this.events[eventName]) {
         this.events[eventName] = [];
