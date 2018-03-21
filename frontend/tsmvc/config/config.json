@@ -1,4 +1,8 @@
 {
     "period" : 1000,
-    "CELL_SQUARE" : 20
+    "CELL_SQUARE" : 20,
+    "DEFAULT_WIDTH" : 20,
+    "DEFAULT_HEIGHT" : 20,
+    "A_LOT_OF_CELL" : 3,
+    "A_LOT_OF_CELL_PLUS_MIDDLE" : 4
 }

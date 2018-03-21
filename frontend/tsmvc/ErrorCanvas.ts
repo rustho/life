@@ -1,6 +1,6 @@
 export default class ErrorCanvas extends Error {
 
-    constructor() {
-        super("More than 1 canvas");
-    }
+  constructor() {
+    super('More than 1 canvas');
+  }
 }
