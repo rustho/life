@@ -216,15 +216,14 @@ document.addEventListener('DOMContentLoaded', () => {
 class Model extends __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */] {
     constructor() {
         super();
-        this.CELL_SQUARE = __WEBPACK_IMPORTED_MODULE_2__config_config_json__["CELL_SQUARE"];
         this.width = __WEBPACK_IMPORTED_MODULE_2__config_config_json__["DEFAULT_WIDTH"];
         this.height = __WEBPACK_IMPORTED_MODULE_2__config_config_json__["DEFAULT_HEIGHT"];
         this.board = this.newBoard();
         Object(__WEBPACK_IMPORTED_MODULE_0__binding__["a" /* default */])(this);
     }
     findCellAndChange(x, y) {
-        const xCell = Math.floor(x / this.CELL_SQUARE);
-        const yCell = Math.floor(y / this.CELL_SQUARE);
+        const xCell = x;
+        const yCell = y;
         if (this.board[yCell][xCell] === 0) {
             this.board[yCell][xCell] = 1;
         }
@@ -271,8 +270,8 @@ class Model extends __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */
         this.emit('changeStateBoard', this.board);
     }
     changeQuantityCell(width, height) {
-        this.width = Math.floor(width / this.CELL_SQUARE);
-        this.height = Math.floor(height / this.CELL_SQUARE);
+        this.width = width;
+        this.height = height;
         this.board = this.newBoard();
         this.emit('changeStateBoard', this.board);
     }
@@ -313,6 +312,9 @@ class Model extends __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__binding__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ErrorCanvas__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__EventEmiter__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__config_config_json__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__config_config_json___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__config_config_json__);
+
 
 
 
@@ -320,14 +322,15 @@ class Model extends __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */
 class View extends __WEBPACK_IMPORTED_MODULE_3__EventEmiter__["a" /* default */] {
     constructor() {
         super();
+        this.CELL_SQUARE = __WEBPACK_IMPORTED_MODULE_4__config_config_json__["CELL_SQUARE"];
         this.findingElements();
         this.addEvents();
         Object(__WEBPACK_IMPORTED_MODULE_1__binding__["a" /* default */])(this);
     }
     changeSize(width, height) {
         const canvas = this.$field.get(0);
-        canvas.width = width;
-        canvas.height = height;
+        canvas.width = width * this.CELL_SQUARE;
+        canvas.height = height * this.CELL_SQUARE;
     }
     drawCanvas(board) {
         const canvas = this.$field.get(0);
@@ -380,13 +383,15 @@ class View extends __WEBPACK_IMPORTED_MODULE_3__EventEmiter__["a" /* default */]
     }
     changeWidth(event) {
         const width = parseInt(event.data.view.$changeWidth.val(), 10);
-        const height = event.data.view.$field.height();
+        const height = event.data.view.$field.height() / this.CELL_SQUARE;
         event.data.view.emit('changeWidth', width, height);
+        event.data.view.emit('stopLife');
     }
     changeHeight(event) {
         const height = parseInt(event.data.view.$changeHeight.val(), 10);
-        const width = event.data.view.$field.width();
+        const width = event.data.view.$field.width() / this.CELL_SQUARE;
         event.data.view.emit('changeHeight', width, height);
+        event.data.view.emit('stopLife');
     }
     changePeriod(event) {
         let userText = (prompt('period in millisecond?', '500'));
@@ -396,8 +401,8 @@ class View extends __WEBPACK_IMPORTED_MODULE_3__EventEmiter__["a" /* default */]
         event.data.view.emit('changePeriod', period);
     }
     clickCell(event) {
-        const x = event.offsetX;
-        const y = event.offsetY;
+        const x = Math.floor(event.offsetX / this.CELL_SQUARE);
+        const y = Math.floor(event.offsetY / this.CELL_SQUARE);
         event.data.view.emit('clickCell', x, y);
     }
 }

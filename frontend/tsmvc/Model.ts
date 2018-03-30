@@ -9,10 +9,8 @@ export default class Model extends EventEmiter implements IModel {
   private width: number;
   private height: number;
   private board: number[][];
-  private CELL_SQUARE: number;
   constructor() {
     super();
-    this.CELL_SQUARE = (config).CELL_SQUARE;
     this.width = (config).DEFAULT_WIDTH;
     this.height = (config).DEFAULT_HEIGHT;
     this.board = this.newBoard();
@@ -20,8 +18,8 @@ export default class Model extends EventEmiter implements IModel {
   }
 
   public findCellAndChange(x: number, y: number): void {
-    const xCell = Math.floor(x / this.CELL_SQUARE);
-    const yCell = Math.floor(y / this.CELL_SQUARE);
+    const xCell = x;
+    const yCell = y;
     if (this.board[yCell][xCell] === 0) {
       this.board[yCell][xCell] = 1;
     } else {
@@ -37,7 +35,7 @@ export default class Model extends EventEmiter implements IModel {
     let res = 0;
     arrayOfBorderY.forEach((indexOfRow, row) => {
       arrayOfBorderX.forEach((indexOfColl, coll) => {
-                // проверка для моделирования поверхности тора
+          // проверка для моделирования поверхности тора
         indexOfRow = (indexOfRow === -1) ? this.height - 1 : indexOfRow;
         indexOfColl = (indexOfColl === -1) ? this.width - 1 : indexOfColl;
         indexOfRow = (indexOfRow === this.height) ? 0 : indexOfRow;
@@ -71,8 +69,8 @@ export default class Model extends EventEmiter implements IModel {
   }
 
   public changeQuantityCell(width: number, height: number): void {
-    this.width = Math.floor(width / this.CELL_SQUARE);
-    this.height = Math.floor(height / this.CELL_SQUARE);
+    this.width = width;
+    this.height = height;
     this.board = this.newBoard();
     this.emit('changeStateBoard', this.board);
   }

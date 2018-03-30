@@ -4,6 +4,8 @@ import ErrorCanvas from './ErrorCanvas';
 import EventEmiter from './EventEmiter';
 import { IView } from './types/IView';
 
+import * as config from './config/config.json';
+
 export default class View extends EventEmiter implements IView {
   public $field: JQuery<HTMLElement>;
   public $start: JQuery<HTMLElement>;
@@ -12,9 +14,11 @@ export default class View extends EventEmiter implements IView {
   private $changeHeight: JQuery<HTMLElement>;
   private $changeWidth: JQuery<HTMLElement>;
   private $changePeriod: JQuery<HTMLElement>;
+  private CELL_SQUARE: number;
 
   constructor() {
     super();
+    this.CELL_SQUARE = config.CELL_SQUARE;
     this.findingElements();
     this.addEvents();
     binding(this);
@@ -22,8 +26,8 @@ export default class View extends EventEmiter implements IView {
 
   public changeSize(width: number, height: number): void {
     const canvas = this.$field.get(0) as HTMLCanvasElement;
-    canvas.width = width;
-    canvas.height = height;
+    canvas.width = width*this.CELL_SQUARE;
+    canvas.height = height*this.CELL_SQUARE;
   }
   public drawCanvas(board: number[][]): void {
     const canvas = this.$field.get(0) as HTMLCanvasElement;
@@ -75,13 +79,15 @@ export default class View extends EventEmiter implements IView {
   }
   private changeWidth(event: JQuery.Event<HTMLElement, {view}>): void {
     const width = parseInt(event.data.view.$changeWidth.val(), 10);
-    const height = event.data.view.$field.height();
+    const height = event.data.view.$field.height()/this.CELL_SQUARE;
     event.data.view.emit('changeWidth', width, height);
+    event.data.view.emit('stopLife');
   }
   private changeHeight(event: JQuery.Event<HTMLElement, {view}>): void {
     const height = parseInt(event.data.view.$changeHeight.val(), 10);
-    const width = event.data.view.$field.width();
+    const width = event.data.view.$field.width()/this.CELL_SQUARE;
     event.data.view.emit('changeHeight', width, height);
+    event.data.view.emit('stopLife');
   }
   private changePeriod(event: JQuery.Event<HTMLElement, {view}>): void {
     let userText = (prompt('period in millisecond?', '500'));
@@ -93,8 +99,8 @@ export default class View extends EventEmiter implements IView {
   }
 
   private clickCell(event: JQuery.Event<HTMLElement, {view}>): void {
-    const x = event.offsetX;
-    const y = event.offsetY;
+    const x = Math.floor(event.offsetX/this.CELL_SQUARE);
+    const y = Math.floor(event.offsetY/this.CELL_SQUARE);
     event.data.view.emit('clickCell', x, y);
   }
 }
