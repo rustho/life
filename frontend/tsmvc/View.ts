@@ -14,6 +14,7 @@ export default class View extends EventEmiter implements IView {
   private $changeHeight: JQuery<HTMLElement>;
   private $changeWidth: JQuery<HTMLElement>;
   private $changePeriod: JQuery<HTMLElement>;
+  private $status: JQuery<HTMLElement>;
   private CELL_SQUARE: number;
 
   constructor() {
@@ -32,10 +33,10 @@ export default class View extends EventEmiter implements IView {
   public drawCanvas(board: number[][]): void {
     const canvas = this.$field.get(0) as HTMLCanvasElement;
     const ctx = canvas.getContext('2d');
-    const cellSquare = 20;
+    const cellSquare = this.CELL_SQUARE;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     board.forEach((row, indexOfRow) => {
-      board.forEach((element, indexOfColl) => {
+      row.forEach((element, indexOfColl) => {
         if (board[indexOfRow][indexOfColl] === 1) {
           ctx.fillRect(indexOfColl * cellSquare, indexOfRow * cellSquare, cellSquare, cellSquare);
         }
@@ -45,6 +46,9 @@ export default class View extends EventEmiter implements IView {
       });
     });
   }
+  private changeStatusGame(text: string): void {
+    this.$status.text(text);
+  }
   private findingElements(): void {
     this.$start = $('.js-start');
     this.$stop = $('.js-stop');
@@ -52,6 +56,7 @@ export default class View extends EventEmiter implements IView {
     this.$changeWidth = $('.js-change_width');
     this.$changeHeight = $('.js-change_height');
     this.$changePeriod = $('.js-change_speed');
+    this.$status = $('.js-status');
     if (!$('.js-field')[1]) {
       this.$field = $('.js-field');
     } else {
@@ -69,24 +74,30 @@ export default class View extends EventEmiter implements IView {
     this.$field.first().off('click').on('click', { view: this }, this.clickCell);
   }
   private startLife(event: JQuery.Event<HTMLElement, {view}>): void {
+    event.data.view.changeStatusGame('Game Begin');
     event.data.view.emit('startLife');
   }
   private stopLife(event: JQuery.Event<HTMLElement, {view}>): void {
+    event.data.view.changeStatusGame('Game is stopped');
     event.data.view.emit('stopLife');
   }
   private clearBoard(event: JQuery.Event<HTMLElement, {view}>): void {
     event.data.view.emit('clearBoard');
+    event.data.view.emit('stopLife');
+    event.data.view.changeStatusGame("it's a new life for you");
   }
   private changeWidth(event: JQuery.Event<HTMLElement, {view}>): void {
     const width = parseInt(event.data.view.$changeWidth.val(), 10);
-    const height = event.data.view.$field.height()/this.CELL_SQUARE;
+    const height = event.data.view.$field.height()/event.data.view.CELL_SQUARE;
     event.data.view.emit('changeWidth', width, height);
+    event.data.view.changeStatusGame('Resizing game');
     event.data.view.emit('stopLife');
   }
   private changeHeight(event: JQuery.Event<HTMLElement, {view}>): void {
     const height = parseInt(event.data.view.$changeHeight.val(), 10);
-    const width = event.data.view.$field.width()/this.CELL_SQUARE;
+    const width = event.data.view.$field.width()/event.data.view.CELL_SQUARE;
     event.data.view.emit('changeHeight', width, height);
+    event.data.view.changeStatusGame('Resizing game');
     event.data.view.emit('stopLife');
   }
   private changePeriod(event: JQuery.Event<HTMLElement, {view}>): void {
@@ -94,13 +105,13 @@ export default class View extends EventEmiter implements IView {
     let period: number = 0;
     userText = (userText === null) ? '100' : userText;
     period = parseInt((userText), 10);
-
     event.data.view.emit('changePeriod', period);
+    event.data.view.changeStatusGame('Speed is changed');
   }
 
   private clickCell(event: JQuery.Event<HTMLElement, {view}>): void {
-    const x = Math.floor(event.offsetX/this.CELL_SQUARE);
-    const y = Math.floor(event.offsetY/this.CELL_SQUARE);
+    const x = Math.floor(event.offsetX/event.data.view.CELL_SQUARE);
+    const y = Math.floor(event.offsetY/event.data.view.CELL_SQUARE);
     event.data.view.emit('clickCell', x, y);
   }
 }

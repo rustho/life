@@ -335,10 +335,10 @@ class View extends __WEBPACK_IMPORTED_MODULE_3__EventEmiter__["a" /* default */]
     drawCanvas(board) {
         const canvas = this.$field.get(0);
         const ctx = canvas.getContext('2d');
-        const cellSquare = 20;
+        const cellSquare = this.CELL_SQUARE;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         board.forEach((row, indexOfRow) => {
-            board.forEach((element, indexOfColl) => {
+            row.forEach((element, indexOfColl) => {
                 if (board[indexOfRow][indexOfColl] === 1) {
                     ctx.fillRect(indexOfColl * cellSquare, indexOfRow * cellSquare, cellSquare, cellSquare);
                 }
@@ -348,6 +348,9 @@ class View extends __WEBPACK_IMPORTED_MODULE_3__EventEmiter__["a" /* default */]
             });
         });
     }
+    changeStatusGame(text) {
+        this.$status.text(text);
+    }
     findingElements() {
         this.$start = __WEBPACK_IMPORTED_MODULE_0_jquery__('.js-start');
         this.$stop = __WEBPACK_IMPORTED_MODULE_0_jquery__('.js-stop');
@@ -355,6 +358,7 @@ class View extends __WEBPACK_IMPORTED_MODULE_3__EventEmiter__["a" /* default */]
         this.$changeWidth = __WEBPACK_IMPORTED_MODULE_0_jquery__('.js-change_width');
         this.$changeHeight = __WEBPACK_IMPORTED_MODULE_0_jquery__('.js-change_height');
         this.$changePeriod = __WEBPACK_IMPORTED_MODULE_0_jquery__('.js-change_speed');
+        this.$status = __WEBPACK_IMPORTED_MODULE_0_jquery__('.js-status');
         if (!__WEBPACK_IMPORTED_MODULE_0_jquery__('.js-field')[1]) {
             this.$field = __WEBPACK_IMPORTED_MODULE_0_jquery__('.js-field');
         }
@@ -373,24 +377,30 @@ class View extends __WEBPACK_IMPORTED_MODULE_3__EventEmiter__["a" /* default */]
         this.$field.first().off('click').on('click', { view: this }, this.clickCell);
     }
     startLife(event) {
+        event.data.view.changeStatusGame('Game Begin');
         event.data.view.emit('startLife');
     }
     stopLife(event) {
+        event.data.view.changeStatusGame('Game is stopped');
         event.data.view.emit('stopLife');
     }
     clearBoard(event) {
         event.data.view.emit('clearBoard');
+        event.data.view.emit('stopLife');
+        event.data.view.changeStatusGame("it's a new life for you");
     }
     changeWidth(event) {
         const width = parseInt(event.data.view.$changeWidth.val(), 10);
-        const height = event.data.view.$field.height() / this.CELL_SQUARE;
+        const height = event.data.view.$field.height() / event.data.view.CELL_SQUARE;
         event.data.view.emit('changeWidth', width, height);
+        event.data.view.changeStatusGame('Resizing game');
         event.data.view.emit('stopLife');
     }
     changeHeight(event) {
         const height = parseInt(event.data.view.$changeHeight.val(), 10);
-        const width = event.data.view.$field.width() / this.CELL_SQUARE;
+        const width = event.data.view.$field.width() / event.data.view.CELL_SQUARE;
         event.data.view.emit('changeHeight', width, height);
+        event.data.view.changeStatusGame('Resizing game');
         event.data.view.emit('stopLife');
     }
     changePeriod(event) {
@@ -399,10 +409,11 @@ class View extends __WEBPACK_IMPORTED_MODULE_3__EventEmiter__["a" /* default */]
         userText = (userText === null) ? '100' : userText;
         period = parseInt((userText), 10);
         event.data.view.emit('changePeriod', period);
+        event.data.view.changeStatusGame('Speed is changed');
     }
     clickCell(event) {
-        const x = Math.floor(event.offsetX / this.CELL_SQUARE);
-        const y = Math.floor(event.offsetY / this.CELL_SQUARE);
+        const x = Math.floor(event.offsetX / event.data.view.CELL_SQUARE);
+        const y = Math.floor(event.offsetY / event.data.view.CELL_SQUARE);
         event.data.view.emit('clickCell', x, y);
     }
 }

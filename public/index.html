@@ -5,12 +5,19 @@
 </head>
 <body>
     <div>
-        <button class='js-start'>start</button>
-        <button class='js-stop'>stop</button>
-        <button class='js-clear'>clear</button>
-        <input type="text" class='js-change_width'></input>
-        <input type="text" class='js-change_height'></input>
-        <button class='js-change_speed'>change speed</button>
+        <button class='js-start'>Start</button>
+        <button class='js-stop'>Stop</button>
+        <button class='js-clear'>Clear</button>
+        <button class='js-change_speed'>Change speed</button>
+        <div>
+            <span>Width</span>
+            <input type="text" class='js-change_width' type="number" maxlength="2"></input>
+        </div>
+        <div>
+            <span>Height</span>
+            <input type="text" class='js-change_height' type="number" maxlength="2"></input>
+        </div>
+        <span class="js-status">Click the start!</span>
     </div>
     <canvas class='js-field' width="400" height=400px></canvas>
     <script src="app.js"></script>
