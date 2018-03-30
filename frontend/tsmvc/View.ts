@@ -84,7 +84,7 @@ export default class View extends EventEmiter implements IView {
     event.data.view.emit('changeHeight', width, height);
   }
   private changePeriod(event: JQuery.Event<HTMLElement, {view}>): void {
-    let userText = (prompt('period in ml/sec?', '500'));
+    let userText = (prompt('period in millisecond?', '500'));
     let period: number = 0;
     userText = (userText === null) ? '100' : userText;
     period = parseInt((userText), 10);
