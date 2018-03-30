@@ -24,7 +24,10 @@ export default class View extends EventEmiter implements IView {
     this.addEvents();
     binding(this);
   }
-
+  public endGame(): void {
+    this.$status.text('END GAME');
+    this.emit('stopLife');
+  }
   public changeSize(width: number, height: number): void {
     const canvas = this.$field.get(0) as HTMLCanvasElement;
     canvas.width = width*this.CELL_SQUARE;

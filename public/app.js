@@ -188,6 +188,9 @@ document.addEventListener('DOMContentLoaded', () => {
     startGame() {
         this.model.nextState();
     }
+    endGame() {
+        this.view.endGame();
+    }
     subscribing() {
         this.view.subscribe('startLife', this.startLife);
         this.view.subscribe('stopLife', this.stopLife);
@@ -197,6 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
         this.view.subscribe('changeHeight', this.changeSize);
         this.view.subscribe('changePeriod', this.changePeriod);
         this.model.subscribe('changeStateBoard', this.updateCanvas);
+        this.model.subscribe('endGame', this.endGame);
     }
 });
 
@@ -219,7 +223,33 @@ class Model extends __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */
         this.width = __WEBPACK_IMPORTED_MODULE_2__config_config_json__["DEFAULT_WIDTH"];
         this.height = __WEBPACK_IMPORTED_MODULE_2__config_config_json__["DEFAULT_HEIGHT"];
         this.board = this.newBoard();
+        this.historyOfBoards = [[[]]];
         Object(__WEBPACK_IMPORTED_MODULE_0__binding__["a" /* default */])(this);
+    }
+    /* isRepeatMatrix(): boolean {
+      const result: boolean = this.stateHistory.some((matrix: boolean[][]) =>
+        matrix.every((row: boolean[], i: number) =>
+          row.every((cell: boolean, j: number) =>
+            (cell === this.matrix[i][j]),
+          ),
+        ),
+      );
+      if (result) { this.stateHistory = []; }
+      else { this.stateHistory.push(this.matrix); }
+      return result;
+    } */
+    endOfGame(board) {
+        let result;
+        this.historyOfBoards.some((element) => element.every((row, indexOfRow) => row.every((column, indexOfColumn) => result = (column === element[indexOfRow][indexOfColumn]))));
+        if (!result) {
+            console.log('end Game');
+            this.emit('endGame');
+            this.historyOfBoards = [[0[0]]];
+        }
+        else {
+            this.historyOfBoards.push(board);
+            console.log('No');
+        }
     }
     findCellAndChange(x, y) {
         const xCell = x;
@@ -263,6 +293,7 @@ class Model extends __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */
             });
         });
         this.board = newBoard;
+        this.endOfGame(this.board);
         this.emit('changeStateBoard', this.board);
     }
     clearBoard() {
@@ -326,6 +357,10 @@ class View extends __WEBPACK_IMPORTED_MODULE_3__EventEmiter__["a" /* default */]
         this.findingElements();
         this.addEvents();
         Object(__WEBPACK_IMPORTED_MODULE_1__binding__["a" /* default */])(this);
+    }
+    endGame() {
+        this.$status.text('END GAME');
+        this.emit('stopLife');
     }
     changeSize(width, height) {
         const canvas = this.$field.get(0);

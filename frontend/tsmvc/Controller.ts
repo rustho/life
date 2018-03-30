@@ -69,6 +69,10 @@ export default class <Model extends IAbstractModel, View extends IAbstractView> 
     this.model.nextState();
   }
 
+  private endGame(): void{
+    this.view.endGame();
+  }
+
   private subscribing() {
     this.view.subscribe('startLife', this.startLife);
     this.view.subscribe('stopLife', this.stopLife);
@@ -79,5 +83,6 @@ export default class <Model extends IAbstractModel, View extends IAbstractView> 
     this.view.subscribe('changePeriod', this.changePeriod);
 
     this.model.subscribe('changeStateBoard', this.updateCanvas);
+    this.model.subscribe('endGame', this.endGame);
   }
 }
