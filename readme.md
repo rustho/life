@@ -12,3 +12,5 @@ For Unit test used Karma, Mocha, Chai
 Project use MVC Architecture pattern 
 ### Clean code
 For clean code used tslint 
+### Online mod
+[click here](https://rustho.github.io/life/public/)
