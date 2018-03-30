@@ -71,7 +71,7 @@
 
 /* harmony default export */ __webpack_exports__["a"] = (function (currentClass) {
     for (const key of Object.getOwnPropertyNames(currentClass.constructor.prototype)) {
-        if (typeof currentClass[key] === "function") {
+        if (typeof currentClass[key] === 'function') {
             currentClass[key] = currentClass[key].bind(currentClass);
         }
     }
@@ -83,7 +83,7 @@
 /* 1 */
 /***/ (function(module, exports) {
 
-module.exports = {"period":1000,"CELL_SQUARE":20}
+module.exports = {"period":1000,"CELL_SQUARE":20,"DEFAULT_WIDTH":20,"DEFAULT_HEIGHT":20,"A_LOT_OF_CELL":3,"A_LOT_OF_CELL_PLUS_MIDDLE":4}
 
 /***/ }),
 /* 2 */
@@ -108,7 +108,7 @@ module.exports = {"period":1000,"CELL_SQUARE":20}
         }
         this.events[eventName].push(fn);
         return () => {
-            this.events[eventName] = this.events[eventName].filter((eventFn) => fn !== eventFn);
+            this.events[eventName] = this.events[eventName].filter(eventFn => fn !== eventFn);
         };
     }
 });
@@ -126,7 +126,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
     const model = new __WEBPACK_IMPORTED_MODULE_1__tsmvc_Model__["a" /* default */]();
     const view = new __WEBPACK_IMPORTED_MODULE_2__tsmvc_View__["a" /* default */]();
     const controller = new __WEBPACK_IMPORTED_MODULE_0__tsmvc_Controller__["a" /* default */](model, view);
@@ -189,14 +189,14 @@ document.addEventListener("DOMContentLoaded", () => {
         this.model.nextState();
     }
     subscribing() {
-        this.view.subscribe("startLife", this.startLife);
-        this.view.subscribe("stopLife", this.stopLife);
-        this.view.subscribe("clearBoard", this.clearBoard);
-        this.view.subscribe("clickCell", this.clickOnCell);
-        this.view.subscribe("changeWidth", this.changeSize);
-        this.view.subscribe("changeHeight", this.changeSize);
-        this.view.subscribe("changePeriod", this.changePeriod);
-        this.model.subscribe("changeStateBoard", this.updateCanvas);
+        this.view.subscribe('startLife', this.startLife);
+        this.view.subscribe('stopLife', this.stopLife);
+        this.view.subscribe('clearBoard', this.clearBoard);
+        this.view.subscribe('clickCell', this.clickOnCell);
+        this.view.subscribe('changeWidth', this.changeSize);
+        this.view.subscribe('changeHeight', this.changeSize);
+        this.view.subscribe('changePeriod', this.changePeriod);
+        this.model.subscribe('changeStateBoard', this.updateCanvas);
     }
 });
 
@@ -217,8 +217,8 @@ class Model extends __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */
     constructor() {
         super();
         this.CELL_SQUARE = __WEBPACK_IMPORTED_MODULE_2__config_config_json__["CELL_SQUARE"];
-        this.width = 20;
-        this.height = 20;
+        this.width = __WEBPACK_IMPORTED_MODULE_2__config_config_json__["DEFAULT_WIDTH"];
+        this.height = __WEBPACK_IMPORTED_MODULE_2__config_config_json__["DEFAULT_HEIGHT"];
         this.board = this.newBoard();
         Object(__WEBPACK_IMPORTED_MODULE_0__binding__["a" /* default */])(this);
     }
@@ -231,10 +231,10 @@ class Model extends __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */
         else {
             this.board[yCell][xCell] = 0;
         }
-        this.emit("changeStateBoard", this.board);
+        this.emit('changeStateBoard', this.board);
     }
     changeStateOfCell(i, j) {
-        let livingcell = 0;
+        let livingCell = 0;
         const arrayOfBorderY = [i - 1, i, i + 1];
         const arrayOfBorderX = [j - 1, j, j + 1];
         let res = 0;
@@ -246,42 +246,47 @@ class Model extends __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */
                 indexOfRow = (indexOfRow === this.height) ? 0 : indexOfRow;
                 indexOfColl = (indexOfColl === this.width) ? 0 : indexOfColl;
                 if (this.board[indexOfRow][indexOfColl] === 1) {
-                    livingcell += 1;
+                    livingCell += 1;
                 }
             });
         });
-        if (livingcell === 3 || (this.board[i][j] === 1 && livingcell === 4)) {
+        if (livingCell === __WEBPACK_IMPORTED_MODULE_2__config_config_json__["A_LOT_OF_CELL"] ||
+            (this.board[i][j] === 1 && livingCell === __WEBPACK_IMPORTED_MODULE_2__config_config_json__["A_LOT_OF_CELL_PLUS_MIDDLE"])) {
             res = 1;
         }
         return res;
     }
     nextState() {
-        const newboard = this.newBoard();
-        newboard.forEach((row, indexOfRow) => {
-            newboard[indexOfRow].forEach((element, indexOfColl) => {
-                newboard[indexOfRow][indexOfColl] = this.changeStateOfCell(indexOfRow, indexOfColl);
+        const newBoard = this.newBoard();
+        newBoard.forEach((row, indexOfRow) => {
+            newBoard[indexOfRow].forEach((element, indexOfColl) => {
+                newBoard[indexOfRow][indexOfColl] = this.changeStateOfCell(indexOfRow, indexOfColl);
             });
         });
-        this.board = newboard;
-        this.emit("changeStateBoard", this.board);
+        this.board = newBoard;
+        this.emit('changeStateBoard', this.board);
     }
     clearBoard() {
         this.board = this.newBoard();
-        this.emit("changeStateBoard", this.board);
+        this.emit('changeStateBoard', this.board);
     }
     changeQuantityCell(width, height) {
         this.width = Math.floor(width / this.CELL_SQUARE);
         this.height = Math.floor(height / this.CELL_SQUARE);
         this.board = this.newBoard();
-        this.emit("changeStateBoard", this.board);
+        this.emit('changeStateBoard', this.board);
     }
     newBoard() {
         const board = [];
-        for (let i = 0; i < this.height; i++) {
+        let i = 0;
+        while (i < this.height) {
             board[i] = [];
-            for (let j = 0; j < this.width; j++) {
+            let j = 0;
+            while (j < this.width) {
                 board[i][j] = 0;
+                j++;
             }
+            i++;
         }
         return board;
     }
@@ -326,29 +331,29 @@ class View extends __WEBPACK_IMPORTED_MODULE_3__EventEmiter__["a" /* default */]
     }
     drawCanvas(board) {
         const canvas = this.$field.get(0);
-        const ctx = canvas.getContext("2d");
-        const cellsquare = 20;
+        const ctx = canvas.getContext('2d');
+        const cellSquare = 20;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         board.forEach((row, indexOfRow) => {
             board.forEach((element, indexOfColl) => {
                 if (board[indexOfRow][indexOfColl] === 1) {
-                    ctx.fillRect(indexOfColl * cellsquare, indexOfRow * cellsquare, cellsquare, cellsquare);
+                    ctx.fillRect(indexOfColl * cellSquare, indexOfRow * cellSquare, cellSquare, cellSquare);
                 }
                 if (board[indexOfRow][indexOfColl] === 0) {
-                    ctx.strokeRect(indexOfColl * cellsquare, indexOfRow * cellsquare, cellsquare, cellsquare);
+                    ctx.strokeRect(indexOfColl * cellSquare, indexOfRow * cellSquare, cellSquare, cellSquare);
                 }
             });
         });
     }
     findingElements() {
-        this.$start = __WEBPACK_IMPORTED_MODULE_0_jquery__(".js-start");
-        this.$stop = __WEBPACK_IMPORTED_MODULE_0_jquery__(".js-stop");
-        this.$clear = __WEBPACK_IMPORTED_MODULE_0_jquery__(".js-clear");
-        this.$changeWidth = __WEBPACK_IMPORTED_MODULE_0_jquery__(".js-change_width");
-        this.$changeHeight = __WEBPACK_IMPORTED_MODULE_0_jquery__(".js-change_height");
-        this.$changePeriod = __WEBPACK_IMPORTED_MODULE_0_jquery__(".js-change_speed");
-        if (!__WEBPACK_IMPORTED_MODULE_0_jquery__(".js-field")[1]) {
-            this.$field = __WEBPACK_IMPORTED_MODULE_0_jquery__(".js-field");
+        this.$start = __WEBPACK_IMPORTED_MODULE_0_jquery__('.js-start');
+        this.$stop = __WEBPACK_IMPORTED_MODULE_0_jquery__('.js-stop');
+        this.$clear = __WEBPACK_IMPORTED_MODULE_0_jquery__('.js-clear');
+        this.$changeWidth = __WEBPACK_IMPORTED_MODULE_0_jquery__('.js-change_width');
+        this.$changeHeight = __WEBPACK_IMPORTED_MODULE_0_jquery__('.js-change_height');
+        this.$changePeriod = __WEBPACK_IMPORTED_MODULE_0_jquery__('.js-change_speed');
+        if (!__WEBPACK_IMPORTED_MODULE_0_jquery__('.js-field')[1]) {
+            this.$field = __WEBPACK_IMPORTED_MODULE_0_jquery__('.js-field');
         }
         else {
             const errorCanvas = new __WEBPACK_IMPORTED_MODULE_2__ErrorCanvas__["a" /* default */]();
@@ -358,42 +363,42 @@ class View extends __WEBPACK_IMPORTED_MODULE_3__EventEmiter__["a" /* default */]
     addEvents() {
         this.$start.click({ view: this }, this.startLife);
         this.$stop.click({ view: this }, this.stopLife);
-        this.$clear.click({ view: this }, this.clearBord);
+        this.$clear.click({ view: this }, this.clearBoard);
         this.$changeWidth.blur({ view: this }, this.changeWidth);
         this.$changeHeight.blur({ view: this }, this.changeHeight);
         this.$changePeriod.click({ view: this }, this.changePeriod);
-        this.$field.first().off("click").on("click", { view: this }, this.clickCell);
+        this.$field.first().off('click').on('click', { view: this }, this.clickCell);
     }
     startLife(event) {
-        event.data.view.emit("startLife");
+        event.data.view.emit('startLife');
     }
     stopLife(event) {
-        event.data.view.emit("stopLife");
+        event.data.view.emit('stopLife');
     }
-    clearBord(event) {
-        event.data.view.emit("clearBoard");
+    clearBoard(event) {
+        event.data.view.emit('clearBoard');
     }
     changeWidth(event) {
         const width = parseInt(event.data.view.$changeWidth.val(), 10);
         const height = event.data.view.$field.height();
-        event.data.view.emit("changeWidth", width, height);
+        event.data.view.emit('changeWidth', width, height);
     }
     changeHeight(event) {
         const height = parseInt(event.data.view.$changeHeight.val(), 10);
         const width = event.data.view.$field.width();
-        event.data.view.emit("changeHeight", width, height);
+        event.data.view.emit('changeHeight', width, height);
     }
     changePeriod(event) {
-        let userText = (prompt("period in mlsec?", "500"));
+        let userText = (prompt('period in millisecond?', '500'));
         let period = 0;
-        userText = (userText === null) ? "100" : userText;
+        userText = (userText === null) ? '100' : userText;
         period = parseInt((userText), 10);
-        event.data.view.emit("changePeriod", period);
+        event.data.view.emit('changePeriod', period);
     }
     clickCell(event) {
         const x = event.offsetX;
         const y = event.offsetY;
-        event.data.view.emit("clickCell", x, y);
+        event.data.view.emit('clickCell', x, y);
     }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = View;
@@ -10778,7 +10783,7 @@ return jQuery;
 "use strict";
 class ErrorCanvas extends Error {
     constructor() {
-        super("More than 1 canvas");
+        super('More than 1 canvas');
     }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = ErrorCanvas;

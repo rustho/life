@@ -35,12 +35,18 @@ describe("View", function(){
             correctCanvas.height = 200;
 
             const board = [];
-            for (let i = 0; i < 10; i++) {
+            let i = 0;
+            let j = 0;
+            while (i < this.height) {
                 board[i] = [];
-                for (let j = 0; j < 10; j++) {
-                    board[i][j] = (i!=j) ? 0 : 1;
+                while (j < this.width) {
+                board[i][j] = 0;
+                j++;
                 }
-            };
+                i++;
+            }
+            return board;
+            }
             
             const ctx = correctCanvas.getContext("2d");
             const cellsquare = 20;

@@ -79,11 +79,15 @@ export default class Model extends EventEmiter implements IModel {
 
   public newBoard(): number[][] {
     const board = [];
-    for (let i = 0; i < this.height; i++) {
+    let i = 0;
+    while (i < this.height) {
       board[i] = [];
-      for (let j = 0; j < this.width; j++) {
+      let j = 0;
+      while (j < this.width) {
         board[i][j] = 0;
+        j++;
       }
+      i++;
     }
     return board;
   }
