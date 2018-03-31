@@ -223,33 +223,25 @@ class Model extends __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */
         this.width = __WEBPACK_IMPORTED_MODULE_2__config_config_json__["DEFAULT_WIDTH"];
         this.height = __WEBPACK_IMPORTED_MODULE_2__config_config_json__["DEFAULT_HEIGHT"];
         this.board = this.newBoard();
-        this.historyOfBoards = [[[]]];
+        this.historyOfBoards = [[0[0]]];
         Object(__WEBPACK_IMPORTED_MODULE_0__binding__["a" /* default */])(this);
     }
-    /* isRepeatMatrix(): boolean {
-      const result: boolean = this.stateHistory.some((matrix: boolean[][]) =>
-        matrix.every((row: boolean[], i: number) =>
-          row.every((cell: boolean, j: number) =>
-            (cell === this.matrix[i][j]),
-          ),
-        ),
-      );
-      if (result) { this.stateHistory = []; }
-      else { this.stateHistory.push(this.matrix); }
-      return result;
-    } */
+    isEqualArray1(a1, a2) {
+        return a1.length === a2.length && a1.every((v, i) => v === a2[i]);
+    }
+    isEqualArray2(a1, a2) {
+        return a1.length === a2.length && a1.every((v, i) => this.isEqualArray1(v, a2[i]));
+    }
     endOfGame(board) {
-        let result;
-        this.historyOfBoards.some((element) => element.every((row, indexOfRow) => row.every((column, indexOfColumn) => result = (column === element[indexOfRow][indexOfColumn]))));
-        if (!result) {
-            console.log('end Game');
-            this.emit('endGame');
-            this.historyOfBoards = [[0[0]]];
-        }
-        else {
-            this.historyOfBoards.push(board);
-            console.log('No');
-        }
+        this.historyOfBoards.forEach((element) => {
+            if (this.isEqualArray2(element, board)) {
+                this.emit('endGame');
+                this.historyOfBoards = [[0[0]]];
+            }
+            else {
+                this.historyOfBoards.push(board);
+            }
+        });
     }
     findCellAndChange(x, y) {
         const xCell = x;

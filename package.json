@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node_modules/.bin/karma start karma.conf.js",
-    "start": "webpack && node_modules/.bin/webpack-dev-server"
+    "start": "webpack && node_modules/.bin/webpack-dev-server --content-base public/"
   },
   "author": "",
   "license": "ISC",
