@@ -9,33 +9,29 @@ export default class Model extends EventEmiter implements IModel {
   private width: number;
   private height: number;
   private board: number[][];
-  private historyOfBoards: [number[][]];
+  private historyOfBoards: number[][][];
   constructor() {
     super();
     this.width = (config).DEFAULT_WIDTH;
     this.height = (config).DEFAULT_HEIGHT;
     this.board = this.newBoard();
-    this.historyOfBoards = [[0[0]]];
+    this.historyOfBoards = [];
     binding(this);
   }
 
-  public isEqualArray1(a1, a2) {
-    return a1.length === a2.length && a1.every((v,i) => v === a2[i]);
-  }
-
-  public isEqualArray2(a1, a2) {
-    return a1.length === a2.length && a1.every((v,i) => this.isEqualArray1(v, a2[i]));
-  }
-
   public endOfGame(board: number[][]){
-    this.historyOfBoards.forEach((element) => {
-      if (this.isEqualArray2(element, board)){
-        this.emit('endGame');
-        this.historyOfBoards=[[0[0]]];
-      }else {
-        this.historyOfBoards.push(board);
-      }
-    });
+    let result: boolean;
+    result = this.historyOfBoards.some(element =>
+      element.every((row,indexOfRow) =>
+        row.every((coll, indexOfColl) =>
+          (coll === board[indexOfRow][indexOfColl]),
+      )));
+    if (result) {
+      this.emit('endGame');
+      this.historyOfBoards=[];
+    } else {
+      this.historyOfBoards.push(board);
+    }
   }
 
   public findCellAndChange(x: number, y: number): void {

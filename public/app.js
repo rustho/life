@@ -223,7 +223,7 @@ class Model extends __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */
         this.width = __WEBPACK_IMPORTED_MODULE_2__config_config_json__["DEFAULT_WIDTH"];
         this.height = __WEBPACK_IMPORTED_MODULE_2__config_config_json__["DEFAULT_HEIGHT"];
         this.board = this.newBoard();
-        this.historyOfBoards = [[0[0]]];
+        this.historyOfBoards = [];
         Object(__WEBPACK_IMPORTED_MODULE_0__binding__["a" /* default */])(this);
     }
     isEqualArray1(a1, a2) {
@@ -233,15 +233,17 @@ class Model extends __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */
         return a1.length === a2.length && a1.every((v, i) => this.isEqualArray1(v, a2[i]));
     }
     endOfGame(board) {
-        this.historyOfBoards.forEach((element) => {
-            if (this.isEqualArray2(element, board)) {
-                this.emit('endGame');
-                this.historyOfBoards = [[0[0]]];
-            }
-            else {
-                this.historyOfBoards.push(board);
-            }
-        });
+        let result;
+        result = this.historyOfBoards.some(element => element.every((row, indexOfRow) => row.every((coll, indexOfColl) => (coll === board[indexOfRow][indexOfColl]))));
+        console.log(result);
+        if (result) {
+            console.log(this.historyOfBoards);
+            this.emit('endGame');
+            this.historyOfBoards = [];
+        }
+        else {
+            this.historyOfBoards.push(board);
+        }
     }
     findCellAndChange(x, y) {
         const xCell = x;
