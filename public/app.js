@@ -226,18 +226,10 @@ class Model extends __WEBPACK_IMPORTED_MODULE_1__EventEmiter__["a" /* default */
         this.historyOfBoards = [];
         Object(__WEBPACK_IMPORTED_MODULE_0__binding__["a" /* default */])(this);
     }
-    isEqualArray1(a1, a2) {
-        return a1.length === a2.length && a1.every((v, i) => v === a2[i]);
-    }
-    isEqualArray2(a1, a2) {
-        return a1.length === a2.length && a1.every((v, i) => this.isEqualArray1(v, a2[i]));
-    }
     endOfGame(board) {
         let result;
         result = this.historyOfBoards.some(element => element.every((row, indexOfRow) => row.every((coll, indexOfColl) => (coll === board[indexOfRow][indexOfColl]))));
-        console.log(result);
         if (result) {
-            console.log(this.historyOfBoards);
             this.emit('endGame');
             this.historyOfBoards = [];
         }
